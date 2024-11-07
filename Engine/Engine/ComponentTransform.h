@@ -14,7 +14,7 @@ public:
 	void Update() override;
 	void OnEditor() override;
 
-	void SetTransformMatrix(glm::float3 position, glm::quat rotation, glm::float3 scale, ComponentTransform* parent);
+	void SetTransformMatrix(const glm::mat4& matrix);
 	void UpdateTransform();
 
 	bool Decompose(const glm::float4x4& transform, glm::vec3& translation, glm::quat& rotation, glm::vec3& scale);

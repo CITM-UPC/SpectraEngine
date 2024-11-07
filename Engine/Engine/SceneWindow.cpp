@@ -1,6 +1,8 @@
 #include "SceneWindow.h"
 #include "App.h"
 
+#include "glm/gtc/type_ptr.hpp"
+
 SceneWindow::SceneWindow(const WindowType type, const std::string& name) : EditorWindow(type, name)
 {
 }
@@ -92,6 +94,39 @@ void SceneWindow::DrawWindow()
         }
         ImGui::EndDragDropTarget();
     }
+
+    ImGuizmo::SetOrthographic(false);
+    ImGuizmo::SetDrawlist();
+
+    float windowWidth = ImGui::GetWindowWidth();
+    float windowHeight = ImGui::GetWindowHeight();
+    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+    glm::mat4 viewMatrix = app->camera->GetViewMatrix();
+    glm::mat4 projectionMatrix = app->camera->GetProjectionMatrix();
+
+    if (app->editor->selectedGameObject)
+    {
+        ComponentTransform* transform = app->editor->selectedGameObject->transform;
+
+        if (transform)
+        {
+            glm::mat4 transformMatrix = transform->localTransform;
+
+            if (ImGuizmo::Manipulate(glm::value_ptr(viewMatrix), glm::value_ptr(projectionMatrix), gizmoOperation, gizmoMode, glm::value_ptr(transformMatrix)))
+            {
+                transform->SetTransformMatrix(transformMatrix);
+                transform->UpdateTransform();
+            }
+        }
+    }
+
+    if (app->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+        gizmoOperation = ImGuizmo::TRANSLATE;
+    else if (app->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
+        gizmoOperation = ImGuizmo::ROTATE;
+    else if (app->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
+        gizmoOperation = ImGuizmo::SCALE;
 
     if (ImGui::IsWindowDocked() && app->editor->performanceWindow->showFpsOverlay)
     {

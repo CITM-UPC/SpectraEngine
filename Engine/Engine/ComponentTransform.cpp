@@ -1,6 +1,8 @@
 #include "ComponentTransform.h"
 #include "GameObject.h"
 
+#include <glm/gtx/matrix_decompose.hpp>
+
 ComponentTransform::ComponentTransform(GameObject* gameObject) : Component(gameObject, ComponentType::TRANSFORM)
 {
     localTransform = glm::float4x4(1.0f);
@@ -136,28 +138,18 @@ void ComponentTransform::OnEditor()
     if (updateTransform) UpdateTransform();
 }
 
-void ComponentTransform::SetTransformMatrix(glm::float3 position, glm::quat rotation, glm::float3 scale, ComponentTransform* parent)
+void ComponentTransform::SetTransformMatrix(const glm::mat4& matrix)
 {
-    this->position = position;
-    this->rotation = rotation;
-    this->scale = scale;
+    localTransform = matrix;
 
-    eulerRotation = degrees(glm::eulerAngles(rotation));
+    Decompose(localTransform, position, rotation, scale);
 
-    localTransform = glm::float4x4(1.0f);
-    localTransform = glm::translate(localTransform, position);
-    localTransform *= glm::mat4_cast(rotation);
-    localTransform = glm::scale(localTransform, scale);
-
-    if (parent != nullptr)
-    {
-        globalTransform = parent->globalTransform * localTransform;
-    }
+    eulerRotation = glm::degrees(glm::eulerAngles(rotation));
 }
 
 void ComponentTransform::UpdateTransform()
 {
-    rotation = glm::quat(glm::vec3(glm::radians(eulerRotation.x), glm::radians(eulerRotation.y), glm::radians(eulerRotation.z)));
+    rotation = glm::quat(glm::radians(eulerRotation));
 
     localTransform = glm::float4x4(1.0f);
     localTransform = glm::translate(localTransform, position);
@@ -184,30 +176,9 @@ void ComponentTransform::UpdateTransform()
 
 bool ComponentTransform::Decompose(const glm::float4x4& transform, glm::vec3& translation, glm::quat& rotation, glm::vec3& scale)
 {
-    glm::float4x4 localMatrix(transform);
-
-    translation = glm::vec3(localMatrix[3]);
-
-    glm::vec3 row[3];
-
-    for (int i = 0; i < 3; i++)
-    {
-        row[i] = glm::vec3(localMatrix[i]);
-    }
-
-    scale.x = glm::length(row[0]);
-    scale.y = glm::length(row[1]);
-    scale.z = glm::length(row[2]);
-
-    if (scale.x != 0) row[0] /= scale.x;
-    if (scale.y != 0) row[1] /= scale.y;
-    if (scale.z != 0) row[2] /= scale.z;
-
-    glm::mat3 rotationMatrix(row[0], row[1], row[2]);
-
-    rotation = glm::quat_cast(rotationMatrix);
-
-    return true;
+    glm::vec3 skew;
+    glm::vec4 perspective;
+    return glm::decompose(transform, scale, rotation, translation, skew, perspective);
 }
 
 void ComponentTransform::SetButtonColor(const char* label)
