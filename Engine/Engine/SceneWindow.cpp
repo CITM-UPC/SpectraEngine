@@ -17,12 +17,32 @@ void SceneWindow::DrawWindow()
     if (ImGui::BeginMenuBar())
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
+
+		static int operation = 0;
+        const char* operationNames[] = { "Translate", "Rotate", "Scale" };
+		for (int i = 0; i < 3; i++)
+		{
+			if (ImGui::RadioButton(operationNames[i], operation == i))
+			{
+				operation = i;
+				if (i == 0)
+					gizmoOperation = ImGuizmo::TRANSLATE;
+				else if (i == 1)
+					gizmoOperation = ImGuizmo::ROTATE;
+				else if (i == 2)
+					gizmoOperation = ImGuizmo::SCALE;
+			}
+		}
+
+        if (ImGui::Button(gizmoMode == ImGuizmo::LOCAL ? "Local" : "World"))
+            gizmoMode = gizmoMode == ImGuizmo::LOCAL ? ImGuizmo::WORLD : ImGuizmo::LOCAL;
+
         if (ImGui::BeginMenu("Shading Mode"))
         {
             static int w = 0;
+            const char* names[] = { "Shaded", "Wireframe", "Shaded Wireframe" };
             for (int n = 0; n < 3; n++)
             {
-                const char* names[] = { "Shaded", "Wireframe", "Shaded Wireframe" };
                 if (ImGui::Selectable(names[n], w == n))
                 {
                     w = n;

@@ -2,6 +2,7 @@
 #include "App.h"
 
 #include "imgui_internal.h"
+#include "ImGuizmo.h"
 
 ModuleEditor::ModuleEditor(App* app) : Module(app)
 {}
@@ -74,6 +75,7 @@ void ModuleEditor::DrawEditor()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
+	ImGuizmo::BeginFrame();
 
     // Bar
     MainMenuBar();

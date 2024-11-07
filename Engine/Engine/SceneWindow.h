@@ -2,6 +2,8 @@
 
 #include "EditorWindow.h"
 
+#include "ImGuizmo.h"
+
 class SceneWindow : public EditorWindow
 {
 public:
@@ -9,4 +11,8 @@ public:
 	~SceneWindow();
 
 	void DrawWindow() override;
+
+private:
+	ImGuizmo::OPERATION gizmoOperation = ImGuizmo::TRANSLATE;
+	ImGuizmo::MODE gizmoMode = ImGuizmo::WORLD;
 };
