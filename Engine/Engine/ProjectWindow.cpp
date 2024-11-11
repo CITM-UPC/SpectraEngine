@@ -383,6 +383,14 @@ void ProjectWindow::DrawMenuBar()
 			}
 		}
 
+		if (ImGui::BeginItemTooltip())
+		{
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted("IMPORT TEXT");
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+		}
+
 		std::vector<std::string> pathParts = GetPathParts();
 		std::vector<std::filesystem::path> fullPaths;
 
@@ -456,6 +464,14 @@ void ProjectWindow::DrawMenuBar()
 		if (ImGui::ImageButton((ImTextureID)(uintptr_t)app->importer->icons.dotsIcon, ImVec2(12, 12)))
 		{
 			ImGui::OpenPopup("OptionsPopup");
+		}
+
+		if (ImGui::BeginItemTooltip())
+		{
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted("DOT TEXT");
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
 		}
 
 		if (ImGui::BeginPopup("OptionsPopup"))

@@ -128,6 +128,14 @@ void ComponentTransform::OnEditor()
 			scale = glm::float3(1.f);
 			updateTransform = true;
 		}
+
+		if (ImGui::BeginItemTooltip())
+		{
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted("Reset TEXT");
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+		}
 	}
 
 	if (updateTransform) UpdateTransform();

@@ -28,10 +28,26 @@ void ConsoleWindow::DrawMenuBar()
 	ImGui::SetNextItemWidth(300.0f);
 	ImGui::InputTextWithHint("##Search", "Search Log", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
+	if (ImGui::BeginItemTooltip())
+	{
+		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+		ImGui::TextUnformatted("Search Log TEXT");
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
+	}
+
 	DrawLogTypeCheckboxes();
 
 	if (ImGui::Button("Clear"))
 		logger.Clear();
+
+	if (ImGui::BeginItemTooltip())
+	{
+		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+		ImGui::TextUnformatted("Clear TEXT");
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
+	}
 
 	ImGui::EndMenuBar();
 }
@@ -43,6 +59,7 @@ void ConsoleWindow::DrawLogTypeCheckboxes()
 	ImGui::SameLine();
 	ImGui::Image((ImTextureID)(uintptr_t)app->importer->icons.infoIcon, ImVec2(20, 20));
 	ImGui::PopStyleColor();
+
 
 	ImGui::SameLine();
 	ImGui::PushStyleColor(ImGuiCol_CheckMark, warningColor);

@@ -22,6 +22,14 @@ void HierarchyWindow::DrawWindow()
 		ImGui::OpenPopup("GameObject");
 	}
 
+	if (ImGui::BeginItemTooltip())
+	{
+		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+		ImGui::TextUnformatted("+ TEXT");
+		ImGui::PopTextWrapPos();
+		ImGui::EndTooltip();
+	}
+
 	if (ImGui::BeginPopup("GameObject"))
 	{
 		if (ImGui::MenuItem("Create Empty"))
@@ -59,7 +67,7 @@ void HierarchyWindow::DrawWindow()
 	ImGui::SameLine();
 
 	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-	ImGui::InputTextWithHint("##Search", "Search", searchInput, 256);
+	ImGui::InputTextWithHint("##Search", "Search text", searchInput, 256);
 
 	ImGui::BeginGroup();
 
