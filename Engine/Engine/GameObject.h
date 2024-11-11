@@ -34,5 +34,6 @@ public:
 	std::vector<GameObject*> children;
 
 	bool isActive = true;
+	bool isStatic = false;
 	bool isEditing = false;
 };

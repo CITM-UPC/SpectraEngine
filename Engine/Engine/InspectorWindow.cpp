@@ -35,6 +35,9 @@ void InspectorWindow::DrawWindow()
 			isEditingInspector = true;
 			ImGui::SetKeyboardFocusHere(-1);
 		}
+		
+		ImGui::SameLine();
+		ImGui::Checkbox("Static", &app->editor->selectedGameObject->isStatic);
 
 		for (auto i = 0; i < app->editor->selectedGameObject->components.size(); i++)
 		{
