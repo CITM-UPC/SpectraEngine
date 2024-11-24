@@ -158,6 +158,7 @@
     <ClCompile Include="PerformanceWindow.cpp" />
     <ClCompile Include="PreferencesWindow.cpp" />
     <ClCompile Include="ProjectWindow.cpp" />
+    <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="SceneWindow.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureImporter.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="PerformanceWindow.h" />
     <ClInclude Include="PreferencesWindow.h" />
     <ClInclude Include="ProjectWindow.h" />
+    <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SceneWindow.h" />
     <ClInclude Include="Texture.h" />
