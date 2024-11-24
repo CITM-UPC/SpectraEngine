@@ -47,8 +47,13 @@ void ComponentMesh::Update()
     {
         glPopMatrix();
 
-        mesh->DrawAABB(transform->globalTransform);
-        mesh->DrawOBB(transform->globalTransform);
+        if (app->editor->selectedGameObject == gameObject)
+        {
+            if (showAABB)
+                mesh->DrawAABB(transform->globalTransform);
+            if (showOBB)
+                mesh->DrawOBB(transform->globalTransform);
+        }
     }
 }
 
@@ -65,5 +70,10 @@ void ComponentMesh::OnEditor()
 
 		ImGui::Checkbox("Vertex Normals", &showVertexNormals);
 		ImGui::Checkbox("Face Normals", &showFaceNormals);
+
+        ImGui::Spacing();
+        
+		ImGui::Checkbox("Show AABB", &showAABB);
+		ImGui::Checkbox("Show OBB", &showOBB);
 	}
 }

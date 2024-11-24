@@ -20,4 +20,7 @@ public:
 private:
 	bool showVertexNormals = false;
 	bool showFaceNormals = false;
+
+	bool showAABB = false;
+	bool showOBB = true;
 };
