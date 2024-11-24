@@ -18,41 +18,45 @@ void ComponentMesh::Update()
 
     if (transform != nullptr)
     {
-        glPushMatrix();
-        glMultMatrixf(glm::value_ptr(transform->globalTransform));
-    }
-
-    const auto& preferences = app->editor->preferencesWindow;
-
-    mesh->DrawMesh(
-        material->textureId,
-        preferences->drawTextures,
-        preferences->wireframe,
-        preferences->shadedWireframe
-    );
-
-    if (showVertexNormals || showFaceNormals)
-    {
-        mesh->DrawNormals(
-            showVertexNormals,
-            showFaceNormals,
-            preferences->vertexNormalLength,
-            preferences->faceNormalLength,
-            preferences->vertexNormalColor,
-            preferences->faceNormalColor
-        );
-    }
-
-    if (transform != nullptr)
-    {
-        glPopMatrix();
-
-        if (app->editor->selectedGameObject == gameObject)
+        if (app->camera->IsAABBInFrustum(mesh->GetAABB(transform->globalTransform)))
         {
-            if (showAABB)
-                mesh->DrawAABB(transform->globalTransform);
-            if (showOBB)
-                mesh->DrawOBB(transform->globalTransform);
+            glPushMatrix();
+            glMultMatrixf(glm::value_ptr(transform->globalTransform));
+
+            const auto& preferences = app->editor->preferencesWindow;
+
+            mesh->DrawMesh(
+                material->textureId,
+                preferences->drawTextures,
+                preferences->wireframe,
+                preferences->shadedWireframe
+            );
+
+            if (showVertexNormals || showFaceNormals)
+            {
+                mesh->DrawNormals(
+                    showVertexNormals,
+                    showFaceNormals,
+                    preferences->vertexNormalLength,
+                    preferences->faceNormalLength,
+                    preferences->vertexNormalColor,
+                    preferences->faceNormalColor
+                );
+            }
+
+            glPopMatrix();
+
+            if (app->editor->selectedGameObject == gameObject)
+            {
+                if (showAABB)
+                    mesh->DrawAABB(transform->globalTransform);
+                if (showOBB)
+                    mesh->DrawOBB(transform->globalTransform);
+            }
+        }
+        else
+        {
+            printf("Mesh out of frustum\n");
         }
     }
 }
