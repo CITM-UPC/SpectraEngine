@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include <glm/gtc/type_ptr.hpp>
 
 void Mesh::InitMesh()
 {
@@ -24,6 +25,24 @@ void Mesh::InitMesh()
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	if (vertices != nullptr && verticesCount > 0)
+	{
+		glm::vec3 minPoint(FLT_MAX);
+		glm::vec3 maxPoint(-FLT_MAX);
+
+		for (uint i = 0; i < verticesCount; ++i)
+		{
+			glm::vec3 vertex(vertices[i * 3], vertices[i * 3 + 1], vertices[i * 3 + 2]);
+			minPoint = glm::min(minPoint, vertex);
+			maxPoint = glm::max(maxPoint, vertex);
+		}
+
+		aabb = AABB(minPoint, maxPoint);
+
+		glm::mat4 identity(1.0f);
+		obb = GetOBB(identity);
+	}
 }
 
 void Mesh::DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool shadedWireframe)
@@ -159,4 +178,111 @@ void Mesh::CleanUpMesh()
 	indices = nullptr;
 	normals = nullptr;
 	texCoords = nullptr;
+}
+
+void Mesh::DrawAABB(const glm::mat4& modelTransform)
+{
+	AABB transformedAABB = GetAABB(modelTransform);
+
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+	glLineWidth(2.0f);
+	glColor3f(0.0f, 1.0f, 0.0f);
+
+	glBegin(GL_LINES);
+
+	glVertex3f(transformedAABB.min.x, transformedAABB.min.y, transformedAABB.min.z);
+	glVertex3f(transformedAABB.max.x, transformedAABB.min.y, transformedAABB.min.z);
+
+	glVertex3f(transformedAABB.max.x, transformedAABB.min.y, transformedAABB.min.z);
+	glVertex3f(transformedAABB.max.x, transformedAABB.min.y, transformedAABB.max.z);
+
+	glVertex3f(transformedAABB.max.x, transformedAABB.min.y, transformedAABB.max.z);
+	glVertex3f(transformedAABB.min.x, transformedAABB.min.y, transformedAABB.max.z);
+
+	glVertex3f(transformedAABB.min.x, transformedAABB.min.y, transformedAABB.max.z);
+	glVertex3f(transformedAABB.min.x, transformedAABB.min.y, transformedAABB.min.z);
+
+	glVertex3f(transformedAABB.min.x, transformedAABB.max.y, transformedAABB.min.z);
+	glVertex3f(transformedAABB.max.x, transformedAABB.max.y, transformedAABB.min.z);
+
+	glVertex3f(transformedAABB.max.x, transformedAABB.max.y, transformedAABB.min.z);
+	glVertex3f(transformedAABB.max.x, transformedAABB.max.y, transformedAABB.max.z);
+
+	glVertex3f(transformedAABB.max.x, transformedAABB.max.y, transformedAABB.max.z);
+	glVertex3f(transformedAABB.min.x, transformedAABB.max.y, transformedAABB.max.z);
+
+	glVertex3f(transformedAABB.min.x, transformedAABB.max.y, transformedAABB.max.z);
+	glVertex3f(transformedAABB.min.x, transformedAABB.max.y, transformedAABB.min.z);
+
+	glVertex3f(transformedAABB.min.x, transformedAABB.min.y, transformedAABB.min.z);
+	glVertex3f(transformedAABB.min.x, transformedAABB.max.y, transformedAABB.min.z);
+
+	glVertex3f(transformedAABB.max.x, transformedAABB.min.y, transformedAABB.min.z);
+	glVertex3f(transformedAABB.max.x, transformedAABB.max.y, transformedAABB.min.z);
+
+	glVertex3f(transformedAABB.max.x, transformedAABB.min.y, transformedAABB.max.z);
+	glVertex3f(transformedAABB.max.x, transformedAABB.max.y, transformedAABB.max.z);
+
+	glVertex3f(transformedAABB.min.x, transformedAABB.min.y, transformedAABB.max.z);
+	glVertex3f(transformedAABB.min.x, transformedAABB.max.y, transformedAABB.max.z);
+
+	glEnd();
+
+	glPopAttrib();
+}
+
+void Mesh::DrawOBB(const glm::mat4& transform)
+{
+	OBB transformedOBB = GetOBB(transform);
+
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+	glLineWidth(2.0f);
+	glColor3f(1.0f, 0.0f, 0.0f);
+
+	glBegin(GL_LINES);
+
+	// Bottom face
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[0]));
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[4]));
+
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[4]));
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[5]));
+
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[5]));
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[1]));
+
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[1]));
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[0]));
+
+	// Top face
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[2]));
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[6]));
+
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[6]));
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[7]));
+
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[7]));
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[3]));
+
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[3]));
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[2]));
+
+	// Vertical edges
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[0]));
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[2]));
+
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[4]));
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[6]));
+
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[5]));
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[7]));
+
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[1]));
+	glVertex3fv(glm::value_ptr(transformedOBB.vertices[3]));
+
+	glEnd();
+
+	glPopAttrib();
 }

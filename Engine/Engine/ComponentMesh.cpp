@@ -13,36 +13,43 @@ ComponentMesh::~ComponentMesh()
 
 void ComponentMesh::Update()
 {
-	ComponentTransform* transform = gameObject->transform;
+    ComponentTransform* transform = gameObject->transform;
+    ComponentMaterial* material = gameObject->material;
 
-	if (transform != nullptr)
-	{
-		glPushMatrix();
-		glMultMatrixf(glm::value_ptr(transform->globalTransform));
-	}
+    if (transform != nullptr)
+    {
+        glPushMatrix();
+        glMultMatrixf(glm::value_ptr(transform->globalTransform));
+    }
 
-	ComponentMaterial* material = gameObject->material;
+    const auto& preferences = app->editor->preferencesWindow;
 
-	mesh->DrawMesh(
-		material->textureId,
-		app->editor->preferencesWindow->drawTextures,
-		app->editor->preferencesWindow->wireframe,
-		app->editor->preferencesWindow->shadedWireframe
-	);
+    mesh->DrawMesh(
+        material->textureId,
+        preferences->drawTextures,
+        preferences->wireframe,
+        preferences->shadedWireframe
+    );
 
-	if (showVertexNormals || showFaceNormals)
-	{
-		mesh->DrawNormals(
-			showVertexNormals,
-			showFaceNormals,
-			app->editor->preferencesWindow->vertexNormalLength,
-			app->editor->preferencesWindow->faceNormalLength,
-			app->editor->preferencesWindow->vertexNormalColor,
-			app->editor->preferencesWindow->faceNormalColor
-		);
-	}
+    if (showVertexNormals || showFaceNormals)
+    {
+        mesh->DrawNormals(
+            showVertexNormals,
+            showFaceNormals,
+            preferences->vertexNormalLength,
+            preferences->faceNormalLength,
+            preferences->vertexNormalColor,
+            preferences->faceNormalColor
+        );
+    }
 
-	if (transform != nullptr) glPopMatrix();
+    if (transform != nullptr)
+    {
+        glPopMatrix();
+
+        mesh->DrawAABB(transform->globalTransform);
+        mesh->DrawOBB(transform->globalTransform);
+    }
 }
 
 void ComponentMesh::OnEditor()
