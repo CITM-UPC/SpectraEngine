@@ -18,6 +18,8 @@ void ComponentMesh::Update()
 
     if (transform != nullptr)
     {
+		app->scene->sceneOctree->Update(mesh, transform->globalTransform);
+
         if (app->camera->IsAABBInFrustum(mesh->GetAABB(transform->globalTransform)))
         {
             glPushMatrix();

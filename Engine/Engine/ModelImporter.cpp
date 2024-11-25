@@ -436,6 +436,7 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 		}
 
 		parent->children.push_back(gameObjectNode);
+		app->scene->sceneOctree->Insert(gameObjectNode->mesh->mesh, gameObjectNode->mesh->mesh->aabb);
 	}
 
 	uint32_t numChildren;
