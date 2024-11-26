@@ -57,6 +57,15 @@ public:
     void DrawFrontView(ImDrawList* draw_list, float scale, const ImVec2& window_size, const ImVec2& window_pos) const;
     void DrawFrontNode(const OctreeNode* node, ImDrawList* draw_list, float scale, const ImVec2& window_size, const glm::vec3& origin, const glm::vec3& size, const ImVec2& window_pos, const glm::vec2& translation) const;
 
+    void DrawBottomView(ImDrawList* draw_list, float scale, const ImVec2& window_size, const ImVec2& window_pos) const;
+    void DrawBottomNode(const OctreeNode* node, ImDrawList* draw_list, float scale, const ImVec2& window_size, const glm::vec3& origin, const glm::vec3& size, const ImVec2& window_pos, const glm::vec2& translation) const;
+    
+    void DrawLeftView(ImDrawList* draw_list, float scale, const ImVec2& window_size, const ImVec2& window_pos) const;
+    void DrawLeftNode(const OctreeNode* node, ImDrawList* draw_list, float scale, const ImVec2& window_size, const glm::vec3& origin, const glm::vec3& size, const ImVec2& window_pos, const glm::vec2& translation) const;
+    
+    void DrawBackView(ImDrawList* draw_list, float scale, const ImVec2& window_size, const ImVec2& window_pos) const;
+    void DrawBackNode(const OctreeNode* node, ImDrawList* draw_list, float scale, const ImVec2& window_size, const glm::vec3& origin, const glm::vec3& size, const ImVec2& window_pos, const glm::vec2& translation) const;
+
 private:
     void Insert(OctreeNode* node, Mesh* object, const AABB& objectBounds, uint depth);
     void Subdivide(OctreeNode* node);

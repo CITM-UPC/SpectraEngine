@@ -103,20 +103,24 @@ void ModuleEditor::DrawEditor()
 		float padding_x = window_size.x / base_width * base_padding;
 		float padding_y = window_size.y / base_height * base_padding;
 
-		float view_width = window_size.x / 2.0f;
-		float view_height = window_size.y / 2.0f;
+		float view_width = window_size.x / 3.0f;
+		float view_height = window_size.y / 3.0f;
 
 		ImVec2 top_view_pos = window_pos;
 		ImVec2 top_view_size(view_width - padding_x, view_height + padding_y);
 		app->scene->sceneOctree->DrawTopDownView(draw_list, scale, top_view_size, top_view_pos);
 
-		ImVec2 side_view_pos(window_pos.x + view_width, window_pos.y);
-		ImVec2 side_view_size(view_width - padding_x, view_height + padding_y);
-		app->scene->sceneOctree->DrawSideView(draw_list, scale, side_view_size, side_view_pos);
+		ImVec2 bottom_view_pos = window_pos;
+		ImVec2 bottom_view_size(view_width + padding_x + 50, view_height + padding_y + 250);
+		app->scene->sceneOctree->DrawBottomView(draw_list, scale, bottom_view_size, bottom_view_pos);
 
-		ImVec2 front_view_pos = ImVec2(window_pos.x, window_pos.y + view_height);
-		ImVec2 front_view_size(view_width - padding_x, view_height + padding_y);
+		ImVec2 front_view_pos = window_pos;
+		ImVec2 front_view_size(view_width - 100, view_height + padding_y + 300);
 		app->scene->sceneOctree->DrawFrontView(draw_list, scale, front_view_size, front_view_pos);
+
+		ImVec2 back_view_pos = window_pos;
+		ImVec2 back_view_size(view_width + padding_x + 50, view_height + padding_y + 300);
+		app->scene->sceneOctree->DrawBackView(draw_list, scale, back_view_size, back_view_pos);
 
 		ImGui::End();
 	}

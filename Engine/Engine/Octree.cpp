@@ -222,7 +222,7 @@ void Octree::Update(Mesh* object, const glm::mat4& transform)
 void Octree::DebugPrintObjects() const 
 {
     system("cls");
-    DebugPrintNodeObjects(root.get(), 0);
+    //DebugPrintNodeObjects(root.get(), 0);
 }
 
 void Octree::DebugPrintNodeObjects(const OctreeNode* node, uint depth) const 
@@ -257,31 +257,32 @@ void Octree::DrawTopDownView(ImDrawList* draw_list, float scale, const ImVec2& w
     glm::vec3 origin = root->bounds.min;
     glm::vec3 size = root->bounds.max - root->bounds.min;
 
+    // XZ
     glm::vec3 octree_center = origin + size * 0.5f;
-
     glm::vec2 center_offset = glm::vec2(window_size.x, window_size.y) * 0.5f;
-
-    glm::vec2 center_pos(octree_center.x, octree_center.y);
+    glm::vec2 center_pos(octree_center.x, octree_center.z);
 
     glm::vec2 translation = center_offset - center_pos;
 
     DrawTopDownNode(root.get(), draw_list, scale, window_size, origin, size, window_pos, translation);
 }
+
 void Octree::DrawTopDownNode(const OctreeNode* node, ImDrawList* draw_list, float scale, const ImVec2& window_size, const glm::vec3& origin, const glm::vec3& size, const ImVec2& window_pos, const glm::vec2& translation) const
 {
     if (!node) return;
 
-    glm::vec2 min2D(node->bounds.min.x, node->bounds.min.y);
-    glm::vec2 max2D(node->bounds.max.x, node->bounds.max.y);
+    // XZ
+    glm::vec2 min2D(node->bounds.min.x, node->bounds.min.z);
+    glm::vec2 max2D(node->bounds.max.x, node->bounds.max.z);
 
-    min2D = (min2D - glm::vec2(origin.x, origin.y)) * scale;
-    max2D = (max2D - glm::vec2(origin.x, origin.y)) * scale;
+    min2D = (min2D - glm::vec2(origin.x, origin.z)) * scale;
+    max2D = (max2D - glm::vec2(origin.x, origin.z)) * scale;
 
     min2D += translation;
     max2D += translation;
 
-    ImVec2 imMin(min2D.x + window_pos.x, window_pos.y + window_size.y - min2D.y);
-    ImVec2 imMax(max2D.x + window_pos.x, window_pos.y + window_size.y - max2D.y);
+    ImVec2 imMin(min2D.x + window_pos.x, window_pos.y + min2D.y);
+    ImVec2 imMax(max2D.x + window_pos.x, window_pos.y + max2D.y);
 
     draw_list->AddRect(imMin, imMax, IM_COL32(255, 0, 0, 255));
 
@@ -293,24 +294,27 @@ void Octree::DrawTopDownNode(const OctreeNode* node, ImDrawList* draw_list, floa
         }
     }
 }
-void Octree::DrawSideView(ImDrawList* draw_list, float scale, const ImVec2& window_size, const ImVec2& window_pos) const
+
+void Octree::DrawBottomView(ImDrawList* draw_list, float scale, const ImVec2& window_size, const ImVec2& window_pos) const
 {
     glm::vec3 origin = root->bounds.min;
     glm::vec3 size = root->bounds.max - root->bounds.min;
 
+    // XZ
     glm::vec3 octree_center = origin + size * 0.5f;
     glm::vec2 center_offset = glm::vec2(window_size.x, window_size.y) * 0.5f;
     glm::vec2 center_pos(octree_center.x, octree_center.z);
 
     glm::vec2 translation = center_offset - center_pos;
 
-    DrawSideNode(root.get(), draw_list, scale, window_size, origin, size, window_pos, translation);
+    DrawBottomNode(root.get(), draw_list, scale, window_size, origin, size, window_pos, translation);
 }
 
-void Octree::DrawSideNode(const OctreeNode* node, ImDrawList* draw_list, float scale, const ImVec2& window_size, const glm::vec3& origin, const glm::vec3& size, const ImVec2& window_pos, const glm::vec2& translation) const
+void Octree::DrawBottomNode(const OctreeNode* node, ImDrawList* draw_list, float scale, const ImVec2& window_size, const glm::vec3& origin, const glm::vec3& size, const ImVec2& window_pos, const glm::vec2& translation) const
 {
     if (!node) return;
 
+    // XZ
     glm::vec2 min2D(node->bounds.min.x, node->bounds.min.z);
     glm::vec2 max2D(node->bounds.max.x, node->bounds.max.z);
 
@@ -320,8 +324,8 @@ void Octree::DrawSideNode(const OctreeNode* node, ImDrawList* draw_list, float s
     min2D += translation;
     max2D += translation;
 
-    ImVec2 imMin(min2D.x + window_pos.x, window_pos.y + window_size.y - min2D.y);
-    ImVec2 imMax(max2D.x + window_pos.x, window_pos.y + window_size.y - max2D.y);
+    ImVec2 imMin(min2D.x + window_pos.x, window_pos.y + window_size.y - max2D.y);
+    ImVec2 imMax(max2D.x + window_pos.x, window_pos.y + window_size.y - min2D.y);
 
     draw_list->AddRect(imMin, imMax, IM_COL32(0, 255, 0, 255));
 
@@ -329,7 +333,7 @@ void Octree::DrawSideNode(const OctreeNode* node, ImDrawList* draw_list, float s
     {
         if (child)
         {
-            DrawSideNode(child.get(), draw_list, scale, window_size, origin, size, window_pos, translation);
+            DrawBottomNode(child.get(), draw_list, scale, window_size, origin, size, window_pos, translation);
         }
     }
 }
@@ -339,6 +343,7 @@ void Octree::DrawFrontView(ImDrawList* draw_list, float scale, const ImVec2& win
     glm::vec3 origin = root->bounds.min;
     glm::vec3 size = root->bounds.max - root->bounds.min;
 
+    // XY
     glm::vec3 octree_center = origin + size * 0.5f;
     glm::vec2 center_offset = glm::vec2(window_size.x, window_size.y) * 0.5f;
     glm::vec2 center_pos(octree_center.x, octree_center.y);
@@ -352,8 +357,12 @@ void Octree::DrawFrontNode(const OctreeNode* node, ImDrawList* draw_list, float 
 {
     if (!node) return;
 
+    // XY
     glm::vec2 min2D(node->bounds.min.x, node->bounds.min.y);
     glm::vec2 max2D(node->bounds.max.x, node->bounds.max.y);
+
+    min2D.y = -min2D.y;
+    max2D.y = -max2D.y;
 
     min2D = (min2D - glm::vec2(origin.x, origin.y)) * scale;
     max2D = (max2D - glm::vec2(origin.x, origin.y)) * scale;
@@ -361,8 +370,8 @@ void Octree::DrawFrontNode(const OctreeNode* node, ImDrawList* draw_list, float 
     min2D += translation;
     max2D += translation;
 
-    ImVec2 imMin(min2D.x + window_pos.x, window_pos.y + window_size.y - min2D.y);
-    ImVec2 imMax(max2D.x + window_pos.x, window_pos.y + window_size.y - max2D.y);
+    ImVec2 imMin(min2D.x + window_pos.x, window_pos.y + min2D.y);
+    ImVec2 imMax(max2D.x + window_pos.x, window_pos.y + max2D.y);
 
     draw_list->AddRect(imMin, imMax, IM_COL32(0, 0, 255, 255));
 
@@ -371,6 +380,52 @@ void Octree::DrawFrontNode(const OctreeNode* node, ImDrawList* draw_list, float 
         if (child)
         {
             DrawFrontNode(child.get(), draw_list, scale, window_size, origin, size, window_pos, translation);
+        }
+    }
+}
+
+void Octree::DrawBackView(ImDrawList* draw_list, float scale, const ImVec2& window_size, const ImVec2& window_pos) const
+{
+    glm::vec3 origin = root->bounds.min;
+    glm::vec3 size = root->bounds.max - root->bounds.min;
+
+    // XY
+    glm::vec3 octree_center = origin + size * 0.5f;
+    glm::vec2 center_offset = glm::vec2(window_size.x, window_size.y) * 0.5f;
+    glm::vec2 center_pos(octree_center.x, octree_center.y);
+
+    glm::vec2 translation = center_offset - center_pos;
+
+    DrawBackNode(root.get(), draw_list, scale, window_size, origin, size, window_pos, translation);
+}
+
+void Octree::DrawBackNode(const OctreeNode* node, ImDrawList* draw_list, float scale, const ImVec2& window_size, const glm::vec3& origin, const glm::vec3& size, const ImVec2& window_pos, const glm::vec2& translation) const
+{
+    if (!node) return;
+
+    // XY
+    glm::vec2 min2D(node->bounds.min.x, node->bounds.min.y);
+    glm::vec2 max2D(node->bounds.max.x, node->bounds.max.y);
+
+    min2D = -min2D;
+    max2D = -max2D;
+
+    min2D = (min2D - glm::vec2(origin.x, origin.y)) * scale;
+    max2D = (max2D - glm::vec2(origin.x, origin.y)) * scale;
+
+    min2D += translation;
+    max2D += translation;
+
+    ImVec2 imMin(min2D.x + window_pos.x, window_pos.y + min2D.y);
+    ImVec2 imMax(max2D.x + window_pos.x, window_pos.y + max2D.y);
+
+    draw_list->AddRect(imMin, imMax, IM_COL32(255, 0, 255, 255));
+
+    for (const auto& child : node->children)
+    {
+        if (child)
+        {
+            DrawBackNode(child.get(), draw_list, scale, window_size, origin, size, window_pos, translation);
         }
     }
 }
