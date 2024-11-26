@@ -86,6 +86,41 @@ void ModuleEditor::DrawEditor()
 			editorWindow->DrawWindow();
 	}
 
+	if (ImGui::Begin("Octree Views"))
+	{
+		ImVec2 window_pos = ImGui::GetWindowPos();
+		ImVec2 window_size = ImGui::GetContentRegionAvail();
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+		float base_width = 1920.0f;
+		float base_height = 1080.0f;
+
+		float scale_x = window_size.x / base_width;
+		float scale_y = window_size.y / base_height;
+		float scale = std::min(scale_x, scale_y) * 15.0f;
+
+		float base_padding = 500.0f;
+		float padding_x = window_size.x / base_width * base_padding;
+		float padding_y = window_size.y / base_height * base_padding;
+
+		float view_width = window_size.x / 2.0f;
+		float view_height = window_size.y / 2.0f;
+
+		ImVec2 top_view_pos = window_pos;
+		ImVec2 top_view_size(view_width - padding_x, view_height + padding_y);
+		app->scene->sceneOctree->DrawTopDownView(draw_list, scale, top_view_size, top_view_pos);
+
+		ImVec2 side_view_pos(window_pos.x + view_width, window_pos.y);
+		ImVec2 side_view_size(view_width - padding_x, view_height + padding_y);
+		app->scene->sceneOctree->DrawSideView(draw_list, scale, side_view_size, side_view_pos);
+
+		ImVec2 front_view_pos = ImVec2(window_pos.x, window_pos.y + view_height);
+		ImVec2 front_view_size(view_width - padding_x, view_height + padding_y);
+		app->scene->sceneOctree->DrawFrontView(draw_list, scale, front_view_size, front_view_pos);
+
+		ImGui::End();
+	}
+
 	/*// Draw status bar
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_MenuBar;
