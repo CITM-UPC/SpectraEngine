@@ -32,47 +32,27 @@ public:
     Octree(const AABB& sceneBounds, uint maxDepth = 5, uint maxObjects = 5);
 
     void Insert(Mesh* object, const AABB& objectBounds);
-
     void Remove(Mesh* object);
-    void Remove(OctreeNode* node, Mesh* object);
-
     std::vector<Mesh*> Query(const AABB& region) const;
-
-    void Clear();
-
-    void Draw(const glm::vec3& color = glm::vec3(1.0f, 1.0f , 0.0f)) const;
-
     void Update(Mesh* object, const glm::mat4& transform);
-    int TotalObjects(const OctreeNode* node) const;
 
 	void DebugPrintObjects() const;
     void DebugPrintNodeObjects(const OctreeNode* node, uint depth) const;
 
-    void DrawTopDownView(ImDrawList* draw_list, float scale, const ImVec2& window_size, const ImVec2& window_pos) const;
-    void DrawTopDownNode(const OctreeNode* node, ImDrawList* draw_list, float scale, const ImVec2& window_size, const glm::vec3& origin, const glm::vec3& size, const ImVec2& window_pos, const glm::vec2& translation) const;
-
-    void DrawSideView(ImDrawList* draw_list, float scale, const ImVec2& window_size, const ImVec2& window_pos) const;
-    void DrawSideNode(const OctreeNode* node, ImDrawList* draw_list, float scale, const ImVec2& window_size, const glm::vec3& origin, const glm::vec3& size, const ImVec2& window_pos, const glm::vec2& translation) const;
-
-    void DrawFrontView(ImDrawList* draw_list, float scale, const ImVec2& window_size, const ImVec2& window_pos) const;
-    void DrawFrontNode(const OctreeNode* node, ImDrawList* draw_list, float scale, const ImVec2& window_size, const glm::vec3& origin, const glm::vec3& size, const ImVec2& window_pos, const glm::vec2& translation) const;
-
-    void DrawBottomView(ImDrawList* draw_list, float scale, const ImVec2& window_size, const ImVec2& window_pos) const;
-    void DrawBottomNode(const OctreeNode* node, ImDrawList* draw_list, float scale, const ImVec2& window_size, const glm::vec3& origin, const glm::vec3& size, const ImVec2& window_pos, const glm::vec2& translation) const;
-    
-    void DrawLeftView(ImDrawList* draw_list, float scale, const ImVec2& window_size, const ImVec2& window_pos) const;
-    void DrawLeftNode(const OctreeNode* node, ImDrawList* draw_list, float scale, const ImVec2& window_size, const glm::vec3& origin, const glm::vec3& size, const ImVec2& window_pos, const glm::vec2& translation) const;
-    
-    void DrawBackView(ImDrawList* draw_list, float scale, const ImVec2& window_size, const ImVec2& window_pos) const;
-    void DrawBackNode(const OctreeNode* node, ImDrawList* draw_list, float scale, const ImVec2& window_size, const glm::vec3& origin, const glm::vec3& size, const ImVec2& window_pos, const glm::vec2& translation) const;
+    void Draw(const glm::vec3& color = glm::vec3(1.0f, 1.0f , 0.0f)) const;
+    void DrawView(ImDrawList* drawList, float scale, const ImVec2& windowSize, const ImVec2& windowPos, int type) const;
 
 private:
-    void Insert(OctreeNode* node, Mesh* object, const AABB& objectBounds, uint depth);
+    void Insert(OctreeNode* node, Mesh* object, const AABB& objectBounds, uint depth);    
+    void Remove(OctreeNode* node, Mesh* object);
     void Subdivide(OctreeNode* node);
     void Query(const OctreeNode* node, const AABB& region, std::vector<Mesh*>& results) const;
     void DrawNode(const OctreeNode* node, const glm::vec3& color) const;
     void DrawAABB(const AABB& aabb, const glm::vec3& color) const;
     bool Intersect(const AABB& a, const AABB& b) const;
+    int TotalObjects(const OctreeNode* node) const;
+
+    void DrawNodeView(const OctreeNode* node, ImDrawList* drawList, float scale, const ImVec2& windowSize, const glm::vec3& origin, const ImVec2& windowPos, const glm::vec2& translation, int type, uint depth) const;
 
 private:
     std::unique_ptr<OctreeNode> root;

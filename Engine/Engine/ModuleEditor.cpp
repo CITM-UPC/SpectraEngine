@@ -88,42 +88,43 @@ void ModuleEditor::DrawEditor()
 
 	if (ImGui::Begin("Octree Views"))
 	{
-		ImVec2 window_pos = ImGui::GetWindowPos();
-		ImVec2 window_size = ImGui::GetContentRegionAvail();
-		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+		static int currentView = 0;
 
-		float base_width = 1920.0f;
-		float base_height = 1080.0f;
+		if (ImGui::Button("Top")) currentView = 0;
+		ImGui::SameLine();
+		if (ImGui::Button("Bottom")) currentView = 1;
+		ImGui::SameLine();
+		if (ImGui::Button("Front")) currentView = 2;
+		ImGui::SameLine();
+		if (ImGui::Button("Back")) currentView = 3;
+		ImGui::SameLine();
+		if (ImGui::Button("Left")) currentView = 4;
+		ImGui::SameLine();
+		if (ImGui::Button("Right")) currentView = 5;
 
-		float scale_x = window_size.x / base_width;
-		float scale_y = window_size.y / base_height;
-		float scale = std::min(scale_x, scale_y) * 15.0f;
+		ImVec2 windowPos = ImGui::GetWindowPos();
+		ImVec2 windowSize = ImGui::GetContentRegionAvail();
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-		float base_padding = 500.0f;
-		float padding_x = window_size.x / base_width * base_padding;
-		float padding_y = window_size.y / base_height * base_padding;
+		float baseWidth = 500.0f;
+		float baseHeight = 500.0f;
 
-		float view_width = window_size.x / 3.0f;
-		float view_height = window_size.y / 3.0f;
+		float scaleX = windowSize.x / baseWidth;
+		float scaleY = windowSize.y / baseHeight;
+		float scale = std::min(scaleX, scaleY) * 10.0f;
 
-		ImVec2 top_view_pos = window_pos;
-		ImVec2 top_view_size(view_width - padding_x, view_height + padding_y);
-		app->scene->sceneOctree->DrawTopDownView(draw_list, scale, top_view_size, top_view_pos);
+		float basePadding = 200.0f;
+		float paddingX = windowSize.x / baseWidth * basePadding;
+		float paddingY = windowSize.y / baseHeight * basePadding;
 
-		ImVec2 bottom_view_pos = window_pos;
-		ImVec2 bottom_view_size(view_width + padding_x + 50, view_height + padding_y + 250);
-		app->scene->sceneOctree->DrawBottomView(draw_list, scale, bottom_view_size, bottom_view_pos);
+		ImVec2 viewPos = ImVec2(windowPos.x, windowPos.y + 50);
+		ImVec2 viewSize(windowSize.x - paddingX, windowSize.y - paddingY);
 
-		ImVec2 front_view_pos = window_pos;
-		ImVec2 front_view_size(view_width - 100, view_height + padding_y + 300);
-		app->scene->sceneOctree->DrawFrontView(draw_list, scale, front_view_size, front_view_pos);
-
-		ImVec2 back_view_pos = window_pos;
-		ImVec2 back_view_size(view_width + padding_x + 50, view_height + padding_y + 300);
-		app->scene->sceneOctree->DrawBackView(draw_list, scale, back_view_size, back_view_pos);
+		app->scene->sceneOctree->DrawView(drawList, scale, viewSize, viewPos, currentView);
 
 		ImGui::End();
 	}
+
 
 	/*// Draw status bar
 	ImGuiViewport* viewport = ImGui::GetMainViewport();
