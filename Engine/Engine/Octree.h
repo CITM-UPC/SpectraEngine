@@ -33,7 +33,7 @@ public:
 
     void Insert(Mesh* object, const AABB& objectBounds);
     void Remove(Mesh* object);
-    std::vector<Mesh*> Query(const AABB& region) const;
+    std::vector<Mesh*> Query(const AABB& region, const glm::mat4& transform) const;
     void Update(Mesh* object, const glm::mat4& transform);
 
 	void DebugPrintObjects() const;
@@ -46,7 +46,7 @@ private:
     void Insert(OctreeNode* node, Mesh* object, const AABB& objectBounds, uint depth);    
     void Remove(OctreeNode* node, Mesh* object);
     void Subdivide(OctreeNode* node);
-    void Query(const OctreeNode* node, const AABB& region, std::vector<Mesh*>& results) const;
+    void Query(const OctreeNode* node, const AABB& region, std::vector<Mesh*>& results, const glm::mat4& transform) const;
     void DrawNode(const OctreeNode* node, const glm::vec3& color) const;
     void DrawAABB(const AABB& aabb, const glm::vec3& color) const;
     bool Intersect(const AABB& a, const AABB& b) const;

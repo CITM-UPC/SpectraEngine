@@ -286,8 +286,13 @@ void ModuleCamera::CalculateFrustumPlanes()
 	}
 }
 
-bool ModuleCamera::IsAABBInFrustum(const AABB& aabb)
+bool ModuleCamera::IsAABBInFrustum(const AABB& aabb, const glm::mat4& transform)
 {
+	std::vector<Mesh*> potentialObjects = app->scene->sceneOctree->Query(aabb, transform);
+
+	if (potentialObjects.empty())
+		return false;
+
 	for (int i = 0; i < 6; ++i)
 	{
 		const Plane& plane = frustumPlanes[i];

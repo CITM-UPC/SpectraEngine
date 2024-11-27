@@ -121,10 +121,8 @@ void ModuleEditor::DrawEditor()
 		ImVec2 viewSize(windowSize.x - paddingX, windowSize.y - paddingY);
 
 		app->scene->sceneOctree->DrawView(drawList, scale, viewSize, viewPos, currentView);
-
-		ImGui::End();
 	}
-
+	ImGui::End();
 
 	/*// Draw status bar
 	ImGuiViewport* viewport = ImGui::GetMainViewport();

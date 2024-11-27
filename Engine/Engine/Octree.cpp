@@ -120,14 +120,16 @@ int Octree::TotalObjects(const OctreeNode* node) const
 }
 
 
-std::vector<Mesh*> Octree::Query(const AABB& region) const
+std::vector<Mesh*> Octree::Query(const AABB& region, const glm::mat4& transform) const
 {
     std::vector<Mesh*> results;
-    Query(root.get(), region, results);
+
+    Query(root.get(), region, results, transform);
+
     return results;
 }
 
-void Octree::Query(const OctreeNode* node, const AABB& region, std::vector<Mesh*>& results) const
+void Octree::Query(const OctreeNode* node, const AABB& region, std::vector<Mesh*>& results, const glm::mat4& transform) const
 {
     if (!node || !Intersect(node->bounds, region))
     {
@@ -136,7 +138,8 @@ void Octree::Query(const OctreeNode* node, const AABB& region, std::vector<Mesh*
 
     for (Mesh* object : node->objects)
     {
-        if (Intersect(object->GetAABB(), region))
+        AABB objectAABB = object->GetAABB(transform);
+        if (Intersect(objectAABB, region))
         {
             results.push_back(object);
         }
@@ -144,7 +147,10 @@ void Octree::Query(const OctreeNode* node, const AABB& region, std::vector<Mesh*
 
     for (const auto& child : node->children)
     {
-        Query(child.get(), region, results);
+        if (child)
+        {
+            Query(child.get(), region, results, transform);
+        }
     }
 }
 
@@ -216,7 +222,6 @@ void Octree::Update(Mesh* object, const glm::mat4& transform)
 
 void Octree::DebugPrintObjects() const 
 {
-    system("cls");
     //DebugPrintNodeObjects(root.get(), 0);
 }
 
