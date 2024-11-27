@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Mesh.h"
+#include "GameObject.h"
+
 #include <vector>
 #include <memory>
 
@@ -11,7 +13,7 @@
 struct OctreeNode 
 {
     AABB bounds;
-    std::vector<Mesh*> objects;
+    std::vector<GameObject*> objects;
     std::array<std::unique_ptr<OctreeNode>, 8> children;
 
     OctreeNode(const AABB& bounds) : bounds(bounds), children({ nullptr }) {}
@@ -31,10 +33,10 @@ class Octree
 public:
     Octree(const AABB& sceneBounds, uint maxDepth = 5, uint maxObjects = 5);
 
-    void Insert(Mesh* object, const AABB& objectBounds);
-    void Remove(Mesh* object);
-    std::vector<Mesh*> Query(const AABB& region, const glm::mat4& transform) const;
-    void Update(Mesh* object, const glm::mat4& transform);
+    void Insert(GameObject* object, const AABB& objectBounds);
+    void Remove(GameObject* object);
+    std::vector<GameObject*> Query(const AABB& region) const;
+    void Update(GameObject* object);
 
 	void DebugPrintObjects() const;
     void DebugPrintNodeObjects(const OctreeNode* node, uint depth) const;
@@ -43,10 +45,10 @@ public:
     void DrawView(ImDrawList* drawList, float scale, const ImVec2& windowSize, const ImVec2& windowPos, int type) const;
 
 private:
-    void Insert(OctreeNode* node, Mesh* object, const AABB& objectBounds, uint depth);    
-    void Remove(OctreeNode* node, Mesh* object);
+    void Insert(OctreeNode* node, GameObject* object, const AABB& objectBounds, uint depth);
+    void Remove(OctreeNode* node, GameObject* object);
     void Subdivide(OctreeNode* node);
-    void Query(const OctreeNode* node, const AABB& region, std::vector<Mesh*>& results, const glm::mat4& transform) const;
+    void Query(const OctreeNode* node, const AABB& region, std::vector<GameObject*>& results) const;
     void DrawNode(const OctreeNode* node, const glm::vec3& color) const;
     void DrawAABB(const AABB& aabb, const glm::vec3& color) const;
     bool Intersect(const AABB& a, const AABB& b) const;

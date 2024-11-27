@@ -30,7 +30,7 @@ public:
 	const glm::mat4& GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;
 
-	bool IsAABBInFrustum(const AABB& aabb, const glm::mat4& transform);
+	bool IsAABBInFrustum(const AABB& aabb);
 
 private:
 	void HandleMovement(glm::vec3& newPos, float speed, float fastSpeed);

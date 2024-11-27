@@ -5,12 +5,12 @@
 Octree::Octree(const AABB& sceneBounds, uint maxDepth, uint maxObjects)
     : root(std::make_unique<OctreeNode>(sceneBounds)), maxDepth(maxDepth), maxObjects(maxObjects) {}
 
-void Octree::Insert(Mesh* object, const AABB& objectBounds)
+void Octree::Insert(GameObject* object, const AABB& objectBounds)
 {
     Insert(root.get(), object, objectBounds, 0);
 }
 
-void Octree::Insert(OctreeNode* node, Mesh* object, const AABB& objectBounds, uint depth)
+void Octree::Insert(OctreeNode* node, GameObject* object, const AABB& objectBounds, uint depth)
 {
     if (!Intersect(node->bounds, objectBounds))
     {
@@ -57,12 +57,13 @@ void Octree::Subdivide(OctreeNode* node)
     }
 }
 
-void Octree::Remove(Mesh* object) 
+void Octree::Remove(GameObject* object)
 {
     Remove(root.get(), object);
 }
 
-void Octree::Remove(OctreeNode* node, Mesh* object) {
+void Octree::Remove(OctreeNode* node, GameObject* object)
+{
     if (!node) return;
 
     auto it = std::remove(node->objects.begin(), node->objects.end(), object);
@@ -102,7 +103,6 @@ void Octree::Remove(OctreeNode* node, Mesh* object) {
     }
 }
 
-
 int Octree::TotalObjects(const OctreeNode* node) const
 {
     if (!node) return 0;
@@ -120,25 +120,25 @@ int Octree::TotalObjects(const OctreeNode* node) const
 }
 
 
-std::vector<Mesh*> Octree::Query(const AABB& region, const glm::mat4& transform) const
+std::vector<GameObject*> Octree::Query(const AABB& region) const
 {
-    std::vector<Mesh*> results;
+    std::vector<GameObject*> results;
 
-    Query(root.get(), region, results, transform);
+    Query(root.get(), region, results);
 
     return results;
 }
 
-void Octree::Query(const OctreeNode* node, const AABB& region, std::vector<Mesh*>& results, const glm::mat4& transform) const
+void Octree::Query(const OctreeNode* node, const AABB& region, std::vector<GameObject*>& results) const
 {
     if (!node || !Intersect(node->bounds, region))
     {
         return;
     }
 
-    for (Mesh* object : node->objects)
+    for (GameObject* object : node->objects)
     {
-        AABB objectAABB = object->GetAABB(transform);
+        AABB objectAABB = object->GetAABB();
         if (Intersect(objectAABB, region))
         {
             results.push_back(object);
@@ -149,7 +149,7 @@ void Octree::Query(const OctreeNode* node, const AABB& region, std::vector<Mesh*
     {
         if (child)
         {
-            Query(child.get(), region, results, transform);
+            Query(child.get(), region, results);
         }
     }
 }
@@ -212,9 +212,9 @@ bool Octree::Intersect(const AABB& a, const AABB& b) const
     return (a.min.x <= b.max.x && a.max.x >= b.min.x) && (a.min.y <= b.max.y && a.max.y >= b.min.y) && (a.min.z <= b.max.z && a.max.z >= b.min.z);
 }
 
-void Octree::Update(Mesh* object, const glm::mat4& transform) 
+void Octree::Update(GameObject* object)
 {
-    AABB transformedAABB = object->GetAABB(transform);
+    AABB transformedAABB = object->GetAABB();
 
     Remove(object);
     Insert(object, transformedAABB);

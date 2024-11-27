@@ -19,9 +19,9 @@ void ComponentMesh::Update()
     if (transform != nullptr)
     {   
         AABB meshAABB = mesh->GetAABB(transform->globalTransform);
-		app->scene->sceneOctree->Update(mesh, transform->globalTransform);
+		app->scene->sceneOctree->Update(gameObject);
 
-        if (app->camera->IsAABBInFrustum(meshAABB, transform->globalTransform))
+        if (app->camera->IsAABBInFrustum(meshAABB))
         {
             glPushMatrix();
             glMultMatrixf(glm::value_ptr(transform->globalTransform));

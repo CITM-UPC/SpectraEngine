@@ -22,6 +22,8 @@ public:
 	Component* AddComponent(Component* component);
 	Component* GetComponent(ComponentType type);
 
+	AABB GetAABB();
+
 public:
 	GameObject* parent;
 	std::string name;
@@ -35,4 +37,7 @@ public:
 
 	bool isActive = true;
 	bool isEditing = false;
+
+private:
+	AABB aabb;
 };

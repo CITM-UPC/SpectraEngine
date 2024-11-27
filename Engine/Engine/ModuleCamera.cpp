@@ -286,9 +286,9 @@ void ModuleCamera::CalculateFrustumPlanes()
 	}
 }
 
-bool ModuleCamera::IsAABBInFrustum(const AABB& aabb, const glm::mat4& transform)
+bool ModuleCamera::IsAABBInFrustum(const AABB& aabb)
 {
-	std::vector<Mesh*> potentialObjects = app->scene->sceneOctree->Query(aabb, transform);
+	std::vector<GameObject*> potentialObjects = app->scene->sceneOctree->Query(aabb);
 
 	if (potentialObjects.empty())
 		return false;

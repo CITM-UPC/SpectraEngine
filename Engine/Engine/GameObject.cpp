@@ -52,3 +52,11 @@ Component* GameObject::GetComponent(ComponentType type)
 
 	return nullptr;
 }
+
+AABB GameObject::GetAABB()
+{
+	if (transform != nullptr && mesh != nullptr && mesh->mesh != nullptr)
+		aabb = mesh->mesh->GetAABB(transform->globalTransform);
+
+	return aabb;
+}
