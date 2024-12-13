@@ -16,6 +16,11 @@ void OctreeNode::UpdateIsOnFrustum()
 {
     isOnFrustum = app->camera->IsAABBInFrustum(bounds);
 
+	for (const auto& object : objects)
+	{
+		object->isOctreeInFrustum = isOnFrustum;
+	}
+
     if (IsLeaf()) return;
 
     for (auto& child : children)
@@ -27,7 +32,7 @@ void OctreeNode::UpdateIsOnFrustum()
     }
 }
 
-void Octree::UpdateAllNodesVisibility()
+void Octree::UpdateAllNodesVisibility() const
 {
     if (root)
     {
@@ -51,6 +56,21 @@ void Octree::Insert(OctreeNode* node, GameObject* object, const AABB& objectBoun
     if (node->IsLeaf())
     {
         Subdivide(node);
+
+        std::vector<GameObject*> objectsToRedistribute = std::move(node->objects);
+        node->objects.clear();
+
+        for (auto* existingObject : objectsToRedistribute)
+        {
+            AABB existingBounds = existingObject->GetAABB();
+            for (auto& child : node->children)
+            {
+                if (child && Intersect(child->bounds, existingBounds))
+                {
+                    Insert(child.get(), existingObject, existingBounds, depth + 1);
+                }
+            }
+        }
     }
 
     for (auto& child : node->children)
@@ -82,66 +102,31 @@ void Octree::Subdivide(OctreeNode* node)
     }
 }
 
-void Octree::Remove(GameObject* object)
+bool Octree::Intersect(const AABB& a, const AABB& b) const
 {
-    Remove(root.get(), object);
+    return (a.min.x <= b.max.x && a.max.x >= b.min.x) && (a.min.y <= b.max.y && a.max.y >= b.min.y) && (a.min.z <= b.max.z && a.max.z >= b.min.z);
 }
 
-void Octree::Remove(OctreeNode* node, GameObject* object)
+void Octree::Clear()
 {
-    if (!node) return;
+    ClearNode(root.get());
+}
 
-    auto it = std::remove(node->objects.begin(), node->objects.end(), object);
-    if (it != node->objects.end())
-    {
-        node->objects.erase(it, node->objects.end());
-    }
+void Octree::ClearNode(OctreeNode* node)
+{
+    if (!node)
+        return;
+
+    node->objects.clear();
 
     for (auto& child : node->children)
     {
         if (child)
         {
-            Remove(child.get(), object);
+            ClearNode(child.get());
+            child.reset();
         }
     }
-
-    if (!node->IsLeaf())
-    {
-        int totalObjects = TotalObjects(node);
-
-        if (totalObjects <= maxObjects)
-        {
-            for (auto& child : node->children)
-            {
-                if (child) 
-                {
-                    node->objects.insert(node->objects.end(), child->objects.begin(), child->objects.end());
-                    child->objects.clear();
-                }
-            }
-
-            for (auto& child : node->children)
-            {
-                child.reset();
-            }
-        }
-    }
-}
-
-int Octree::TotalObjects(const OctreeNode* node) const
-{
-    if (!node) return 0;
-
-    int count = node->objects.size();
-    for (const auto& child : node->children)
-    {
-        if (child)
-        {
-            count += TotalObjects(child.get());
-        }
-    }
-
-    return count;
 }
 
 void Octree::DrawAABB(const AABB& aabb, const glm::vec3& color) const
@@ -193,53 +178,6 @@ void Octree::DrawNode(const OctreeNode* node, const glm::vec3& color) const
         if (child)
         {
             DrawNode(child.get(), color);
-        }
-    }
-}
-
-bool Octree::Intersect(const AABB& a, const AABB& b) const
-{
-    return (a.min.x <= b.max.x && a.max.x >= b.min.x) && (a.min.y <= b.max.y && a.max.y >= b.min.y) && (a.min.z <= b.max.z && a.max.z >= b.min.z);
-}
-
-void Octree::Update(GameObject* object)
-{
-    AABB transformedAABB = object->GetAABB();
-
-    Remove(object);
-    Insert(object, transformedAABB);
-
-	object->isOctreeInFrustum = root->isOnFrustum;
-}
-
-void Octree::DebugPrintObjects() const 
-{
-    //DebugPrintNodeObjects(root.get(), 0);
-}
-
-void Octree::DebugPrintNodeObjects(const OctreeNode* node, uint depth) const 
-{
-    if (!node) return;
-
-    if (node->objects.size() > 0)
-    {
-        std::cout << "Depth: " << depth << " | AABB: ("
-        << node->bounds.min.x << ", " << node->bounds.min.y << ", " << node->bounds.min.z
-        << ") to ("
-        << node->bounds.max.x << ", " << node->bounds.max.y << ", " << node->bounds.max.z
-        << ") | Objects: " << node->objects.size() << std::endl;
-    }
-
-    for (auto* object : node->objects) 
-    {
-        std::cout << "  Object: " << object << std::endl;
-    }
-
-    for (const auto& child : node->children)
-    {
-        if (child)
-        {
-            DebugPrintNodeObjects(child.get(), depth + 1);
         }
     }
 }

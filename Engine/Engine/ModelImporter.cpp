@@ -436,7 +436,7 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 		}
 
 		parent->children.push_back(gameObjectNode);
-		app->scene->sceneOctree->Insert(gameObjectNode, gameObjectNode->GetAABB());
+		app->scene->octreeNeedsUpdate = true;
 	}
 
 	uint32_t numChildren;

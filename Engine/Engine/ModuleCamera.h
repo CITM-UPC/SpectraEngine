@@ -50,6 +50,8 @@ public:
 	float farPlane = 512.0f;
 	int screenWidth, screenHeight;
 
+	bool frustumNeedsUpdate = true;
+
 private:
 	glm::vec3 X, Y, Z;
 	glm::vec3 pos, ref;
@@ -63,5 +65,4 @@ private:
 	bool isDefaultCursor = true;	
 	
 	Plane frustumPlanes[6];
-	bool frustumNeedsUpdate = true;
 };

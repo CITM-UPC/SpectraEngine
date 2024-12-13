@@ -37,7 +37,8 @@ public:
 
 	bool isActive = true;
 	bool isEditing = false;
-	bool isOctreeInFrustum = false;
+	bool isOctreeInFrustum = true;
+
 private:
 	AABB aabb;
 };
