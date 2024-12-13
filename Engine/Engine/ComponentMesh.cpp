@@ -19,7 +19,9 @@ void ComponentMesh::Update()
     if (transform != nullptr)
     {   
         AABB meshAABB = mesh->GetAABB(transform->globalTransform);
-		app->scene->sceneOctree->Update(gameObject);
+        app->scene->sceneOctree->Update(gameObject);
+
+        if (!gameObject->isOctreeInFrustum) return;
 
         if (app->camera->IsAABBInFrustum(meshAABB))
         {

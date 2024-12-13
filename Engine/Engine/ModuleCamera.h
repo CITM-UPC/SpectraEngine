@@ -30,7 +30,7 @@ public:
 	const glm::mat4& GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;
 
-	bool IsAABBInFrustum(const AABB& aabb);
+	bool IsAABBInFrustum(const AABB& aabb) const;
 
 private:
 	void HandleMovement(glm::vec3& newPos, float speed, float fastSpeed);
@@ -63,4 +63,5 @@ private:
 	bool isDefaultCursor = true;	
 	
 	Plane frustumPlanes[6];
+	bool frustumNeedsUpdate = true;
 };

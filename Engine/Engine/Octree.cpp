@@ -2,12 +2,37 @@
 
 #include <iostream>
 
+#include "App.h"
+
 Octree::Octree(const AABB& sceneBounds, uint maxDepth, uint maxObjects)
     : root(std::make_unique<OctreeNode>(sceneBounds)), maxDepth(maxDepth), maxObjects(maxObjects) {}
 
 void Octree::Insert(GameObject* object, const AABB& objectBounds)
 {
     Insert(root.get(), object, objectBounds, 0);
+}
+
+void OctreeNode::UpdateIsOnFrustum()
+{
+    isOnFrustum = app->camera->IsAABBInFrustum(bounds);
+
+    if (IsLeaf()) return;
+
+    for (auto& child : children)
+    {
+        if (child)
+        {
+            child->UpdateIsOnFrustum();
+        }
+    }
+}
+
+void Octree::UpdateAllNodesVisibility()
+{
+    if (root)
+    {
+        root->UpdateIsOnFrustum();
+    }
 }
 
 void Octree::Insert(OctreeNode* node, GameObject* object, const AABB& objectBounds, uint depth)
@@ -119,41 +144,6 @@ int Octree::TotalObjects(const OctreeNode* node) const
     return count;
 }
 
-
-std::vector<GameObject*> Octree::Query(const AABB& region) const
-{
-    std::vector<GameObject*> results;
-
-    Query(root.get(), region, results);
-
-    return results;
-}
-
-void Octree::Query(const OctreeNode* node, const AABB& region, std::vector<GameObject*>& results) const
-{
-    if (!node || !Intersect(node->bounds, region))
-    {
-        return;
-    }
-
-    for (GameObject* object : node->objects)
-    {
-        AABB objectAABB = object->GetAABB();
-        if (Intersect(objectAABB, region))
-        {
-            results.push_back(object);
-        }
-    }
-
-    for (const auto& child : node->children)
-    {
-        if (child)
-        {
-            Query(child.get(), region, results);
-        }
-    }
-}
-
 void Octree::DrawAABB(const AABB& aabb, const glm::vec3& color) const
 {
     glm::vec3 vertices[8] = {
@@ -218,6 +208,8 @@ void Octree::Update(GameObject* object)
 
     Remove(object);
     Insert(object, transformedAABB);
+
+	object->isOctreeInFrustum = root->isOnFrustum;
 }
 
 void Octree::DebugPrintObjects() const 

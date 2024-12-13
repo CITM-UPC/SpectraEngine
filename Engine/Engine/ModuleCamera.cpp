@@ -48,7 +48,11 @@ bool ModuleCamera::Update(float dt)
 
 	CalculateViewMatrix();
 
-	CalculateFrustumPlanes();
+	if (frustumNeedsUpdate)
+	{
+		CalculateFrustumPlanes();
+		frustumNeedsUpdate = false;
+	}
 
 	return true;
 }
@@ -75,6 +79,9 @@ void ModuleCamera::HandleInput()
 
 	pos += newPos;
 	ref += newPos;
+
+	if (glm::length(newPos) > 0.0f)
+		frustumNeedsUpdate = true;
 }
 
 void ModuleCamera::HandleMovement(glm::vec3& newPos, float speed, float fastSpeed)
@@ -105,6 +112,7 @@ void ModuleCamera::HandleMovement(glm::vec3& newPos, float speed, float fastSpee
 		newPos += Y * static_cast<float>(dy) * panSpeed;
 
 		SetCursor(CursorType::DRAG);
+		frustumNeedsUpdate = true;
 	}
 	else if (isDragging)
 		isDragging = false;
@@ -115,7 +123,10 @@ void ModuleCamera::HandleZoom(float zoomSpeed)
 	int mouseZ = app->input->GetMouseZ();
 
 	if (mouseZ != 0)
+	{
 		pos -= Z * zoomSpeed * (mouseZ > 0 ? 1.0f : -1.0f);
+		frustumNeedsUpdate = true;
+	}
 }
 
 void ModuleCamera::HandleRotation()
@@ -127,6 +138,7 @@ void ModuleCamera::HandleRotation()
 		app->input->GetKey(SDL_SCANCODE_LALT) == KEY_IDLE)
 	{
 		RotateCamera(dx, dy);
+		frustumNeedsUpdate = true;
 	}
 
 	if (app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT
@@ -138,6 +150,7 @@ void ModuleCamera::HandleRotation()
 		LookAt(ref);
 
 		SetCursor(CursorType::ORBIT);
+		frustumNeedsUpdate = true;
 	}
 	else if (isOrbiting)
 		isOrbiting = false;
@@ -151,6 +164,7 @@ void ModuleCamera::HandleRotation()
 		pos += direction * zoomDelta;
 
 		SetCursor(CursorType::ZOOM);
+		frustumNeedsUpdate = true;
 	}
 	else if (isZooming)
 		isZooming = false;
@@ -284,15 +298,12 @@ void ModuleCamera::CalculateFrustumPlanes()
 		frustumPlanes[i].normal /= length;
 		frustumPlanes[i].distance /= length;
 	}
+
+	app->scene->sceneOctree->UpdateAllNodesVisibility();
 }
 
-bool ModuleCamera::IsAABBInFrustum(const AABB& aabb)
+bool ModuleCamera::IsAABBInFrustum(const AABB& aabb) const
 {
-	std::vector<GameObject*> potentialObjects = app->scene->sceneOctree->Query(aabb);
-
-	if (potentialObjects.empty())
-		return false;
-
 	for (int i = 0; i < 6; ++i)
 	{
 		const Plane& plane = frustumPlanes[i];
