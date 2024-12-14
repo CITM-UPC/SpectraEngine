@@ -85,7 +85,6 @@ void Octree::Insert(OctreeNode* node, GameObject* object, const AABB& objectBoun
 void Octree::Subdivide(OctreeNode* node)
 {
     glm::vec3 size = (node->bounds.max - node->bounds.min) * 0.5f;
-    glm::vec3 mid = node->bounds.min + size;
 
     for (int i = 0; i < 8; ++i) 
     {
@@ -269,4 +268,30 @@ void Octree::DrawNodeView(const OctreeNode* node, ImDrawList* drawList, float sc
             DrawNodeView(child.get(), drawList, scale, windowSize, origin, windowPos, translation, type, depth + 1);
         }
     }
+}
+
+void Octree::CollectIntersectingObjects(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, std::vector<GameObject*>& objects) const
+{
+	CollectIntersectingObjects(root.get(), rayOrigin, rayDirection, objects);
+}
+
+void Octree::CollectIntersectingObjects(const OctreeNode* node, const glm::vec3& rayOrigin, const glm::vec3& rayDirection, std::vector<GameObject*>& objects) const
+{
+	if (!node) return;
+
+	if (node->bounds.IntersectsRay(rayOrigin, rayDirection))
+	{
+		for (const auto& object : node->objects)
+		{
+			objects.push_back(object);
+		}
+
+		for (const auto& child : node->children)
+		{
+			if (child)
+			{
+				CollectIntersectingObjects(child.get(), rayOrigin, rayDirection, objects);
+			}
+		}
+	}
 }

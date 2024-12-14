@@ -18,11 +18,11 @@ public:
 	bool CleanUp();
 
 	GameObject* CreateGameObject(const char* name, GameObject* parent);
+	void CollectObjects(const GameObject* gameObject, std::vector<GameObject*>& objects) const;
 
 private:
 	void UpdateOctree() const;
 	void AddGameObjectToOctree(const GameObject* gameObject) const;
-	void CollectObjects(const GameObject* gameObject, std::vector<GameObject*>& objects) const;
 
 public:
 	GameObject* root = nullptr;

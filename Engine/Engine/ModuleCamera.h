@@ -32,6 +32,8 @@ public:
 
 	bool IsAABBInFrustum(const AABB& aabb) const;
 
+	glm::vec3 GetPosition() const { return pos; }
+
 private:
 	void HandleMovement(glm::vec3& newPos, float speed, float fastSpeed);
 	void HandleZoom(float zoomSpeed);

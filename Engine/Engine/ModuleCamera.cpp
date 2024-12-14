@@ -246,7 +246,7 @@ void ModuleCamera::CalculateViewMatrix()
 
 glm::mat4 ModuleCamera::GetProjectionMatrix() const
 {
-	float aspectRatio = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
+	float aspectRatio = app->editor->sceneWindow->windowSize.x / app->editor->sceneWindow->windowSize.y;
 	return glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 }
 

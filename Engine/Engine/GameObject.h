@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <glm/glm.hpp>
 
 class GameObject
 {
@@ -23,6 +24,8 @@ public:
 	Component* GetComponent(ComponentType type);
 
 	AABB GetAABB();
+
+	bool IntersectsRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, float& intersectionDistance) const;
 
 public:
 	GameObject* parent;

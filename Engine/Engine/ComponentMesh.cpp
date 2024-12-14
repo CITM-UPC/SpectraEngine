@@ -58,10 +58,6 @@ void ComponentMesh::Update()
                     mesh->DrawOBB(transform->globalTransform);
             }
         }
-        else
-        {
-            printf("Mesh out of frustum\n");
-        }
     }
 }
 

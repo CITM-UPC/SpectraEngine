@@ -40,12 +40,14 @@ public:
     void DrawView(ImDrawList* drawList, float scale, const ImVec2& windowSize, const ImVec2& windowPos, int type) const;
     void UpdateAllNodesVisibility() const;
     void Clear();
+	void CollectIntersectingObjects(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, std::vector<GameObject*>& objects) const;
 
 private:
     void Insert(OctreeNode* node, GameObject* object, const AABB& objectBounds, uint depth);
     void Subdivide(OctreeNode* node);
 	bool Intersect(const AABB& a, const AABB& b) const;
 	void ClearNode(OctreeNode* node);
+	void CollectIntersectingObjects(const OctreeNode* node, const glm::vec3& rayOrigin, const glm::vec3& rayDirection, std::vector<GameObject*>& objects) const;
 
     void DrawNode(const OctreeNode* node, const glm::vec3& color) const;
     void DrawAABB(const AABB& aabb, const glm::vec3& color) const;
