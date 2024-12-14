@@ -136,11 +136,17 @@ void ModelImporter::SaveMeshToCustomFile(aiMesh* newMesh, const aiScene* scene, 
 		aiString texturePath;
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == AI_SUCCESS)
 		{
+			std::string fullPath = texturePath.C_Str();
+
+			size_t lastSlashPos = fullPath.find_last_of("\\/");
+
+			std::string filename = (lastSlashPos != std::string::npos) ? fullPath.substr(lastSlashPos + 1) : fullPath;
+
 			std::string basePath = "Assets/Textures/";
-			if (app->fileSystem->FileExists(basePath + texturePath.C_Str()))
+			if (app->fileSystem->FileExists(basePath + filename))
 			{
-				diffuseTexturePath = basePath + texturePath.C_Str();
-				app->importer->ImportFile(diffuseTexturePath.c_str());
+				diffuseTexturePath = basePath + filename;
+				app->importer->ImportFile(diffuseTexturePath);
 			}
 		}
 	}
@@ -312,6 +318,9 @@ void ModelImporter::SaveNodeToBuffer(const aiNode* node, std::vector<char>& buff
 	memcpy(buffer.data() + currentPos, node->mName.C_Str(), static_cast<size_t>(nameLength) + 1);
 	currentPos += static_cast<size_t>(nameLength) + 1;
 
+	memcpy(buffer.data() + currentPos, &node->mTransformation, sizeof(aiMatrix4x4));
+	currentPos += sizeof(aiMatrix4x4);
+
 	// Save number of meshes
 	uint32_t numMeshes = node->mNumMeshes;
 	memcpy(buffer.data() + currentPos, &numMeshes, sizeof(uint32_t));
@@ -400,6 +409,25 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 	std::string nodeName(buffer + currentPos, static_cast<size_t>(nameLength));
 	currentPos += static_cast<size_t>(nameLength) + 1;
 
+	aiMatrix4x4 transformation;
+	memcpy(&transformation, buffer + currentPos, sizeof(aiMatrix4x4));
+	currentPos += sizeof(aiMatrix4x4);
+
+	glm::vec3 position(transformation.a4, transformation.b4, transformation.c4);
+
+	glm::mat3 rotationMatrix(
+		transformation.a1, transformation.b1, transformation.c1,
+		transformation.a2, transformation.b2, transformation.c2,
+		transformation.a3, transformation.b3, transformation.c3
+	);
+
+	glm::quat rotation = glm::quat_cast(rotationMatrix);
+	glm::vec3 scale(
+		glm::length(glm::vec3(transformation.a1, transformation.b1, transformation.c1)),
+		glm::length(glm::vec3(transformation.a2, transformation.b2, transformation.c2)),
+		glm::length(glm::vec3(transformation.a3, transformation.b3, transformation.c3))
+	);
+
 	// Node meshes number
 	uint32_t numMeshes;
 	memcpy(&numMeshes, buffer + currentPos, sizeof(uint32_t));
@@ -410,6 +438,9 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 	if (numMeshes > 0)
 	{
 		gameObjectNode = new GameObject(nodeName.c_str(), parent);
+
+		gameObjectNode->transform->SetTransformMatrix(position, rotation, scale, gameObjectNode->parent->transform);
+		gameObjectNode->transform->UpdateTransform();
 
 		// Process meshes
 		for (uint32_t i = 0; i < numMeshes; i++)
@@ -462,6 +493,8 @@ size_t ModelImporter::CalculateNodeSize(const aiNode* node)
 
 	// Node name size
 	size += sizeof(uint32_t) + strlen(node->mName.C_Str()) + 1;
+
+	size += sizeof(aiMatrix4x4);
 
 	// Meshes size
 	size += sizeof(uint32_t);
