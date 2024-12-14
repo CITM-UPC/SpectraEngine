@@ -330,7 +330,44 @@ void ProjectWindow::HandleItemClick(const std::filesystem::directory_entry& entr
 			UpdateDirectoryContent();
 			isItemSelected = false;
 			shouldBreakLoop = true;
+			return;
 		}
+	}
+
+	if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))
+	{
+		ImGui::OpenPopup(("ItemContextMenu" + entry.path().string()).c_str());
+	}
+
+	if (ImGui::BeginPopup(("ItemContextMenu" + entry.path().string()).c_str()))
+	{
+		if (ImGui::MenuItem("Open"))
+		{
+			if (entry.is_directory())
+			{
+				currentPath = entry.path();
+				UpdateDirectoryContent();
+				isItemSelected = false;
+				shouldBreakLoop = true;
+			}
+			else if (entry.is_regular_file())
+			{
+				std::string command = "explorer \"" + entry.path().string() + "\"";
+				system(command.c_str());
+			}
+		}
+		if (ImGui::MenuItem("Show in Explorer"))
+		{
+			std::string command = "explorer /select,\"" + entry.path().string() + "\"";
+			system(command.c_str());
+		}
+		if (ImGui::MenuItem("Copy Path"))
+		{
+			char fullPath[MAX_PATH];
+			GetFullPathName(entry.path().string().c_str(), MAX_PATH, fullPath, nullptr);
+			ImGui::SetClipboardText(fullPath);
+		}
+		ImGui::EndPopup();
 	}
 }
 
@@ -553,14 +590,16 @@ void ProjectWindow::DrawSelectionBar()
 
 GLuint ProjectWindow::GetFileIcon(const std::filesystem::path& entry) const
 {
-	std::string extension = entry.extension().string();
+	std::string extension = app->fileSystem->GetExtension(entry.string());
 
-	if (extension == ".png")
+	if (extension == "png")
 		return app->importer->icons.pngFileIcon;
-	else if (extension == ".dds")
+
+	if (extension == "dds")
 		return app->importer->icons.ddsFileIcon;
-	else if (extension == ".fbx")
+
+	if (extension == "fbx")
 		return app->importer->icons.fbxFileIcon;
-	else
-		return app->importer->icons.fileIcon;
+
+	return app->importer->icons.fileIcon;
 }
