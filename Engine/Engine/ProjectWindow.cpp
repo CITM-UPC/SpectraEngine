@@ -406,10 +406,11 @@ void ProjectWindow::DrawMenuBar()
 		if (ImGui::Button("Import"))
 		{
 			const char* filter =
-				"All Files (*.fbx;*.png;*.dds)\0*.fbx;*.png;*.dds\0"
+				"All Files (*.fbx;*.png;*.dds;*.tga)\0*.fbx;*.png;*.dds;*.tga\0"
 				"FBX Files (*.fbx)\0*.fbx\0"
 				"PNG Files (*.png)\0*.png\0"
 				"DDS Files (*.dds)\0*.dds\0"
+				"TGA Files (*.tga)\0*.tga\0"
 				"\0";
 
 			std::string selectedFile = app->fileSystem->OpenFileDialog(filter);
