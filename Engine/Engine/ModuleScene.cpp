@@ -38,6 +38,30 @@ bool ModuleScene::Update(float dt)
 
 void ModuleScene::UpdateOctree() const
 {
+	AABB newBounds;
+	bool firstObject = true;
+
+	std::vector<GameObject*> objects;
+	CollectObjects(root, objects);
+
+	for (const auto& object : objects)
+	{
+		if (object != nullptr)
+		{
+			if (firstObject)
+			{
+				newBounds = object->GetAABB();
+				firstObject = false;
+			}
+			else
+			{
+				newBounds.min = glm::min(newBounds.min, object->GetAABB().min);
+				newBounds.max = (glm::max)(newBounds.max, object->GetAABB().max);
+			}
+		}
+	}
+
+	sceneOctree->SetBounds(newBounds);
 	sceneOctree->Clear();
 	AddGameObjectToOctree(root);
 }

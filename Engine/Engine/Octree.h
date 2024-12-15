@@ -37,12 +37,14 @@ public:
 
     void Insert(GameObject* object, const AABB& objectBounds);
     void Draw(const glm::vec3& color = glm::vec3(1.0f, 1.0f , 0.0f)) const;
-    void DrawView(ImDrawList* drawList, float scale, const ImVec2& windowSize, const ImVec2& windowPos, int type) const;
+    void DrawView(ImDrawList* drawList, const ImVec2& windowSize, const ImVec2& windowPos, int type) const;
     void UpdateAllNodesVisibility() const;
     void Clear();
 	void CollectIntersectingObjects(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, std::vector<GameObject*>& objects) const;
 	void SetMaxDepth(const int newDepth) { maxDepth = newDepth; }
 	void SetMaxObjects(const int newObjects) { maxObjects = newObjects; }
+	AABB GetBounds() const { return root->bounds; }
+	void SetBounds(const AABB& newBounds) const { root->bounds = newBounds; }
 
 private:
     void Insert(OctreeNode* node, GameObject* object, const AABB& objectBounds, uint depth);

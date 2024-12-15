@@ -47,13 +47,11 @@ void OctreeWindow::DrawWindow()
 		ImVec2 windowPos = ImGui::GetWindowPos();
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
 
-		float scale = std::min(windowSize.x / baseWidth, windowSize.y / baseHeight) * 10.0f;
-
         ImVec2 padding(windowSize.x / baseWidth * basePadding, windowSize.y / baseHeight * basePadding);
-        ImVec2 viewPos(windowPos.x, windowPos.y + ImGui::GetCursorPosY());
+        ImVec2 viewPos(windowPos.x + (padding.x / 2), windowPos.y + ImGui::GetCursorPosY() + (padding.y / 2));
         ImVec2 viewSize(windowSize.x - padding.x, windowSize.y - padding.y);
 
-		app->scene->sceneOctree->DrawView(ImGui::GetWindowDrawList(), scale, viewSize, viewPos, currentView);
+		app->scene->sceneOctree->DrawView(ImGui::GetWindowDrawList(), viewSize, viewPos, currentView);
 	}
 
 	ImGui::End();

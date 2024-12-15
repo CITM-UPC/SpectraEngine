@@ -181,32 +181,67 @@ void Octree::DrawNode(const OctreeNode* node, const glm::vec3& color) const
     }
 }
 
-void Octree::DrawView(ImDrawList* drawList, float scale, const ImVec2& windowSize, const ImVec2& windowPos, int type) const
+void Octree::DrawView(ImDrawList* drawList, const ImVec2& windowSize, const ImVec2& windowPos, int type) const
 {
-    glm::vec3 origin = root->bounds.min;
-    glm::vec3 size = root->bounds.max - root->bounds.min;
+    if (!root) return;
 
-    glm::vec3 octreeCenter = origin + size * 0.5f;
+    glm::vec3 min = root->bounds.min;
+    glm::vec3 max = root->bounds.max;
+    glm::vec3 size = max - min;
+    glm::vec3 center = (min + max) * 0.5f;
+
+    float scaleX, scaleY;
+    switch (type)
+    {
+    case 0: // Top (XZ)
+    case 1: // Bottom (XZ)
+        scaleX = windowSize.x / size.x;
+        scaleY = windowSize.y / size.z;
+        break;
+    case 2: // Front (XY)
+    case 3: // Back (XY)
+        scaleX = windowSize.x / size.x;
+        scaleY = windowSize.y / size.y;
+        break;
+    case 4: // Left (YZ)
+    case 5: // Right (YZ)
+        scaleX = windowSize.x / size.z;
+        scaleY = windowSize.y / size.y;
+        break;
+    default:
+        return;
+    }
+
+    float viewScale = std::min(scaleX, scaleY);
+
     glm::vec2 centerOffset = glm::vec2(windowSize.x, windowSize.y) * 0.5f;
     glm::vec2 centerPos;
 
     switch (type)
     {
-    case 0:
-	case 1:
-		centerPos = glm::vec2(octreeCenter.x, octreeCenter.z);
-		break;
-	case 2:
-	case 3:
-		centerPos = glm::vec2(octreeCenter.x, octreeCenter.y);
-		break;
-	case 4:
-	case 5:
-		centerPos = glm::vec2(octreeCenter.z, octreeCenter.y);
-		break;
+    case 0: // Top (XZ)
+        centerPos = glm::vec2(center.x, center.z);
+        break;
+    case 1: // Bottom (XZ inverted)
+        centerPos = glm::vec2(center.x, -center.z);
+        break;
+    case 2: // Front (XY)
+        centerPos = glm::vec2(center.x, -center.y);
+        break;
+    case 3: // Back (XY inverted)
+        centerPos = glm::vec2(-center.x, -center.y);
+        break;
+    case 4: // Left (YZ)
+        centerPos = glm::vec2(center.z, -center.y);
+        break;
+    case 5: // Right (YZ inverted)
+        centerPos = glm::vec2(-center.z, -center.y);
+        break;
     }
 
-    DrawNodeView(root.get(), drawList, scale, windowSize, origin, windowPos, centerOffset - centerPos, type, 0);
+    glm::vec2 translation = centerOffset - centerPos * viewScale;
+
+    DrawNodeView(root.get(), drawList, viewScale, windowSize, min, windowPos, translation, type, 0);
 }
 
 void Octree::DrawNodeView(const OctreeNode* node, ImDrawList* drawList, float scale, const ImVec2& windowSize, const glm::vec3& origin, const ImVec2& windowPos, const glm::vec2& translation, int type, uint depth) const
@@ -214,51 +249,46 @@ void Octree::DrawNodeView(const OctreeNode* node, ImDrawList* drawList, float sc
     if (!node) return;
 
     glm::vec2 min2D, max2D;
-
     switch (type)
     {
-    case 0: // XZ
+    case 0: // Top (XZ)
         min2D = glm::vec2(node->bounds.min.x, node->bounds.min.z);
         max2D = glm::vec2(node->bounds.max.x, node->bounds.max.z);
         break;
-    case 1: // XZ (inv)
-        min2D = glm::vec2(node->bounds.min.x, -node->bounds.min.z);
-        max2D = glm::vec2(node->bounds.max.x, -node->bounds.max.z);
+    case 1: // Bottom (XZ inverted)
+        min2D = glm::vec2(node->bounds.min.x, -node->bounds.max.z);
+        max2D = glm::vec2(node->bounds.max.x, -node->bounds.min.z);
         break;
-    case 2: // XY
-        min2D = glm::vec2(node->bounds.min.x, -node->bounds.min.y);
-        max2D = glm::vec2(node->bounds.max.x, -node->bounds.max.y);
+    case 2: // Front (XY)
+        min2D = glm::vec2(node->bounds.min.x, -node->bounds.max.y);
+        max2D = glm::vec2(node->bounds.max.x, -node->bounds.min.y);
         break;
-    case 3: // XY (inv)
-        min2D = -glm::vec2(node->bounds.max.x, node->bounds.max.y);
-        max2D = -glm::vec2(node->bounds.min.x, node->bounds.min.y);
+    case 3: // Back (XY inverted)
+        min2D = glm::vec2(-node->bounds.max.x, -node->bounds.max.y);
+        max2D = glm::vec2(-node->bounds.min.x, -node->bounds.min.y);
         break;
-    case 4: // YZ
-        min2D = glm::vec2(node->bounds.min.z, -node->bounds.min.y);
-        max2D = glm::vec2(node->bounds.max.z, -node->bounds.max.y);
+    case 4: // Left (YZ)
+        min2D = glm::vec2(node->bounds.min.z, -node->bounds.max.y);
+        max2D = glm::vec2(node->bounds.max.z, -node->bounds.min.y);
         break;
-    case 5: // YZ (inv)
-        min2D = glm::vec2(-node->bounds.max.z, -node->bounds.min.y);
-        max2D = glm::vec2(-node->bounds.min.z, -node->bounds.max.y);
+    case 5: // Right (YZ inverted)
+        min2D = glm::vec2(-node->bounds.max.z, -node->bounds.max.y);
+        max2D = glm::vec2(-node->bounds.min.z, -node->bounds.min.y);
         break;
     default:
         return;
     }
 
-    glm::vec2 originOffset = (type % 2 == 0) ? glm::vec2(origin.x, origin[type / 2]) : glm::vec2(origin[type / 2], origin.y);
-
-    min2D = (min2D - originOffset) * scale + translation;
-    max2D = (max2D - originOffset) * scale + translation;
+    min2D = min2D * scale + translation;
+    max2D = max2D * scale + translation;
 
     uint r = 255;
     uint g = glm::clamp(255 - (depth * (255 / maxDepth)), 0u, 255u);
     uint b = 0;
-
     ImU32 color = IM_COL32(r, g, b, 255);
 
     ImVec2 imMin = ImVec2(min2D.x + windowPos.x, windowPos.y + min2D.y);
     ImVec2 imMax = ImVec2(max2D.x + windowPos.x, windowPos.y + max2D.y);
-
     drawList->AddRect(imMin, imMax, color);
 
     for (const auto& child : node->children)
