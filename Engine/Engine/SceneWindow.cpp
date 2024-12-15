@@ -63,7 +63,9 @@ void SceneWindow::DrawWindow()
 		app->renderer3D->updateFramebuffer = true;
 	}
 
-	if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0))
+	if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0) 
+		&& app->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_IDLE 
+		&& app->input->GetKey(SDL_SCANCODE_LALT) == KEY_IDLE)
 	{
 		HandleMousePicking();
 	}
