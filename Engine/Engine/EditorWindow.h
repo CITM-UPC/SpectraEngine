@@ -13,7 +13,8 @@ enum class WindowType
 	SCENE,
 	PERFORMANCE,
 	PREFERENCES,
-	ABOUT
+	ABOUT,
+	OCTREE
 };
 
 class EditorWindow

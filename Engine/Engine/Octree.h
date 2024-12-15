@@ -41,6 +41,8 @@ public:
     void UpdateAllNodesVisibility() const;
     void Clear();
 	void CollectIntersectingObjects(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, std::vector<GameObject*>& objects) const;
+	void SetMaxDepth(const int newDepth) { maxDepth = newDepth; }
+	void SetMaxObjects(const int newObjects) { maxObjects = newObjects; }
 
 private:
     void Insert(OctreeNode* node, GameObject* object, const AABB& objectBounds, uint depth);

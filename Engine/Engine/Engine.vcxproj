@@ -155,6 +155,7 @@
     <ClCompile Include="ModuleResources.cpp" />
     <ClCompile Include="ModuleScene.cpp" />
     <ClCompile Include="ModuleWindow.cpp" />
+    <ClCompile Include="OctreeWindow.cpp" />
     <ClCompile Include="PerformanceWindow.cpp" />
     <ClCompile Include="PreferencesWindow.cpp" />
     <ClCompile Include="ProjectWindow.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="ModuleResources.h" />
     <ClInclude Include="ModuleScene.h" />
     <ClInclude Include="ModuleWindow.h" />
+    <ClInclude Include="OctreeWindow.h" />
     <ClInclude Include="PerformanceWindow.h" />
     <ClInclude Include="PreferencesWindow.h" />
     <ClInclude Include="ProjectWindow.h" />

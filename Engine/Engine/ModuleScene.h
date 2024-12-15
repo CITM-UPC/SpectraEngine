@@ -29,5 +29,10 @@ public:
 	Octree* sceneOctree = nullptr;
 	AABB sceneBounds;
 
+	int octreeMaxDepth = 3;
+	int octreeMaxObjects = 4;
+	glm::vec3 octreeColor = glm::vec3(0.0f, 1.0f, 1.0f);
+	bool drawOctree = false;
+
 	bool octreeNeedsUpdate = true;
 };

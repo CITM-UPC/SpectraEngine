@@ -52,6 +52,8 @@ bool ModuleEditor::Awake()
 	editorWindows.push_back(preferencesWindow);
 	aboutWindow = new AboutWindow(WindowType::ABOUT, "About");
 	editorWindows.push_back(aboutWindow);
+	octreeWindow = new OctreeWindow(WindowType::OCTREE, "Octree");
+	editorWindows.push_back(octreeWindow);
 
 	return ret;
 }
@@ -85,44 +87,6 @@ void ModuleEditor::DrawEditor()
 		if (editorWindow->IsEnabled())
 			editorWindow->DrawWindow();
 	}
-
-	if (ImGui::Begin("Octree Views"))
-	{
-		static int currentView = 0;
-
-		if (ImGui::Button("Top")) currentView = 0;
-		ImGui::SameLine();
-		if (ImGui::Button("Bottom")) currentView = 1;
-		ImGui::SameLine();
-		if (ImGui::Button("Front")) currentView = 2;
-		ImGui::SameLine();
-		if (ImGui::Button("Back")) currentView = 3;
-		ImGui::SameLine();
-		if (ImGui::Button("Left")) currentView = 4;
-		ImGui::SameLine();
-		if (ImGui::Button("Right")) currentView = 5;
-
-		ImVec2 windowPos = ImGui::GetWindowPos();
-		ImVec2 windowSize = ImGui::GetContentRegionAvail();
-		ImDrawList* drawList = ImGui::GetWindowDrawList();
-
-		float baseWidth = 500.0f;
-		float baseHeight = 500.0f;
-
-		float scaleX = windowSize.x / baseWidth;
-		float scaleY = windowSize.y / baseHeight;
-		float scale = std::min(scaleX, scaleY) * 10.0f;
-
-		float basePadding = 200.0f;
-		float paddingX = windowSize.x / baseWidth * basePadding;
-		float paddingY = windowSize.y / baseHeight * basePadding;
-
-		ImVec2 viewPos = ImVec2(windowPos.x, windowPos.y + 50);
-		ImVec2 viewSize(windowSize.x - paddingX, windowSize.y - paddingY);
-
-		app->scene->sceneOctree->DrawView(drawList, scale, viewSize, viewPos, currentView);
-	}
-	ImGui::End();
 
 	/*// Draw status bar
 	ImGuiViewport* viewport = ImGui::GetMainViewport();

@@ -14,7 +14,7 @@ bool ModuleScene::Awake()
 	root = CreateGameObject("Untitled Scene", nullptr);
 
 	sceneBounds = AABB(glm::vec3(-15.0f), glm::vec3(15.0f));
-	sceneOctree = new Octree(sceneBounds, 3, 4);
+	sceneOctree = new Octree(sceneBounds, octreeMaxDepth, octreeMaxObjects);
 
 	return true;
 }
@@ -30,7 +30,8 @@ bool ModuleScene::Update(float dt)
 
 	root->Update();
 
-	sceneOctree->Draw();
+	if (drawOctree)
+		sceneOctree->Draw(octreeColor);
 
 	return true;
 }
