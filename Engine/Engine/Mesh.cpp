@@ -33,6 +33,8 @@ void Mesh::DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool sh
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+	glColor3f(diffuseColor.x, diffuseColor.y, diffuseColor.z);
+
 	if (drawTextures && !wireframe && textureID != 0)
 	{
 		glBindTexture(GL_TEXTURE_2D, textureID);

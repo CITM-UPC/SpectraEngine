@@ -67,12 +67,13 @@ bool ModelImporter::LoadModel(Resource* resource, GameObject* root)
 void ModelImporter::SaveMeshToCustomFile(aiMesh* newMesh, const aiScene* scene, const std::string& filePath)
 {
 	// Validate mesh data
-	if (!newMesh || !newMesh->HasPositions() || !newMesh->HasNormals() ||
-		!newMesh->HasTextureCoords(0) || !newMesh->HasFaces())
+	if (!newMesh || !newMesh->HasPositions() || !newMesh->HasNormals() || !newMesh->HasFaces())
 	{
 		LOG(LogType::LOG_ERROR, "Invalid aiMesh data");
 		return;
 	}
+
+	bool hasTextureCoords = newMesh->HasTextureCoords(0);
 
 	// Get counts
 	const uint32_t ranges[4] =
@@ -80,15 +81,19 @@ void ModelImporter::SaveMeshToCustomFile(aiMesh* newMesh, const aiScene* scene, 
 		newMesh->mNumFaces * 3,
 		newMesh->mNumVertices,
 		newMesh->mNumVertices,
-		newMesh->mNumVertices
+		hasTextureCoords ? newMesh->mNumVertices : 0
 	};
 
 	// Process texture coordinates
-	std::unique_ptr<float[]> texCoords(new float[static_cast<size_t>(newMesh->mNumVertices) * 2]);
-	for (size_t i = 0; i < newMesh->mNumVertices; i++)
+	std::unique_ptr<float[]> texCoords;
+	if (hasTextureCoords)
 	{
-		texCoords[i * 2] = newMesh->mTextureCoords[0][i].x;
-		texCoords[i * 2 + 1] = newMesh->mTextureCoords[0][i].y;
+		texCoords = std::make_unique<float[]>(static_cast<size_t>(newMesh->mNumVertices) * 2);
+		for (size_t i = 0; i < newMesh->mNumVertices; i++)
+		{
+			texCoords[i * 2] = newMesh->mTextureCoords[0][i].x;
+			texCoords[i * 2 + 1] = newMesh->mTextureCoords[0][i].y;
+		}
 	}
 
 	// Process indices
@@ -152,11 +157,11 @@ void ModelImporter::SaveMeshToCustomFile(aiMesh* newMesh, const aiScene* scene, 
 	}
 
 	// Calculate total size needed
-	const size_t size = sizeof(ranges)
+	size_t size = sizeof(ranges)
 		+ (sizeof(uint32_t) * ranges[0])
 		+ (sizeof(float) * ranges[1] * 3)
 		+ (sizeof(float) * ranges[2] * 3)
-		+ (sizeof(float) * ranges[3] * 2)
+		+ (hasTextureCoords ? (sizeof(float) * ranges[3] * 2) : 0)
 		+ (sizeof(glm::vec4) * 3)
 		+ sizeof(uint32_t)
 		+ diffuseTexturePath.size() + 1;
@@ -176,7 +181,10 @@ void ModelImporter::SaveMeshToCustomFile(aiMesh* newMesh, const aiScene* scene, 
 	writeData(indices.get(), sizeof(uint32_t) * ranges[0]);
 	writeData(newMesh->mVertices, sizeof(float) * ranges[1] * 3);
 	writeData(newMesh->mNormals, sizeof(float) * ranges[2] * 3);
-	writeData(texCoords.get(), sizeof(float) * ranges[3] * 2);
+
+	if (newMesh->HasTextureCoords(0))
+		writeData(texCoords.get(), sizeof(float) * ranges[3] * 2);
+
 	writeData(&diffuseColor, sizeof(glm::vec4));
 	writeData(&specularColor, sizeof(glm::vec4));
 	writeData(&ambientColor, sizeof(glm::vec4));
@@ -435,13 +443,17 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 
 	// Create GameObject if there are meshes
 	GameObject* gameObjectNode = nullptr;
+
+	if (nodeName == "RootNode")
+		nodeName = fileName;
+
+	gameObjectNode = new GameObject(nodeName.c_str(), parent);
+
+	gameObjectNode->transform->SetTransformMatrix(position, rotation, scale, gameObjectNode->parent->transform);
+	gameObjectNode->transform->UpdateTransform();
+
 	if (numMeshes > 0)
 	{
-		gameObjectNode = new GameObject(nodeName.c_str(), parent);
-
-		gameObjectNode->transform->SetTransformMatrix(position, rotation, scale, gameObjectNode->parent->transform);
-		gameObjectNode->transform->UpdateTransform();
-
 		// Process meshes
 		for (uint32_t i = 0; i < numMeshes; i++)
 		{
@@ -465,9 +477,9 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 				}
 			}
 		}
-
-		parent->children.push_back(gameObjectNode);
 	}
+
+	parent->children.push_back(gameObjectNode);
 
 	uint32_t numChildren;
 	memcpy(&numChildren, buffer + currentPos, sizeof(uint32_t));
