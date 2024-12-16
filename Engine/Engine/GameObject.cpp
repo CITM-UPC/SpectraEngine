@@ -1,5 +1,7 @@
 #include "GameObject.h"
 
+#include "App.h"
+
 GameObject::GameObject(const char* name, GameObject* parent) : parent(parent), name(name)
 {
 	transform = new ComponentTransform(this);
@@ -26,6 +28,11 @@ void GameObject::Update()
 			(*it)->Update();
 		}
 	}
+
+    isParentSelected = app->editor->selectedGameObject == parent;
+
+    if (mesh)
+        mesh->drawOutline = isParentSelected || app->editor->selectedGameObject == this;
 }
 
 void GameObject::Enable()

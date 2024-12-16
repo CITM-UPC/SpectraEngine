@@ -112,7 +112,7 @@ void Mesh::DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool sh
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void Mesh::DrawOutline()
+void Mesh::DrawOutline(bool parentSelected)
 {
 	glEnable(GL_STENCIL_TEST);
 
@@ -137,7 +137,7 @@ void Mesh::DrawOutline()
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(4.0f);
-	glColor3f(0.0f, 1.0f, 1.0f);
+	parentSelected ? glColor3f(0.2f, 0.3f, 0.3f) : glColor3f(0.0f, 1.0f, 1.0f);
 
 	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr);
 

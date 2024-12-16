@@ -41,6 +41,7 @@ public:
 	bool isActive = true;
 	bool isEditing = false;
 	bool isOctreeInFrustum = true;
+	bool isParentSelected = false;
 
 private:
 	AABB aabb;

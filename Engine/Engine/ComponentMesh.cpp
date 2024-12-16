@@ -36,8 +36,8 @@ void ComponentMesh::Update()
                 preferences->shadedWireframe
             );
 
-            if (gameObject == app->editor->selectedGameObject)
-				mesh->DrawOutline();
+            if (drawOutline)
+                mesh->DrawOutline(gameObject->isParentSelected);
 
             if (showVertexNormals || showFaceNormals)
             {
