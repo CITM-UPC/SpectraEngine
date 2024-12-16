@@ -18,7 +18,8 @@ void OctreeNode::UpdateIsOnFrustum()
 
 	for (const auto& object : objects)
 	{
-		object->isOctreeInFrustum = isOnFrustum;
+        if (isOnFrustum)
+            object->isOctreeInFrustum = isOnFrustum;
 	}
 
     if (IsLeaf()) return;
@@ -34,6 +35,16 @@ void OctreeNode::UpdateIsOnFrustum()
 
 void Octree::UpdateAllNodesVisibility() const
 {
+    std::vector<GameObject*> objects;
+    app->scene->CollectObjects(app->scene->root, objects);
+    for (const auto& object : objects)
+    {
+        if (object != nullptr)
+        {
+            object->isOctreeInFrustum = false;
+        }
+    }
+
     if (root)
     {
         root->UpdateIsOnFrustum();

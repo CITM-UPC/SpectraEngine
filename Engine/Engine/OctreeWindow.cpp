@@ -19,15 +19,23 @@ void OctreeWindow::DrawWindow()
 
 	if (ImGui::CollapsingHeader("Preferences", ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		int maxDepth = app->scene->octreeMaxDepth;
 		ImGui::InputInt("Max Depth", &app->scene->octreeMaxDepth);
-		app->scene->octreeMaxDepth = std::clamp(app->scene->octreeMaxDepth, 1, 5);
-		app->scene->sceneOctree->SetMaxDepth(app->scene->octreeMaxDepth);
-		app->scene->octreeNeedsUpdate = true;
+		if (maxDepth != app->scene->octreeMaxDepth)
+		{
+			app->scene->octreeMaxDepth = std::clamp(app->scene->octreeMaxDepth, 1, 5);
+			app->scene->sceneOctree->SetMaxDepth(app->scene->octreeMaxDepth);
+			app->scene->octreeNeedsUpdate = true;
+		}
 
-		ImGui::InputInt("Max Objects", &app->scene->octreeMaxObjects);
-		app->scene->octreeMaxObjects = std::clamp(app->scene->octreeMaxObjects, 1, 10);
-		app->scene->sceneOctree->SetMaxObjects(app->scene->octreeMaxObjects);
-		app->scene->octreeNeedsUpdate = true;
+		int maxObjects = app->scene->octreeMaxObjects;
+		ImGui::InputInt("Max Objects", &maxObjects);
+		if (maxObjects != app->scene->octreeMaxObjects)
+		{
+			app->scene->octreeMaxObjects = std::clamp(maxObjects, 1, 10);
+			app->scene->sceneOctree->SetMaxObjects(app->scene->octreeMaxObjects);
+			app->scene->octreeNeedsUpdate = true;
+		}
 
 		ImGui::ColorEdit3("Octree Color", glm::value_ptr(app->scene->octreeColor));
 
