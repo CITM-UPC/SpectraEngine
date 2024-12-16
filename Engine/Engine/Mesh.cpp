@@ -112,6 +112,40 @@ void Mesh::DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool sh
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+void Mesh::DrawOutline()
+{
+	glEnable(GL_STENCIL_TEST);
+
+	glStencilFunc(GL_ALWAYS, 1, 0xFFFFFFFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glClear(GL_STENCIL_BUFFER_BIT);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glDisable(GL_DEPTH_TEST);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glBindBuffer(GL_ARRAY_BUFFER, verticesId);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesId);
+	glVertexPointer(3, GL_FLOAT, 0, nullptr);
+
+	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr);
+
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glEnable(GL_DEPTH_TEST);
+
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFFFFFFFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glLineWidth(4.0f);
+	glColor3f(0.0f, 1.0f, 1.0f);
+
+	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr);
+
+	glDisable(GL_STENCIL_TEST);
+	glLineWidth(1.0f);
+	glColor3f(1.0f, 1.0f, 1.0f);
+}
+
 void Mesh::DrawNormals(bool vertexNormals, bool faceNormals, float vertexNormalLength, float faceNormalLength, glm::vec3 vertexNormalColor, glm::vec3 faceNormalColor)
 {
 	if (vertexNormals && verticesCount > 0 && normalsCount > 0)

@@ -74,6 +74,7 @@ public:
 	void InitMesh();
 	void DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool shadedWireframe);
 	void DrawNormals(bool vertexNormals, bool faceNormals, float vertexNormalLength, float faceNormalLength, glm::vec3 vertexNormalColor, glm::vec3 faceNormalColor);
+	void DrawOutline();
 	void CleanUpMesh();
 
 	const AABB& GetAABB() const { return aabb; }
