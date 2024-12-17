@@ -29,7 +29,7 @@ void GameObject::Update()
 		}
 	}
 
-    isParentSelected = app->editor->selectedGameObject == parent;
+    isParentSelected = parent && (app->editor->selectedGameObject == parent || parent->isParentSelected);
 
     if (mesh)
         mesh->drawOutline = isParentSelected || app->editor->selectedGameObject == this;
