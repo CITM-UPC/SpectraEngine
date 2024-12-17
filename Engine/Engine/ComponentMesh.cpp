@@ -13,36 +13,55 @@ ComponentMesh::~ComponentMesh()
 
 void ComponentMesh::Update()
 {
-	ComponentTransform* transform = gameObject->transform;
+    ComponentTransform* transform = gameObject->transform;
+    ComponentMaterial* material = gameObject->material;
 
-	if (transform != nullptr)
-	{
-		glPushMatrix();
-		glMultMatrixf(glm::value_ptr(transform->globalTransform));
-	}
+    if (transform != nullptr)
+    {   
+        const AABB meshAABB = mesh->GetAABB(transform->globalTransform);
 
-	ComponentMaterial* material = gameObject->material;
+        if (!gameObject->isOctreeInFrustum) return;
 
-	mesh->DrawMesh(
-		material->textureId,
-		app->editor->preferencesWindow->drawTextures,
-		app->editor->preferencesWindow->wireframe,
-		app->editor->preferencesWindow->shadedWireframe
-	);
+        if (app->camera->IsAABBInFrustum(meshAABB))
+        {
+            glPushMatrix();
+            glMultMatrixf(glm::value_ptr(transform->globalTransform));
 
-	if (showVertexNormals || showFaceNormals)
-	{
-		mesh->DrawNormals(
-			showVertexNormals,
-			showFaceNormals,
-			app->editor->preferencesWindow->vertexNormalLength,
-			app->editor->preferencesWindow->faceNormalLength,
-			app->editor->preferencesWindow->vertexNormalColor,
-			app->editor->preferencesWindow->faceNormalColor
-		);
-	}
+            const auto& preferences = app->editor->preferencesWindow;
 
-	if (transform != nullptr) glPopMatrix();
+            mesh->DrawMesh(
+                material->textureId,
+                preferences->drawTextures,
+                preferences->wireframe,
+                preferences->shadedWireframe
+            );
+
+            if (drawOutline)
+                mesh->DrawOutline(gameObject->isParentSelected);
+
+            if (showVertexNormals || showFaceNormals)
+            {
+                mesh->DrawNormals(
+                    showVertexNormals,
+                    showFaceNormals,
+                    preferences->vertexNormalLength,
+                    preferences->faceNormalLength,
+                    preferences->vertexNormalColor,
+                    preferences->faceNormalColor
+                );
+            }
+
+            glPopMatrix();
+
+            if (app->editor->selectedGameObject == gameObject)
+            {
+                if (showAABB)
+                    mesh->DrawAABB(transform->globalTransform);
+                if (showOBB)
+                    mesh->DrawOBB(transform->globalTransform);
+            }
+        }
+    }
 }
 
 void ComponentMesh::OnEditor()
@@ -58,5 +77,10 @@ void ComponentMesh::OnEditor()
 
 		ImGui::Checkbox("Vertex Normals", &showVertexNormals);
 		ImGui::Checkbox("Face Normals", &showFaceNormals);
+
+        ImGui::Spacing();
+        
+		ImGui::Checkbox("Show AABB", &showAABB);
+		ImGui::Checkbox("Show OBB", &showOBB);
 	}
 }

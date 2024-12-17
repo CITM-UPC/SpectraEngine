@@ -1,6 +1,8 @@
 #include "SceneWindow.h"
 #include "App.h"
 
+#include <limits>
+
 SceneWindow::SceneWindow(const WindowType type, const std::string& name) : EditorWindow(type, name)
 {
 }
@@ -53,15 +55,22 @@ void SceneWindow::DrawWindow()
 
 	UpdateMouseState();
 
-	ImVec2 textureSize = ImVec2((float)app->window->width, (float)app->window->height);
-	ImVec2 windowSize = ImGui::GetWindowSize();
+	const ImVec2 newWindowSize = ImGui::GetContentRegionAvail();
 
-	ImVec2 uv0 = ImVec2((textureSize.x - windowSize.x) / (2 * textureSize.x),
-		(textureSize.y + windowSize.y) / (2 * textureSize.y));
-	ImVec2 uv1 = ImVec2((textureSize.x + windowSize.x) / (2 * textureSize.x),
-		(textureSize.y - windowSize.y) / (2 * textureSize.y));
+	if (windowSize.x != newWindowSize.x || windowSize.y != newWindowSize.y)
+	{
+		windowSize = newWindowSize;
+		app->renderer3D->updateFramebuffer = true;
+	}
 
-	ImGui::Image((void*)(intptr_t)app->renderer3D->fboTexture, windowSize, uv0, uv1);
+	if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0) 
+		&& app->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_IDLE 
+		&& app->input->GetKey(SDL_SCANCODE_LALT) == KEY_IDLE)
+	{
+		HandleMousePicking();
+	}
+
+	ImGui::Image((void*)(intptr_t)app->renderer3D->fboTexture, windowSize, ImVec2(0, 1), ImVec2(1, 0));
 
 	if (ImGui::BeginDragDropTarget())
 	{
@@ -94,4 +103,44 @@ void SceneWindow::DrawWindow()
 
 	ImGui::End();
 	ImGui::PopStyleVar();
+}
+
+void SceneWindow::HandleMousePicking() const
+{
+	ImVec2 mousePos = ImGui::GetMousePos();
+	ImVec2 windowPos = ImGui::GetWindowPos();
+
+	float mouseX = mousePos.x - windowPos.x;
+	float mouseY = mousePos.y - windowPos.y - ImGui::GetCursorPosY();
+
+	float normalizedX = (2.0f * mouseX) / windowSize.x - 1.0f;
+	float normalizedY = 1.0f - (2.0f * mouseY) / windowSize.y;
+
+	glm::vec4 rayClip = glm::vec4(normalizedX, normalizedY, -1.0f, 1.0f);
+	glm::vec4 rayEye = glm::inverse(app->camera->GetProjectionMatrix()) * rayClip;
+	rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0f, 0.0f);
+	glm::vec3 rayWorld = glm::normalize(glm::vec3(glm::inverse(app->camera->GetViewMatrix()) * rayEye));
+
+	glm::vec3 rayOrigin = app->camera->GetPosition();
+	GameObject* selectedObject = nullptr;
+
+	float closestDistance = (std::numeric_limits<size_t>::max)();
+
+	std::vector<GameObject*> objects;
+	app->scene->sceneOctree->CollectIntersectingObjects(rayOrigin, rayWorld, objects);
+
+	for (GameObject* object : objects)
+	{
+		float intersectionDistance;
+		if (object->IntersectsRay(rayOrigin, rayWorld, intersectionDistance))
+		{
+			if (intersectionDistance < closestDistance)
+			{
+				closestDistance = intersectionDistance;
+				selectedObject = object;
+			}
+		}
+	}
+
+	app->editor->selectedGameObject = selectedObject;
 }

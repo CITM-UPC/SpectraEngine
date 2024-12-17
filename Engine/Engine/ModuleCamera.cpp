@@ -48,6 +48,12 @@ bool ModuleCamera::Update(float dt)
 
 	CalculateViewMatrix();
 
+	if (frustumNeedsUpdate)
+	{
+		CalculateFrustumPlanes();
+		frustumNeedsUpdate = false;
+	}
+
 	return true;
 }
 
@@ -73,6 +79,9 @@ void ModuleCamera::HandleInput()
 
 	pos += newPos;
 	ref += newPos;
+
+	if (glm::length(newPos) > 0.0f)
+		frustumNeedsUpdate = true;
 }
 
 void ModuleCamera::HandleMovement(glm::vec3& newPos, float speed, float fastSpeed)
@@ -103,6 +112,7 @@ void ModuleCamera::HandleMovement(glm::vec3& newPos, float speed, float fastSpee
 		newPos += Y * static_cast<float>(dy) * panSpeed;
 
 		SetCursor(CursorType::DRAG);
+		frustumNeedsUpdate = true;
 	}
 	else if (isDragging)
 		isDragging = false;
@@ -113,7 +123,10 @@ void ModuleCamera::HandleZoom(float zoomSpeed)
 	int mouseZ = app->input->GetMouseZ();
 
 	if (mouseZ != 0)
+	{
 		pos -= Z * zoomSpeed * (mouseZ > 0 ? 1.0f : -1.0f);
+		frustumNeedsUpdate = true;
+	}
 }
 
 void ModuleCamera::HandleRotation()
@@ -125,6 +138,7 @@ void ModuleCamera::HandleRotation()
 		app->input->GetKey(SDL_SCANCODE_LALT) == KEY_IDLE)
 	{
 		RotateCamera(dx, dy);
+		frustumNeedsUpdate = true;
 	}
 
 	if (app->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT
@@ -136,6 +150,7 @@ void ModuleCamera::HandleRotation()
 		LookAt(ref);
 
 		SetCursor(CursorType::ORBIT);
+		frustumNeedsUpdate = true;
 	}
 	else if (isOrbiting)
 		isOrbiting = false;
@@ -149,6 +164,7 @@ void ModuleCamera::HandleRotation()
 		pos += direction * zoomDelta;
 
 		SetCursor(CursorType::ZOOM);
+		frustumNeedsUpdate = true;
 	}
 	else if (isZooming)
 		isZooming = false;
@@ -230,7 +246,7 @@ void ModuleCamera::CalculateViewMatrix()
 
 glm::mat4 ModuleCamera::GetProjectionMatrix() const
 {
-	float aspectRatio = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
+	float aspectRatio = app->editor->sceneWindow->windowSize.x / app->editor->sceneWindow->windowSize.y;
 	return glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 }
 
@@ -257,4 +273,57 @@ void ModuleCamera::SetCursor(CursorType cursorType)
 		isOrbiting = (cursorType == CursorType::ORBIT);
 		isDragging = (cursorType == CursorType::DRAG);
 	}
+}
+
+void ModuleCamera::CalculateFrustumPlanes()
+{
+	projectionMatrix = GetProjectionMatrix();
+	glm::mat4 viewProjMatrix = projectionMatrix * viewMatrix;
+
+	// Left, Right, Bottom, Top, Near, Far
+	const int components[6] = { 0, 0, 1, 1, 2, 2 };
+	const float signs[6] = { 1, -1, 1, -1, 1, -1 };
+
+	for (int i = 0; i < 6; ++i)
+	{
+		int c = components[i / 2];
+		float sign = signs[i];
+
+		frustumPlanes[i].normal.x = viewProjMatrix[0][3] + sign * viewProjMatrix[0][c];
+		frustumPlanes[i].normal.y = viewProjMatrix[1][3] + sign * viewProjMatrix[1][c];
+		frustumPlanes[i].normal.z = viewProjMatrix[2][3] + sign * viewProjMatrix[2][c];
+		frustumPlanes[i].distance = viewProjMatrix[3][3] + sign * viewProjMatrix[3][c];
+
+		float length = glm::length(frustumPlanes[i].normal);
+		frustumPlanes[i].normal /= length;
+		frustumPlanes[i].distance /= length;
+	}
+
+	app->scene->sceneOctree->UpdateAllNodesVisibility();
+}
+
+bool ModuleCamera::IsAABBInFrustum(const AABB& aabb) const
+{
+	for (int i = 0; i < 6; ++i)
+	{
+		const Plane& plane = frustumPlanes[i];
+		bool anyVertexInside = false;
+
+		for (int corner = 0; corner < 8 && !anyVertexInside; ++corner)
+		{
+			glm::vec3 vertex(
+				(corner & 1) ? aabb.max.x : aabb.min.x,
+				(corner & 2) ? aabb.max.y : aabb.min.y,
+				(corner & 4) ? aabb.max.z : aabb.min.z
+			);
+
+			if (glm::dot(plane.normal, vertex) + plane.distance >= 0)
+				anyVertexInside = true;
+		}
+
+		if (!anyVertexInside)
+			return false;
+	}
+
+	return true;
 }

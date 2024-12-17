@@ -2,6 +2,8 @@
 
 #include "Module.h"
 #include "GameObject.h"
+#include "Octree.h"
+#include "Mesh.h"
 
 class GameObject;
 
@@ -16,7 +18,21 @@ public:
 	bool CleanUp();
 
 	GameObject* CreateGameObject(const char* name, GameObject* parent);
+	void CollectObjects(const GameObject* gameObject, std::vector<GameObject*>& objects) const;
+
+private:
+	void UpdateOctree() const;
+	void AddGameObjectToOctree(const GameObject* gameObject) const;
 
 public:
 	GameObject* root = nullptr;
+	Octree* sceneOctree = nullptr;
+	AABB sceneBounds;
+
+	int octreeMaxDepth = 3;
+	int octreeMaxObjects = 4;
+	glm::vec3 octreeColor = glm::vec3(0.0f, 1.0f, 1.0f);
+	bool drawOctree = false;
+
+	bool octreeNeedsUpdate = true;
 };

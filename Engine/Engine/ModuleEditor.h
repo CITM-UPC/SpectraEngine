@@ -12,6 +12,7 @@
 #include "PerformanceWindow.h"
 #include "PreferencesWindow.h"
 #include "AboutWindow.h"
+#include "OctreeWindow.h"
 
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
@@ -44,6 +45,7 @@ public:
 	PerformanceWindow* performanceWindow = nullptr;
 	PreferencesWindow* preferencesWindow = nullptr;
 	AboutWindow* aboutWindow = nullptr;
+	OctreeWindow* octreeWindow = nullptr;
 
 	ImVec4 dataTextColor = ImVec4(0.45f, 0.55f, 0.75f, 1.0f);
 

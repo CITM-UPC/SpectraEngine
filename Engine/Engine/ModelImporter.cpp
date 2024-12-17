@@ -477,6 +477,8 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 				}
 			}
 		}
+
+		app->scene->octreeNeedsUpdate = true;
 	}
 
 	parent->children.push_back(gameObjectNode);

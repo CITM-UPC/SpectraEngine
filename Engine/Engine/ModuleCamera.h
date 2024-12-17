@@ -6,6 +6,13 @@
 #include "glm/gtx/transform.hpp"
 
 #include "ModuleInput.h"
+#include "Mesh.h"
+
+struct Plane 
+{
+	glm::vec3 normal;
+	float distance;
+};
 
 class ModuleCamera : public Module
 {
@@ -23,6 +30,10 @@ public:
 	const glm::mat4& GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;
 
+	bool IsAABBInFrustum(const AABB& aabb) const;
+
+	glm::vec3 GetPosition() const { return pos; }
+
 private:
 	void HandleMovement(glm::vec3& newPos, float speed, float fastSpeed);
 	void HandleZoom(float zoomSpeed);
@@ -33,20 +44,27 @@ private:
 
 	void SetCursor(CursorType cursorType);
 
+	void CalculateFrustumPlanes();
+
 public:
 	float fov = 60.0f;
 	float nearPlane = 0.125f;
 	float farPlane = 512.0f;
 	int screenWidth, screenHeight;
 
+	bool frustumNeedsUpdate = true;
+
 private:
 	glm::vec3 X, Y, Z;
 	glm::vec3 pos, ref;
 	glm::mat4 viewMatrix;
+	glm::mat4 projectionMatrix;
 
 	bool isZooming = false;
 	bool isOrbiting = false;
 	bool isFreeLook = false;
 	bool isDragging = false;
-	bool isDefaultCursor = true;
+	bool isDefaultCursor = true;	
+	
+	Plane frustumPlanes[6];
 };

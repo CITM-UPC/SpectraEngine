@@ -117,6 +117,8 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Sources\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="Octree.cpp" />
+    <ClCompile Include="OctreeWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ModuleInput.h">
@@ -218,5 +220,7 @@
     <ClInclude Include="Mesh.h">
       <Filter>Sources\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Octree.h" />
+    <ClInclude Include="OctreeWindow.h" />
   </ItemGroup>
 </Project>

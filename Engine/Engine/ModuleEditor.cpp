@@ -52,6 +52,8 @@ bool ModuleEditor::Awake()
 	editorWindows.push_back(preferencesWindow);
 	aboutWindow = new AboutWindow(WindowType::ABOUT, "About");
 	editorWindows.push_back(aboutWindow);
+	octreeWindow = new OctreeWindow(WindowType::OCTREE, "Octree");
+	editorWindows.push_back(octreeWindow);
 
 	return ret;
 }

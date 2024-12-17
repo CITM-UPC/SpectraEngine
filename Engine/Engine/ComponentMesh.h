@@ -16,8 +16,12 @@ public:
 
 public:
 	Mesh* mesh;
+	bool drawOutline = false;
 
 private:
 	bool showVertexNormals = false;
 	bool showFaceNormals = false;
+
+	bool showAABB = false;
+	bool showOBB = false;
 };
