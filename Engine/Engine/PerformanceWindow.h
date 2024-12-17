@@ -12,9 +12,6 @@ public:
 
 	void DrawWindow() override;
 
-public:
-	bool showFpsOverlay = false;
-
 private:
 	// CPU
 	std::string cpuName;

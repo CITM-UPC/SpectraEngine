@@ -24,6 +24,10 @@ void ComponentMesh::Update()
 
         if (app->camera->IsAABBInFrustum(meshAABB))
         {
+            app->camera->meshCount++;
+            app->camera->vertexCount += mesh->verticesCount;
+            app->camera->triangleCount += mesh->indicesCount / 3;
+
             glPushMatrix();
             glMultMatrixf(glm::value_ptr(transform->globalTransform));
 

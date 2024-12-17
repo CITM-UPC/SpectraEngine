@@ -50,6 +50,11 @@ void SceneWindow::DrawWindow()
 		}
 		ImGui::PopStyleVar();
 
+		if (ImGui::Selectable("Stats", showStatsOverlay, 0, ImVec2(30, 0)))
+		{
+			showStatsOverlay = !showStatsOverlay;
+		}
+
 		ImGui::EndMenuBar();
 	}
 
@@ -82,22 +87,38 @@ void SceneWindow::DrawWindow()
 		ImGui::EndDragDropTarget();
 	}
 
-	if (ImGui::IsWindowDocked() && app->editor->performanceWindow->showFpsOverlay)
+	if (ImGui::IsWindowDocked() && showStatsOverlay)
 	{
-		if (windowSize.x > 120 && windowSize.y > 100)
+		if (windowSize.x > 140 && windowSize.y > 140)
 		{
+			auto formatNumber = [](size_t count) -> std::string
+			{
+				if (count >= 1000000) return std::to_string(count / 1000000.0).substr(0, std::to_string(count / 1000000.0).find('.') + 2) + "M";
+				if (count >= 1000) return std::to_string(count / 1000.0).substr(0, std::to_string(count / 1000.0).find('.') + 2) + "k";
+				return std::to_string(count);
+			};
+
 			float dt = app->GetDT();
 			float currentFps = 1.0f / dt;
 			float ms = dt * 1000.0f;
 
+			ImGui::SetNextWindowBgAlpha(0.75f);
 			ImVec2 windowPos = ImGui::GetWindowPos();
-			ImVec2 topRightPos = ImVec2(windowPos.x + windowSize.x - 80, windowPos.y + 60);
-			ImVec4 overlayColor = ImVec4(0.0f, 1.0f, 0.8f, 1.0f);
+			ImVec2 topRightPos = ImVec2(windowPos.x + windowSize.x - 140, windowPos.y + 50);
 			ImGui::SetNextWindowPos(topRightPos);
-			ImGui::Begin("FPSOverlay", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
-			ImGui::TextColored(overlayColor, "%.2f FPS", currentFps);
-			ImGui::TextColored(overlayColor, "%.2f ms", ms);
+			ImGui::SetNextWindowSize(ImVec2(130, 125));
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
+			if (ImGui::Begin("FPSOverlay", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize))
+			{
+				ImGui::Text("FPS: %.2f", currentFps);
+				ImGui::Text("CPU: %.2f ms", ms);
+				ImGui::Text("Tris: %s", formatNumber(app->camera->triangleCount).c_str());
+				ImGui::Text("Verts: %s", formatNumber(app->camera->vertexCount).c_str());
+				ImGui::Text("Meshes: %d", app->camera->meshCount);
+				ImGui::Text("Screen: %.fx%.f", windowSize.x, windowSize.y);
+			}
 			ImGui::End();
+			ImGui::PopStyleVar();
 		}
 	}
 

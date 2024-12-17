@@ -54,6 +54,10 @@ public:
 
 	bool frustumNeedsUpdate = true;
 
+	int meshCount = 0;
+	int vertexCount = 0;
+	int triangleCount = 0;
+
 private:
 	glm::vec3 X, Y, Z;
 	glm::vec3 pos, ref;

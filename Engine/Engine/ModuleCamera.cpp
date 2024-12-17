@@ -54,6 +54,10 @@ bool ModuleCamera::Update(float dt)
 		frustumNeedsUpdate = false;
 	}
 
+	meshCount = 0;
+	vertexCount = 0;
+	triangleCount = 0;
+
 	return true;
 }
 

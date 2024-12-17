@@ -16,4 +16,7 @@ private:
 
 public:
 	ImVec2 windowSize = ImVec2(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+private:
+	bool showStatsOverlay = false;
 };

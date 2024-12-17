@@ -106,7 +106,10 @@ void PreferencesWindow::DrawWindow()
 	{
 		ImGui::Text("Fov ");
 		ImGui::SameLine();
-		ImGui::SliderFloat("##Fov", &app->camera->fov, 4.0f, 120.0f);
+		if (ImGui::SliderFloat("##Fov", &app->camera->fov, 4.0f, 120.0f))
+		{
+			app->camera->frustumNeedsUpdate = true;
+		}
 
 		ImGui::Text("Near");
 		ImGui::SameLine();
