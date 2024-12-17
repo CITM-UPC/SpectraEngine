@@ -48,7 +48,7 @@ ResourceType ModuleResources::GetResourceTypeFromExtension(const std::string& ex
 {
 	if (extension == "fbx")
 		return ResourceType::MODEL;
-	else if (extension == "png" || extension == "dds")
+	else if (extension == "png" || extension == "dds" || extension == "tga")
 		return ResourceType::TEXTURE;
 	else
 		return ResourceType::UNKNOWN;

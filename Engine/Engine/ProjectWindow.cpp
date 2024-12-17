@@ -330,7 +330,44 @@ void ProjectWindow::HandleItemClick(const std::filesystem::directory_entry& entr
 			UpdateDirectoryContent();
 			isItemSelected = false;
 			shouldBreakLoop = true;
+			return;
 		}
+	}
+
+	if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))
+	{
+		ImGui::OpenPopup(("ItemContextMenu" + entry.path().string()).c_str());
+	}
+
+	if (ImGui::BeginPopup(("ItemContextMenu" + entry.path().string()).c_str()))
+	{
+		if (ImGui::MenuItem("Open"))
+		{
+			if (entry.is_directory())
+			{
+				currentPath = entry.path();
+				UpdateDirectoryContent();
+				isItemSelected = false;
+				shouldBreakLoop = true;
+			}
+			else if (entry.is_regular_file())
+			{
+				std::string command = "explorer \"" + entry.path().string() + "\"";
+				system(command.c_str());
+			}
+		}
+		if (ImGui::MenuItem("Show in Explorer"))
+		{
+			std::string command = "explorer /select,\"" + entry.path().string() + "\"";
+			system(command.c_str());
+		}
+		if (ImGui::MenuItem("Copy Path"))
+		{
+			char fullPath[MAX_PATH];
+			GetFullPathName(entry.path().string().c_str(), MAX_PATH, fullPath, nullptr);
+			ImGui::SetClipboardText(fullPath);
+		}
+		ImGui::EndPopup();
 	}
 }
 
@@ -369,10 +406,11 @@ void ProjectWindow::DrawMenuBar()
 		if (ImGui::Button("Import"))
 		{
 			const char* filter =
-				"All Files (*.fbx;*.png;*.dds)\0*.fbx;*.png;*.dds\0"
+				"All Files (*.fbx;*.png;*.dds;*.tga)\0*.fbx;*.png;*.dds;*.tga\0"
 				"FBX Files (*.fbx)\0*.fbx\0"
 				"PNG Files (*.png)\0*.png\0"
 				"DDS Files (*.dds)\0*.dds\0"
+				"TGA Files (*.tga)\0*.tga\0"
 				"\0";
 
 			std::string selectedFile = app->fileSystem->OpenFileDialog(filter);
@@ -381,6 +419,14 @@ void ProjectWindow::DrawMenuBar()
 				app->importer->ImportFile(selectedFile);
 				UpdateDirectoryContent();
 			}
+		}
+
+		if (ImGui::BeginItemTooltip())
+		{
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted("IMPORT TEXT");
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
 		}
 
 		std::vector<std::string> pathParts = GetPathParts();
@@ -456,6 +502,14 @@ void ProjectWindow::DrawMenuBar()
 		if (ImGui::ImageButton((ImTextureID)(uintptr_t)app->importer->icons.dotsIcon, ImVec2(12, 12)))
 		{
 			ImGui::OpenPopup("OptionsPopup");
+		}
+
+		if (ImGui::BeginItemTooltip())
+		{
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted("DOT TEXT");
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
 		}
 
 		if (ImGui::BeginPopup("OptionsPopup"))
@@ -537,14 +591,16 @@ void ProjectWindow::DrawSelectionBar()
 
 GLuint ProjectWindow::GetFileIcon(const std::filesystem::path& entry) const
 {
-	std::string extension = entry.extension().string();
+	std::string extension = app->fileSystem->GetExtension(entry.string());
 
-	if (extension == ".png")
+	if (extension == "png")
 		return app->importer->icons.pngFileIcon;
-	else if (extension == ".dds")
+
+	if (extension == "dds")
 		return app->importer->icons.ddsFileIcon;
-	else if (extension == ".fbx")
+
+	if (extension == "fbx")
 		return app->importer->icons.fbxFileIcon;
-	else
-		return app->importer->icons.fileIcon;
+
+	return app->importer->icons.fileIcon;
 }

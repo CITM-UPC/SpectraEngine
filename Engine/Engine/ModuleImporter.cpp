@@ -70,7 +70,7 @@ void ModuleImporter::ImportFile(const std::string& fileDir, bool addToScene)
 {
 	std::string extension = app->fileSystem->GetExtension(fileDir);
 
-	bool isValidFile = extension == "fbx" || extension == "png" || extension == "dds";
+	bool isValidFile = extension == "fbx" || extension == "png" || extension == "dds" || extension == "tga";
 
 	if (!isValidFile)
 	{
