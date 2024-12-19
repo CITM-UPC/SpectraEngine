@@ -18,4 +18,7 @@ private:
 	char searchInput[256] = "";
 	char inputName[256] = "GameObject";
 	ImGuiInputTextFlags inputTextFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
+
+	GameObject* selectedNode = nullptr;
+	bool showNodePopup = false;
 };

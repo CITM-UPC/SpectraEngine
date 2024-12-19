@@ -34,8 +34,8 @@ void HierarchyWindow::DrawWindow()
 	{
 		if (ImGui::MenuItem("Create Empty"))
 		{
-			app->scene->CreateGameObject("GameObject", app->scene->root);
-			app->editor->selectedGameObject = app->scene->root->children.back();
+			GameObject* newEmpty = app->scene->CreateGameObject("GameObject", app->scene->root);
+			app->editor->selectedGameObject = newEmpty;
 		}
 		if (ImGui::BeginMenu("3D Object"))
 		{
@@ -72,6 +72,42 @@ void HierarchyWindow::DrawWindow()
 	ImGui::BeginGroup();
 
 	HierarchyTree(app->scene->root, true, searchInput);
+
+	if (showNodePopup)
+	{
+		ImGui::OpenPopup("nodePopup");
+		showNodePopup = false;
+	}
+
+	if (ImGui::BeginPopup("nodePopup"))
+	{
+		if (ImGui::MenuItem("Create Empty Child"))
+		{
+			GameObject* newChild = app->scene->CreateGameObject("GameObject", selectedNode);
+			app->editor->selectedGameObject = newChild;
+		}
+		if (ImGui::MenuItem("Create Empty Parent", nullptr, false, selectedNode->parent != nullptr))
+		{
+			GameObject* newParent = app->scene->CreateGameObject("GameObject", selectedNode->parent);
+
+			if (selectedNode->parent)
+			{
+				auto it = std::find(selectedNode->parent->children.begin(),
+					selectedNode->parent->children.end(),
+					selectedNode);
+				if (it != selectedNode->parent->children.end())
+				{
+					selectedNode->parent->children.erase(it);
+				}
+			}
+
+			selectedNode->parent = newParent;
+			newParent->children.push_back(selectedNode);
+
+			app->editor->selectedGameObject = newParent;
+		}
+		ImGui::EndPopup();
+	}
 
 	ImVec2 availableSize = ImGui::GetContentRegionAvail();
 
@@ -134,6 +170,12 @@ void HierarchyWindow::HierarchyTree(GameObject* node, bool isRoot, const char* s
 		if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0) && !ImGui::IsItemToggledOpen())
 		{
 			node->isEditing = true;
+		}
+
+		if (ImGui::IsItemClicked(1))
+		{
+			selectedNode = node;
+			showNodePopup = true;
 		}
 
 		// Rename node
