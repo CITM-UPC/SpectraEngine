@@ -9,6 +9,7 @@ ComponentMesh::ComponentMesh(GameObject* gameObject) : Component(gameObject, Com
 
 ComponentMesh::~ComponentMesh()
 {
+	mesh = nullptr;
 }
 
 void ComponentMesh::Update()

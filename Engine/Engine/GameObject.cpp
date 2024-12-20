@@ -13,6 +13,23 @@ GameObject::GameObject(const char* name, GameObject* parent) : parent(parent), n
 
 GameObject::~GameObject()
 {
+    for (auto& child : children)
+    {
+        delete child;
+        child = nullptr;
+    }
+    children.clear();
+
+    for (auto& component : components)
+    {
+        delete component;
+        component = nullptr;
+    }
+    components.clear();
+
+    transform = nullptr;
+    mesh = nullptr;
+    material = nullptr;
 }
 
 void GameObject::Update()

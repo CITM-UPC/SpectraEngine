@@ -13,6 +13,7 @@ ComponentMaterial::ComponentMaterial(GameObject* gameObject) : Component(gameObj
 
 ComponentMaterial::~ComponentMaterial()
 {
+	materialTexture = nullptr;
 }
 
 void ComponentMaterial::Update()

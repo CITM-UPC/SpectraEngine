@@ -106,6 +106,23 @@ void HierarchyWindow::DrawWindow()
 
 			app->editor->selectedGameObject = newParent;
 		}
+		if (ImGui::MenuItem("Delete", nullptr, false, selectedNode != app->scene->root))
+		{
+			if (selectedNode->parent)
+			{
+				auto it = std::find(selectedNode->parent->children.begin(),
+					selectedNode->parent->children.end(),
+					selectedNode);
+				if (it != selectedNode->parent->children.end())
+				{
+					selectedNode->parent->children.erase(it);
+				}
+			}
+			delete selectedNode;
+			selectedNode = nullptr;
+			app->editor->selectedGameObject = nullptr;
+			app->scene->octreeNeedsUpdate = true;
+		}
 		ImGui::EndPopup();
 	}
 
