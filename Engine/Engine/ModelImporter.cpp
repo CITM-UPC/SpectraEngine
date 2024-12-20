@@ -447,16 +447,16 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 	if (nodeName == "RootNode")
 		nodeName = fileName;
 
-	gameObjectNode = new GameObject(nodeName.c_str(), parent);
-
-	gameObjectNode->transform->SetTransformMatrix(position, rotation, scale, gameObjectNode->parent->transform);
-	gameObjectNode->transform->UpdateTransform();
-
 	if (numMeshes > 0)
 	{
 		// Process meshes
 		for (uint32_t i = 0; i < numMeshes; i++)
 		{
+			gameObjectNode = new GameObject(nodeName.c_str(), parent);
+
+			gameObjectNode->transform->SetTransformMatrix(position, rotation, scale, gameObjectNode->parent->transform);
+			gameObjectNode->transform->UpdateTransform();
+
 			uint32_t meshIndex;
 			memcpy(&meshIndex, buffer + currentPos, sizeof(uint32_t));
 			currentPos += sizeof(uint32_t);
@@ -476,12 +476,12 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 						gameObjectNode->material->AddTexture(newTexture);
 				}
 			}
+
+			parent->children.push_back(gameObjectNode);
 		}
 
 		app->scene->octreeNeedsUpdate = true;
 	}
-
-	parent->children.push_back(gameObjectNode);
 
 	uint32_t numChildren;
 	memcpy(&numChildren, buffer + currentPos, sizeof(uint32_t));
@@ -490,9 +490,14 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 	// Processs children nodes
 	if (numChildren > 0)
 	{
-		GameObject* holder = gameObjectNode ? gameObjectNode : new GameObject(fileName, parent);
+		GameObject* holder = gameObjectNode ? gameObjectNode : new GameObject(nodeName.c_str(), parent);
 		if (!gameObjectNode)
+		{
+			holder->transform->SetTransformMatrix(position, rotation, scale, holder->parent->transform);
+			holder->transform->UpdateTransform();
 			parent->children.push_back(holder);
+			app->scene->octreeNeedsUpdate = true;
+		}
 
 		for (uint32_t i = 0; i < numChildren; i++)
 		{

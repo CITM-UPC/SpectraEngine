@@ -176,6 +176,9 @@ void Mesh::DrawNormals(bool vertexNormals, bool faceNormals, float vertexNormalL
 			uint index1 = indices[i + 1];
 			uint index2 = indices[i + 2];
 
+			if (index0 >= verticesCount || index1 >= verticesCount || index2 >= verticesCount)
+				continue;
+
 			glm::vec3 v0(vertices[index0 * 3], vertices[index0 * 3 + 1], vertices[index0 * 3 + 2]);
 			glm::vec3 v1(vertices[index1 * 3], vertices[index1 * 3 + 1], vertices[index1 * 3 + 2]);
 			glm::vec3 v2(vertices[index2 * 3], vertices[index2 * 3 + 1], vertices[index2 * 3 + 2]);
