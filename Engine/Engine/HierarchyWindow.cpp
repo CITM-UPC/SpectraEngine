@@ -129,6 +129,60 @@ void HierarchyWindow::DrawWindow()
 	ImGui::End();
 }
 
+void HierarchyWindow::HandleDragAndDrop(GameObject* node)
+{
+	if (node == app->scene->root)
+		return;
+
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+	{
+		ImGui::SetDragDropPayload("GAMEOBJECT", &node, sizeof(GameObject*));
+		ImGui::Text("Dragging %s", node->name.c_str());
+		ImGui::EndDragDropSource();
+	}
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECT"))
+		{
+			GameObject* droppedNode = *(GameObject**)payload->Data;
+			if (droppedNode != node && droppedNode->parent != node)
+			{
+				GameObject* current = node;
+				bool isDescendant = false;
+				while (current != nullptr)
+				{
+					if (current == droppedNode)
+					{
+						isDescendant = true;
+						break;
+					}
+					current = current->parent;
+				}
+
+				if (!isDescendant)
+				{
+					glm::mat4 parentGlobalTransformInverse = glm::inverse(node->transform->globalTransform);
+					glm::mat4 newLocalTransform = parentGlobalTransformInverse * droppedNode->transform->globalTransform;
+
+					glm::vec3 newPosition, newScale;
+					glm::quat newRotation;
+					droppedNode->transform->Decompose(newLocalTransform, newPosition, newRotation, newScale);
+
+					RemoveNodeFromParent(droppedNode);
+					droppedNode->parent = node;
+					node->children.push_back(droppedNode);
+
+					droppedNode->transform->SetTransformMatrix(newPosition, newRotation, newScale, node->transform);
+					droppedNode->transform->updateTransform = true;
+					node->transform->updateTransform = true;
+				}
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
+}
+
 void HierarchyWindow::HierarchyTree(GameObject* node, bool isRoot, const char* searchText)
 {
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
@@ -194,14 +248,19 @@ void HierarchyWindow::HierarchyTree(GameObject* node, bool isRoot, const char* s
 			ImGui::SetKeyboardFocusHere(-1);
 		}
 
+		HandleDragAndDrop(node);
+
 		// Create child nodes
-		if (isOpen && !node->children.empty())
+		if (isOpen)
 		{
 			for (unsigned int i = 0; i < node->children.size(); i++)
 			{
 				HierarchyTree(node->children[i], false, searchText);
 			}
-			ImGui::TreePop();
+			if (!(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen))
+			{
+				ImGui::TreePop();
+			}
 		}
 
 		if (!node->isActive)
