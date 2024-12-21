@@ -90,16 +90,7 @@ void HierarchyWindow::DrawWindow()
 		{
 			GameObject* newParent = app->scene->CreateGameObject("GameObject", selectedNode->parent);
 
-			if (selectedNode->parent)
-			{
-				auto it = std::find(selectedNode->parent->children.begin(),
-					selectedNode->parent->children.end(),
-					selectedNode);
-				if (it != selectedNode->parent->children.end())
-				{
-					selectedNode->parent->children.erase(it);
-				}
-			}
+			RemoveNodeFromParent(selectedNode);
 
 			selectedNode->parent = newParent;
 			newParent->children.push_back(selectedNode);
@@ -108,18 +99,11 @@ void HierarchyWindow::DrawWindow()
 		}
 		if (ImGui::MenuItem("Delete", nullptr, false, selectedNode != app->scene->root))
 		{
-			if (selectedNode->parent)
-			{
-				auto it = std::find(selectedNode->parent->children.begin(),
-					selectedNode->parent->children.end(),
-					selectedNode);
-				if (it != selectedNode->parent->children.end())
-				{
-					selectedNode->parent->children.erase(it);
-				}
-			}
+			RemoveNodeFromParent(selectedNode);
+
 			delete selectedNode;
 			selectedNode = nullptr;
+
 			app->editor->selectedGameObject = nullptr;
 			app->scene->octreeNeedsUpdate = true;
 		}
@@ -243,4 +227,16 @@ bool HierarchyWindow::FilterNode(GameObject* node, const char* searchText)
 	std::transform(searchTextLower.begin(), searchTextLower.end(), searchTextLower.begin(), ::tolower);
 
 	return nodeNameLower.find(searchTextLower) != std::string::npos;
+}
+
+void HierarchyWindow::RemoveNodeFromParent(const GameObject* node) const
+{
+	if (node->parent)
+	{
+		auto it = std::find(node->parent->children.begin(),
+			node->parent->children.end(),
+			node);
+		if (it != node->parent->children.end())
+			node->parent->children.erase(it);
+	}
 }
