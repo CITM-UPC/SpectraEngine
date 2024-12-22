@@ -31,7 +31,7 @@ Resource* ModuleResources::CreateResource(const std::string& fileDir, ResourceTy
 		resource = new Resource(ResourceType::MODEL);
 		break;
 	case ResourceType::TEXTURE:
-		resource = new Texture(0, 0, 0);
+		resource = new Texture(0, 0, 0, fileDir.c_str());
 		break;
 	}
 
