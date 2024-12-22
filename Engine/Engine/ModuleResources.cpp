@@ -28,10 +28,11 @@ Resource* ModuleResources::CreateResource(const std::string& fileDir, ResourceTy
 	switch (type)
 	{
 	case ResourceType::MODEL:
-		resource = new Resource(fileName, ResourceType::MODEL);
+		resource = new Resource(ResourceType::MODEL);
 		break;
 	case ResourceType::TEXTURE:
-		resource = new Resource(fileName, ResourceType::TEXTURE);
+		resource = new Texture(0, 0, 0);
+		break;
 	}
 
 	if (resource)
@@ -39,6 +40,7 @@ Resource* ModuleResources::CreateResource(const std::string& fileDir, ResourceTy
 		resource->SetAssetFileDir(fileDir.c_str());
 		std::string libraryFileDir = CreateLibraryFileDir(fileName, type);
 		resource->SetLibraryFileDir(libraryFileDir);
+		resources.push_back(resource);
 	}
 
 	return resource;
@@ -74,12 +76,10 @@ Resource* ModuleResources::FindResourceInLibrary(const std::string& fileDir, Res
 	std::string fileName = app->fileSystem->GetFileNameWithoutExtension(fileDir);
 	std::string libraryFileDir = CreateLibraryFileDir(fileName, type);
 
-	if (app->fileSystem->FileExists(libraryFileDir))
+	for (const auto& resource : resources)
 	{
-		Resource* resource = new Resource(fileName, type);
-		resource->SetAssetFileDir(fileDir.c_str());
-		resource->SetLibraryFileDir(libraryFileDir);
-		return resource;
+		if (resource->GetLibraryFileDir() == libraryFileDir)
+			return resource;
 	}
 
 	return nullptr;

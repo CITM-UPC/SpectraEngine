@@ -99,7 +99,11 @@ void ModuleImporter::LoadToScene(Resource* newResource, ResourceType resourceTyp
 		modelImporter->LoadModel(newResource, app->scene->root);
 		break;
 	case ResourceType::TEXTURE:
-		Texture* newTexture = textureImporter->LoadTextureImage(newResource);
+		Texture* newTexture = dynamic_cast<Texture*>(newResource);
+		if (newTexture && newTexture->textureId == 0)
+		{
+			newTexture = textureImporter->LoadTextureImage(newResource);
+		}
 		if (newTexture && app->editor->selectedGameObject)
 		{
 			app->editor->selectedGameObject->material->AddTexture(newTexture);

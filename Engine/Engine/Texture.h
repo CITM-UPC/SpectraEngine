@@ -1,8 +1,10 @@
 #pragma once
 
+#include "Resource.h"
+
 typedef unsigned int GLuint;
 
-class Texture
+class Texture : public Resource
 {
 public:
 	Texture(GLuint id, int width, int height, const char* path = nullptr);

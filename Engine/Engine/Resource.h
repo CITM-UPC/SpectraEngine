@@ -12,11 +12,10 @@ enum class ResourceType
 class Resource
 {
 public:
-	Resource(const std::string& name, ResourceType type) : name(name), type(type) {}
+	Resource(ResourceType type) : type(type) {}
 	virtual ~Resource() {}
 
 	ResourceType GetType() const { return type; }
-	const std::string& GetName() const { return name; }
 
 	void SetAssetFileDir(const std::string& assetFileDir) { this->assetFileDir = assetFileDir; }
 	void SetLibraryFileDir(const std::string& libraryFileDir) { this->libraryFileDir = libraryFileDir; }
@@ -26,7 +25,6 @@ public:
 
 private:
 	ResourceType type;
-	std::string name;
 	std::string assetFileDir;
 	std::string libraryFileDir;
 };

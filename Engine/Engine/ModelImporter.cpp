@@ -151,7 +151,8 @@ void ModelImporter::SaveMeshToCustomFile(aiMesh* newMesh, const aiScene* scene, 
 			if (app->fileSystem->FileExists(basePath + filename))
 			{
 				diffuseTexturePath = basePath + filename;
-				app->importer->ImportFile(diffuseTexturePath);
+				if (!app->resources->FindResourceInLibrary(diffuseTexturePath, ResourceType::TEXTURE))
+					app->importer->ImportFile(diffuseTexturePath);
 			}
 		}
 	}
@@ -471,7 +472,13 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 					std::string extension = app->fileSystem->GetExtension(meshes[meshIndex]->diffuseTexturePath);
 					ResourceType resourceType = app->resources->GetResourceTypeFromExtension(extension);
 					Resource* newResource = app->resources->FindResourceInLibrary(meshes[meshIndex]->diffuseTexturePath, resourceType);
-					Texture* newTexture = app->importer->textureImporter->LoadTextureImage(newResource);
+					if (!newResource)
+						newResource = app->importer->ImportFileToLibrary(meshes[meshIndex]->diffuseTexturePath, resourceType);
+					Texture* newTexture = dynamic_cast<Texture*>(newResource);
+					if (newTexture && newTexture->textureId == 0)
+					{
+						newTexture = app->importer->textureImporter->LoadTextureImage(newResource);
+					}
 					if (newTexture != nullptr)
 						gameObjectNode->material->AddTexture(newTexture);
 				}

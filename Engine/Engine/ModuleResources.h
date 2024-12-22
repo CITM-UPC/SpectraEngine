@@ -4,6 +4,7 @@
 #include "Resource.h"
 
 #include <string>
+#include <vector>
 
 class ModuleResources : public Module
 {
@@ -21,4 +22,7 @@ public:
 	std::string CreateLibraryFileDir(std::string name, ResourceType type);
 
 	Resource* FindResourceInLibrary(const std::string& fileDir, ResourceType type);
+
+private:
+	std::vector<Resource*> resources;
 };
