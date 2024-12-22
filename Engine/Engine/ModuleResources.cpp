@@ -30,6 +30,9 @@ Resource* ModuleResources::CreateResource(const std::string& fileDir, ResourceTy
 	case ResourceType::MODEL:
 		resource = new Resource(ResourceType::MODEL);
 		break;
+	case ResourceType::MESH:
+		resource = new Mesh();
+		break;
 	case ResourceType::TEXTURE:
 		resource = new Texture(0, 0, 0, fileDir.c_str());
 		break;
@@ -62,6 +65,9 @@ std::string ModuleResources::CreateLibraryFileDir(std::string name, ResourceType
 	{
 	case ResourceType::MODEL:
 		return "Library/Models/" + name + ".model";
+		break;
+	case ResourceType::MESH:
+		return "Library/Meshes/" + name + ".mesh";
 		break;
 	case ResourceType::TEXTURE:
 		return "Library/Textures/" + name + ".dds";

@@ -220,42 +220,50 @@ Mesh* ModelImporter::LoadMeshFromCustomFile(const std::string& filePath)
 	uint32_t ranges[4] = { 0,0,0,0 };
 	file.read(reinterpret_cast<char*>(ranges), sizeof(ranges));
 
-	Mesh* mesh = new Mesh();
-	mesh->indicesCount = ranges[0];
-	mesh->verticesCount = ranges[1];
-	mesh->normalsCount = ranges[2];
-	mesh->texCoordsCount = ranges[3];
+	Resource* newResource = app->resources->FindResourceInLibrary(filePath, ResourceType::MESH);
+	if (!newResource)
+		newResource = app->importer->ImportFileToLibrary(filePath, ResourceType::MESH);
 
-	// Indices
-	mesh->indices = new uint32_t[mesh->indicesCount];
-	file.read(reinterpret_cast<char*>(mesh->indices), sizeof(uint32_t) * mesh->indicesCount);
+	Mesh* mesh = dynamic_cast<Mesh*>(newResource);
 
-	// Vertices
-	mesh->vertices = new float[mesh->verticesCount * 3];
-	file.read(reinterpret_cast<char*>(mesh->vertices), sizeof(float) * mesh->verticesCount * 3);
+	if (mesh && mesh->indicesCount == 0)
+	{
+		mesh->indicesCount = ranges[0];
+		mesh->verticesCount = ranges[1];
+		mesh->normalsCount = ranges[2];
+		mesh->texCoordsCount = ranges[3];
 
-	// Normals
-	mesh->normals = new float[mesh->normalsCount * 3];
-	file.read(reinterpret_cast<char*>(mesh->normals), sizeof(float) * mesh->normalsCount * 3);
+		// Indices
+		mesh->indices = new uint32_t[mesh->indicesCount];
+		file.read(reinterpret_cast<char*>(mesh->indices), sizeof(uint32_t) * mesh->indicesCount);
 
-	// Texture coords
-	mesh->texCoords = new float[mesh->texCoordsCount * 2];
-	file.read(reinterpret_cast<char*>(mesh->texCoords), sizeof(float) * mesh->texCoordsCount * 2);
+		// Vertices
+		mesh->vertices = new float[mesh->verticesCount * 3];
+		file.read(reinterpret_cast<char*>(mesh->vertices), sizeof(float) * mesh->verticesCount * 3);
 
-	// Materials
-	file.read(reinterpret_cast<char*>(&mesh->diffuseColor), sizeof(glm::vec4));
-	file.read(reinterpret_cast<char*>(&mesh->specularColor), sizeof(glm::vec4));
-	file.read(reinterpret_cast<char*>(&mesh->ambientColor), sizeof(glm::vec4));
+		// Normals
+		mesh->normals = new float[mesh->normalsCount * 3];
+		file.read(reinterpret_cast<char*>(mesh->normals), sizeof(float) * mesh->normalsCount * 3);
 
-	// Texture
-	uint32_t texturePathLength = 0;
-	file.read(reinterpret_cast<char*>(&texturePathLength), sizeof(uint32_t));
-	mesh->diffuseTexturePath.resize(texturePathLength);
-	file.read(&mesh->diffuseTexturePath[0], texturePathLength);
+		// Texture coords
+		mesh->texCoords = new float[mesh->texCoordsCount * 2];
+		file.read(reinterpret_cast<char*>(mesh->texCoords), sizeof(float) * mesh->texCoordsCount * 2);
+
+		// Materials
+		file.read(reinterpret_cast<char*>(&mesh->diffuseColor), sizeof(glm::vec4));
+		file.read(reinterpret_cast<char*>(&mesh->specularColor), sizeof(glm::vec4));
+		file.read(reinterpret_cast<char*>(&mesh->ambientColor), sizeof(glm::vec4));
+
+		// Texture
+		uint32_t texturePathLength = 0;
+		file.read(reinterpret_cast<char*>(&texturePathLength), sizeof(uint32_t));
+		mesh->diffuseTexturePath.resize(texturePathLength);
+		file.read(&mesh->diffuseTexturePath[0], texturePathLength);
+
+		mesh->InitMesh();
+	}
 
 	file.close();
-
-	mesh->InitMesh();
 
 	return mesh;
 }

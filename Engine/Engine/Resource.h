@@ -6,6 +6,7 @@ enum class ResourceType
 {
 	TEXTURE,
 	MODEL,
+	MESH,
 	UNKNOWN = -1
 };
 
