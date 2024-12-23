@@ -160,6 +160,7 @@
     <ClCompile Include="PreferencesWindow.cpp" />
     <ClCompile Include="ProjectWindow.cpp" />
     <ClCompile Include="Octree.cpp" />
+    <ClCompile Include="ResourcesWindow.cpp" />
     <ClCompile Include="SceneWindow.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureImporter.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="ProjectWindow.h" />
     <ClInclude Include="Octree.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResourcesWindow.h" />
     <ClInclude Include="SceneWindow.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureImporter.h" />

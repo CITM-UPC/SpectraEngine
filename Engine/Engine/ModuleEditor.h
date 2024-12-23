@@ -20,6 +20,8 @@
 
 #include <list>
 
+#include "ResourcesWindow.h"
+
 class ModuleEditor : public Module
 {
 public:
@@ -46,6 +48,7 @@ public:
 	PreferencesWindow* preferencesWindow = nullptr;
 	AboutWindow* aboutWindow = nullptr;
 	OctreeWindow* octreeWindow = nullptr;
+	ResourcesWindow* resourcesWindow = nullptr;
 
 	ImVec4 dataTextColor = ImVec4(0.45f, 0.55f, 0.75f, 1.0f);
 

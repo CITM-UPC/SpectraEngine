@@ -54,6 +54,8 @@ bool ModuleEditor::Awake()
 	editorWindows.push_back(aboutWindow);
 	octreeWindow = new OctreeWindow(WindowType::OCTREE, "Octree");
 	editorWindows.push_back(octreeWindow);
+	resourcesWindow = new ResourcesWindow(WindowType::RESOURCES, "Resources");
+	editorWindows.push_back(resourcesWindow);
 
 	return ret;
 }
@@ -179,6 +181,8 @@ void ModuleEditor::MainMenuBar()
 					Resource* resource = app->resources->FindResourceInLibrary(fullPath, ResourceType::MODEL);
 					if (!resource)
 						resource = app->importer->ImportFileToLibrary(fullPath, ResourceType::MODEL);
+
+					app->resources->ModifyResourceUsageCount(resource, 1);
 
 					app->importer->modelImporter->LoadModel(resource, app->scene->root);
 

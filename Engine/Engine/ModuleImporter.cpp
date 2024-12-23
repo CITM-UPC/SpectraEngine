@@ -88,7 +88,10 @@ void ModuleImporter::ImportFile(const std::string& fileDir, bool addToScene)
 		newResource = ImportFileToLibrary(newDir, resourceType);
 
 	if (addToScene)
+	{
 		LoadToScene(newResource, resourceType);
+		app->resources->ModifyResourceUsageCount(newResource, 1);
+	}
 }
 
 void ModuleImporter::LoadToScene(Resource* newResource, ResourceType resourceType)

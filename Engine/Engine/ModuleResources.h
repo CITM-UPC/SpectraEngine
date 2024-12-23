@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 class ModuleResources : public Module
 {
@@ -23,6 +24,11 @@ public:
 
 	Resource* FindResourceInLibrary(const std::string& fileDir, ResourceType type);
 
+	const std::vector<Resource*>& GetResources() const { return resources; }
+	int GetResourceUsageCount(Resource* resource) const;
+	void ModifyResourceUsageCount(Resource* resource, int delta);
+
 private:
 	std::vector<Resource*> resources;
+	std::unordered_map<Resource*, int> resourceUsageCount;
 };

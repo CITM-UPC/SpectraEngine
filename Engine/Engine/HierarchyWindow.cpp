@@ -53,6 +53,8 @@ void HierarchyWindow::DrawWindow()
 					if (!resource)
 						resource = app->importer->ImportFileToLibrary(fullPath, ResourceType::MODEL);
 
+					app->resources->ModifyResourceUsageCount(resource, 1);
+
 					app->importer->modelImporter->LoadModel(resource, app->scene->root);
 					app->editor->selectedGameObject = app->scene->root->children.back();
 				}

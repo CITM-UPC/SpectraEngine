@@ -44,6 +44,7 @@ Resource* ModuleResources::CreateResource(const std::string& fileDir, ResourceTy
 		std::string libraryFileDir = CreateLibraryFileDir(fileName, type);
 		resource->SetLibraryFileDir(libraryFileDir);
 		resources.push_back(resource);
+		resourceUsageCount[resource] = 0;
 	}
 
 	return resource;
@@ -82,11 +83,38 @@ Resource* ModuleResources::FindResourceInLibrary(const std::string& fileDir, Res
 	std::string fileName = app->fileSystem->GetFileNameWithoutExtension(fileDir);
 	std::string libraryFileDir = CreateLibraryFileDir(fileName, type);
 
+	Resource* foundResource = nullptr;
 	for (const auto& resource : resources)
 	{
 		if (resource->GetLibraryFileDir() == libraryFileDir)
-			return resource;
+		{
+			foundResource = resource;
+			break;
+		}
 	}
 
-	return nullptr;
+	return foundResource;
+}
+
+int ModuleResources::GetResourceUsageCount(Resource* resource) const
+{
+	auto it = resourceUsageCount.find(resource);
+	if (it != resourceUsageCount.end())
+	{
+		return it->second;
+	}
+	return 0;
+}
+
+void ModuleResources::ModifyResourceUsageCount(Resource* resource, int delta)
+{
+	auto it = resourceUsageCount.find(resource);
+	if (it != resourceUsageCount.end())
+	{
+		it->second += delta;
+		if (it->second < 0)
+		{
+			it->second = 0;
+		}
+	}
 }

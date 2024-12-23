@@ -224,6 +224,8 @@ Mesh* ModelImporter::LoadMeshFromCustomFile(const std::string& filePath)
 	if (!newResource)
 		newResource = app->importer->ImportFileToLibrary(filePath, ResourceType::MESH);
 
+	app->resources->ModifyResourceUsageCount(newResource, 1);
+
 	Mesh* mesh = dynamic_cast<Mesh*>(newResource);
 
 	if (mesh && mesh->indicesCount == 0)
@@ -482,6 +484,9 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 					Resource* newResource = app->resources->FindResourceInLibrary(meshes[meshIndex]->diffuseTexturePath, resourceType);
 					if (!newResource)
 						newResource = app->importer->ImportFileToLibrary(meshes[meshIndex]->diffuseTexturePath, resourceType);
+
+					app->resources->ModifyResourceUsageCount(newResource, 1);
+
 					Texture* newTexture = dynamic_cast<Texture*>(newResource);
 					if (newTexture && newTexture->textureId == 0)
 					{

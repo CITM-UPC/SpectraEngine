@@ -73,7 +73,7 @@ struct OBB
 class Mesh : public Resource
 {
 public:
-	Mesh() : Resource(ResourceType::MODEL) {}
+	Mesh() : Resource(ResourceType::MESH) {}
 	void InitMesh();
 	void DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool shadedWireframe);
 	void DrawNormals(bool vertexNormals, bool faceNormals, float vertexNormalLength, float faceNormalLength, glm::vec3 vertexNormalColor, glm::vec3 faceNormalColor);

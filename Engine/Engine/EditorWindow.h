@@ -14,7 +14,8 @@ enum class WindowType
 	PERFORMANCE,
 	PREFERENCES,
 	ABOUT,
-	OCTREE
+	OCTREE,
+	RESOURCES
 };
 
 class EditorWindow
