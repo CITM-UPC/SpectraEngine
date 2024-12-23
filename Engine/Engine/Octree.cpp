@@ -324,7 +324,8 @@ void Octree::CollectIntersectingObjects(const OctreeNode* node, const glm::vec3&
 	{
 		for (const auto& object : node->objects)
 		{
-			objects.push_back(object);
+			if (object->isOctreeInFrustum)
+                objects.push_back(object);
 		}
 
 		for (const auto& child : node->children)

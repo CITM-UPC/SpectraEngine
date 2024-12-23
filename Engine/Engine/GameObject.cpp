@@ -94,12 +94,16 @@ bool GameObject::IntersectsRay(const glm::vec3& rayOrigin, const glm::vec3& rayD
     const float* vertices = mesh->mesh->vertices;
     const uint* indices = mesh->mesh->indices;
     uint indicesCount = mesh->mesh->indicesCount;
+	uint verticesCount = mesh->mesh->verticesCount;
 
     bool hit = false;
     float closestDistance = FLT_MAX;
 
     for (uint i = 0; i < indicesCount; i += 3)
     {
+        if (indices[i] >= verticesCount || indices[i + 1] >= verticesCount || indices[i + 2] >= verticesCount)
+            return false;
+
         glm::vec3 v0 = glm::vec3(transformMatrix * glm::vec4(vertices[indices[i] * 3], vertices[indices[i] * 3 + 1], vertices[indices[i] * 3 + 2], 1.0f));
         glm::vec3 v1 = glm::vec3(transformMatrix * glm::vec4(vertices[indices[i + 1] * 3], vertices[indices[i + 1] * 3 + 1], vertices[indices[i + 1] * 3 + 2], 1.0f));
         glm::vec3 v2 = glm::vec3(transformMatrix * glm::vec4(vertices[indices[i + 2] * 3], vertices[indices[i + 2] * 3 + 1], vertices[indices[i + 2] * 3 + 2], 1.0f));

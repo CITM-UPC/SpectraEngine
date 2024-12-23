@@ -150,8 +150,15 @@ void SceneWindow::HandleMousePicking() const
 	std::vector<GameObject*> objects;
 	app->scene->sceneOctree->CollectIntersectingObjects(rayOrigin, rayWorld, objects);
 
+	std::unordered_set<GameObject*> reviewedObjects;
+
 	for (GameObject* object : objects)
 	{
+		if (reviewedObjects.find(object) != reviewedObjects.end())
+			continue;
+
+		reviewedObjects.insert(object);
+
 		float intersectionDistance;
 		if (object->IntersectsRay(rayOrigin, rayWorld, intersectionDistance))
 		{
