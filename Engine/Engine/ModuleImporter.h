@@ -15,6 +15,7 @@ struct Icons
 	GLuint openFolderIcon = 0;
 	GLuint fileIcon = 0;
 	GLuint pngFileIcon = 0;
+	GLuint tgaFileIcon = 0;
 	GLuint ddsFileIcon = 0;
 	GLuint fbxFileIcon = 0;
 	GLuint dotsIcon = 0;

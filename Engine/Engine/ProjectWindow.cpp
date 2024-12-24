@@ -596,6 +596,9 @@ GLuint ProjectWindow::GetFileIcon(const std::filesystem::path& entry) const
 	if (extension == "png")
 		return app->importer->icons.pngFileIcon;
 
+	if (extension == "tga")
+		return app->importer->icons.tgaFileIcon;
+
 	if (extension == "dds")
 		return app->importer->icons.ddsFileIcon;
 
