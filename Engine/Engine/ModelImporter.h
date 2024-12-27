@@ -29,7 +29,7 @@ private:
 	size_t CalculateNodeSize(const aiNode* node);
 
 	// Loading functions
-	Mesh* LoadMeshFromCustomFile(const std::string& filePath);
+	void LoadMeshFromCustomFile(const std::string& filePath, Mesh* mesh);
 	void LoadModelFromCustomFile(const std::string& filePath, GameObject* root);
 	void LoadNodeFromBuffer(const char* buffer, size_t& currentPos, std::vector<Mesh*>& meshes, GameObject* parent, const char* fileName);
 };

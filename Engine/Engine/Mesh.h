@@ -7,6 +7,8 @@
 #include <string>
 #include <array>
 
+#include "Model.h"
+
 typedef unsigned int uint;
 
 struct AABB
@@ -74,6 +76,7 @@ class Mesh : public Resource
 {
 public:
 	Mesh() : Resource(ResourceType::MESH) {}
+	~Mesh() { CleanUpMesh(); }
 	void InitMesh();
 	void DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool shadedWireframe);
 	void DrawNormals(bool vertexNormals, bool faceNormals, float vertexNormalLength, float faceNormalLength, glm::vec3 vertexNormalColor, glm::vec3 faceNormalColor);
@@ -86,6 +89,8 @@ public:
 
 	void DrawAABB(const glm::mat4& transform);
 	void DrawOBB(const glm::mat4& transform);
+
+	void SetParentModel(Model* model) { parentModel = model; }
 
 public:
 	uint indicesId = 0;
@@ -109,4 +114,7 @@ public:
 
 	AABB aabb;
 	OBB obb;
+
+private:
+	Model* parentModel = nullptr;
 };

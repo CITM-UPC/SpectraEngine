@@ -27,6 +27,7 @@ public:
 	const std::vector<Resource*>& GetResources() const { return resources; }
 	int GetResourceUsageCount(Resource* resource) const;
 	void ModifyResourceUsageCount(Resource* resource, int delta);
+	void RemoveUnusedResource(Resource* resource);
 
 private:
 	std::vector<Resource*> resources;

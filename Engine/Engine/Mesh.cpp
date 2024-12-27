@@ -217,6 +217,12 @@ void Mesh::CleanUpMesh()
 	indices = nullptr;
 	normals = nullptr;
 	texCoords = nullptr;
+
+	if (parentModel)
+	{
+		parentModel->DeleteMesh(this);
+		parentModel = nullptr;
+	}
 }
 
 void Mesh::DrawAABB(const glm::mat4& modelTransform)

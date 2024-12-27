@@ -20,8 +20,37 @@ void ResourcesWindow::DrawWindow()
 	ImGui::End();
 }
 
+void ResourcesWindow::UpdateResources()
+{
+	resources = app->resources->GetResources();
+}
+
 void ResourcesWindow::DrawResourceUsageTable()
 {
+	ImGui::Text("Resource Usage: %d", resources.size());
+
+	std::vector<Resource*> unusedResources;
+	for (const auto& resource : resources)
+	{
+		if (app->resources->GetResourceUsageCount(resource) == 0)
+		{
+			unusedResources.push_back(resource);
+		}
+	}
+
+	if (ImGui::Button("Delete Unused Resources"))
+	{
+		for (const auto& resource : unusedResources)
+		{
+			app->resources->RemoveUnusedResource(resource);
+		}
+		UpdateResources();
+	}
+
+	ImGui::SameLine();
+
+	ImGui::Text("Unused Resources: %d", unusedResources.size());
+
 	if (ImGui::BeginTable("Resource Usage", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable))
 	{
 		ImGui::TableSetupColumn("Resource");
@@ -29,7 +58,7 @@ void ResourcesWindow::DrawResourceUsageTable()
 		ImGui::TableSetupColumn("Usage Count");
 		ImGui::TableHeadersRow();
 
-		for (const auto& resource : app->resources->GetResources())
+		for (const auto& resource : resources)
 		{
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);

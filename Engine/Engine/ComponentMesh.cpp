@@ -9,6 +9,7 @@ ComponentMesh::ComponentMesh(GameObject* gameObject) : Component(gameObject, Com
 
 ComponentMesh::~ComponentMesh()
 {
+	app->resources->ModifyResourceUsageCount(mesh, -1);
 	mesh = nullptr;
 }
 

@@ -1,5 +1,9 @@
 #include "ModuleResources.h"
+
+#include <iostream>
+
 #include "App.h"
+#include "Model.h"
 
 ModuleResources::ModuleResources(App* app) : Module(app)
 {
@@ -28,7 +32,7 @@ Resource* ModuleResources::CreateResource(const std::string& fileDir, ResourceTy
 	switch (type)
 	{
 	case ResourceType::MODEL:
-		resource = new Resource(ResourceType::MODEL);
+		resource = new Model();
 		break;
 	case ResourceType::MESH:
 		resource = new Mesh();
@@ -116,5 +120,25 @@ void ModuleResources::ModifyResourceUsageCount(Resource* resource, int delta)
 		{
 			it->second = 0;
 		}
+	}
+
+	//RemoveUnusedResource(resource);
+
+	app->editor->resourcesWindow->UpdateResources();
+}
+
+void ModuleResources::RemoveUnusedResource(Resource* resource)
+{
+	if (GetResourceUsageCount(resource) == 0)
+	{
+		auto it = std::find(resources.begin(), resources.end(), resource);
+		if (it != resources.end())
+		{
+			resources.erase(it);
+		}
+
+		delete resource;
+
+		resourceUsageCount.erase(resource);
 	}
 }

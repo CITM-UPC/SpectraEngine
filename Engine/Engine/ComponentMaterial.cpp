@@ -13,6 +13,7 @@ ComponentMaterial::ComponentMaterial(GameObject* gameObject) : Component(gameObj
 
 ComponentMaterial::~ComponentMaterial()
 {
+	app->resources->ModifyResourceUsageCount(materialTexture, -1);
 	materialTexture = nullptr;
 }
 
@@ -63,6 +64,8 @@ void ComponentMaterial::AddTexture(Texture* texture)
 			gameObject->AddComponent(gameObject->material);
 		}
 
+		app->resources->ModifyResourceUsageCount(materialTexture, -1);
+		app->resources->ModifyResourceUsageCount(texture, 1);
 		materialTexture = texture;
 		textureId = materialTexture->textureId;
 	}
@@ -74,6 +77,8 @@ void ComponentMaterial::AddTexture(Texture* texture)
 			child->AddComponent(child->material);
 		}
 
+		app->resources->ModifyResourceUsageCount(child->material->materialTexture, -1);
+		app->resources->ModifyResourceUsageCount(texture, 1);
 		child->material->materialTexture = texture;
 		child->material->textureId = texture->textureId;
 	}

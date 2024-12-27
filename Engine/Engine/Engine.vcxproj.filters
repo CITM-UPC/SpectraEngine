@@ -126,6 +126,9 @@
     <ClCompile Include="ResourcesWindow.cpp">
       <Filter>Sources\Modules\EditorWindows</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Sources\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ModuleInput.h">
@@ -235,6 +238,9 @@
     </ClInclude>
     <ClInclude Include="ResourcesWindow.h">
       <Filter>Sources\Modules\EditorWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Sources\Resources</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

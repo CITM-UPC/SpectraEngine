@@ -5,6 +5,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "Model.h"
+
 ModelImporter::ModelImporter()
 {
 	struct aiLogStream stream;
@@ -151,8 +153,8 @@ void ModelImporter::SaveMeshToCustomFile(aiMesh* newMesh, const aiScene* scene, 
 			if (app->fileSystem->FileExists(basePath + filename))
 			{
 				diffuseTexturePath = basePath + filename;
-				if (!app->resources->FindResourceInLibrary(diffuseTexturePath, ResourceType::TEXTURE))
-					app->importer->ImportFile(diffuseTexturePath);
+				//if (!app->resources->FindResourceInLibrary(diffuseTexturePath, ResourceType::TEXTURE))
+				//	app->importer->ImportFile(diffuseTexturePath);
 			}
 		}
 	}
@@ -208,66 +210,52 @@ void ModelImporter::SaveMeshToCustomFile(aiMesh* newMesh, const aiScene* scene, 
 	}
 }
 
-Mesh* ModelImporter::LoadMeshFromCustomFile(const std::string& filePath)
+void ModelImporter::LoadMeshFromCustomFile(const std::string& filePath, Mesh* mesh)
 {
 	std::ifstream file(filePath, std::ios::binary);
 	if (!file.is_open())
 	{
 		LOG(LogType::LOG_ERROR, "Failed to open file for loading data.");
-		return nullptr;
 	}
 
 	uint32_t ranges[4] = { 0,0,0,0 };
 	file.read(reinterpret_cast<char*>(ranges), sizeof(ranges));
 
-	Resource* newResource = app->resources->FindResourceInLibrary(filePath, ResourceType::MESH);
-	if (!newResource)
-		newResource = app->importer->ImportFileToLibrary(filePath, ResourceType::MESH);
+	mesh->indicesCount = ranges[0];
+	mesh->verticesCount = ranges[1];
+	mesh->normalsCount = ranges[2];
+	mesh->texCoordsCount = ranges[3];
 
-	app->resources->ModifyResourceUsageCount(newResource, 1);
+	// Indices
+	mesh->indices = new uint32_t[mesh->indicesCount];
+	file.read(reinterpret_cast<char*>(mesh->indices), sizeof(uint32_t) * mesh->indicesCount);
 
-	Mesh* mesh = dynamic_cast<Mesh*>(newResource);
+	// Vertices
+	mesh->vertices = new float[mesh->verticesCount * 3];
+	file.read(reinterpret_cast<char*>(mesh->vertices), sizeof(float) * mesh->verticesCount * 3);
 
-	if (mesh && mesh->indicesCount == 0)
-	{
-		mesh->indicesCount = ranges[0];
-		mesh->verticesCount = ranges[1];
-		mesh->normalsCount = ranges[2];
-		mesh->texCoordsCount = ranges[3];
+	// Normals
+	mesh->normals = new float[mesh->normalsCount * 3];
+	file.read(reinterpret_cast<char*>(mesh->normals), sizeof(float) * mesh->normalsCount * 3);
 
-		// Indices
-		mesh->indices = new uint32_t[mesh->indicesCount];
-		file.read(reinterpret_cast<char*>(mesh->indices), sizeof(uint32_t) * mesh->indicesCount);
+	// Texture coords
+	mesh->texCoords = new float[mesh->texCoordsCount * 2];
+	file.read(reinterpret_cast<char*>(mesh->texCoords), sizeof(float) * mesh->texCoordsCount * 2);
 
-		// Vertices
-		mesh->vertices = new float[mesh->verticesCount * 3];
-		file.read(reinterpret_cast<char*>(mesh->vertices), sizeof(float) * mesh->verticesCount * 3);
+	// Materials
+	file.read(reinterpret_cast<char*>(&mesh->diffuseColor), sizeof(glm::vec4));
+	file.read(reinterpret_cast<char*>(&mesh->specularColor), sizeof(glm::vec4));
+	file.read(reinterpret_cast<char*>(&mesh->ambientColor), sizeof(glm::vec4));
 
-		// Normals
-		mesh->normals = new float[mesh->normalsCount * 3];
-		file.read(reinterpret_cast<char*>(mesh->normals), sizeof(float) * mesh->normalsCount * 3);
+	// Texture
+	uint32_t texturePathLength = 0;
+	file.read(reinterpret_cast<char*>(&texturePathLength), sizeof(uint32_t));
+	mesh->diffuseTexturePath.resize(texturePathLength);
+	file.read(&mesh->diffuseTexturePath[0], texturePathLength);
 
-		// Texture coords
-		mesh->texCoords = new float[mesh->texCoordsCount * 2];
-		file.read(reinterpret_cast<char*>(mesh->texCoords), sizeof(float) * mesh->texCoordsCount * 2);
-
-		// Materials
-		file.read(reinterpret_cast<char*>(&mesh->diffuseColor), sizeof(glm::vec4));
-		file.read(reinterpret_cast<char*>(&mesh->specularColor), sizeof(glm::vec4));
-		file.read(reinterpret_cast<char*>(&mesh->ambientColor), sizeof(glm::vec4));
-
-		// Texture
-		uint32_t texturePathLength = 0;
-		file.read(reinterpret_cast<char*>(&texturePathLength), sizeof(uint32_t));
-		mesh->diffuseTexturePath.resize(texturePathLength);
-		file.read(&mesh->diffuseTexturePath[0], texturePathLength);
-
-		mesh->InitMesh();
-	}
+	mesh->InitMesh();
 
 	file.close();
-
-	return mesh;
 }
 
 void ModelImporter::SaveModelToCustomFile(const aiScene* scene, const std::string& fileName)
@@ -389,8 +377,16 @@ void ModelImporter::LoadModelFromCustomFile(const std::string& filePath, GameObj
 	memcpy(&numMeshes, buffer.data() + currentPos, sizeof(uint32_t));
 	currentPos += sizeof(uint32_t);
 
+	Resource* newModelResource = app->resources->FindResourceInLibrary(filePath, ResourceType::MODEL);
+	if (!newModelResource)
+		newModelResource = app->importer->ImportFileToLibrary(filePath, ResourceType::MODEL);
+
+	Model* model = dynamic_cast<Model*>(newModelResource);
+
+	if (app->resources->GetResourceUsageCount(model) == 0)
+		app->resources->ModifyResourceUsageCount(model, 1);
+
 	// Load meshes
-	std::vector<Mesh*> meshes;
 	for (uint32_t i = 0; i < numMeshes; i++)
 	{
 		// Mesh path
@@ -401,11 +397,23 @@ void ModelImporter::LoadModelFromCustomFile(const std::string& filePath, GameObj
 		std::string meshPath(buffer.data() + currentPos, static_cast<size_t>(pathLength));
 		currentPos += static_cast<size_t>(pathLength) + 1;
 
-		// Load mesh from file
-		Mesh* mesh = LoadMeshFromCustomFile(meshPath);
-		if (mesh)
+		if (!model->HasMeshAtIndex(i))
 		{
-			meshes.push_back(mesh);
+			Resource* newMeshResource = app->resources->FindResourceInLibrary(meshPath, ResourceType::MESH);
+			if (!newMeshResource)
+				newMeshResource = app->importer->ImportFileToLibrary(meshPath, ResourceType::MESH);
+
+			Mesh* mesh = dynamic_cast<Mesh*>(newMeshResource);
+
+			if (mesh)
+			{
+				// Load mesh from file
+				if (mesh->indicesCount == 0)
+					LoadMeshFromCustomFile(meshPath, mesh);
+
+				model->AddMesh(mesh, i);
+				mesh->SetParentModel(model);
+			}
 		}
 	}
 
@@ -414,8 +422,16 @@ void ModelImporter::LoadModelFromCustomFile(const std::string& filePath, GameObj
 	fileName = fileName.substr(fileName.find_last_of("/\\") + 1);
 	fileName = fileName.substr(0, fileName.find_last_of("."));
 
+	std::vector<Mesh*> orderedMeshes;
+	for (uint32_t i = 0; i < numMeshes; i++)
+	{
+		Mesh* mesh = model->GetMeshByIndex(i);
+		if (mesh)
+			orderedMeshes.push_back(mesh);
+	}
+
 	// Load root node
-	LoadNodeFromBuffer(buffer.data(), currentPos, meshes, root, fileName.c_str());
+	LoadNodeFromBuffer(buffer.data(), currentPos, orderedMeshes, root, fileName.c_str());
 }
 
 void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, std::vector<Mesh*>& meshes, GameObject* parent, const char* fileName)
@@ -477,6 +493,8 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 				ComponentMesh* componentMesh = dynamic_cast<ComponentMesh*>(gameObjectNode->AddComponent(gameObjectNode->mesh));
 				componentMesh->mesh = meshes[meshIndex];
 
+				app->resources->ModifyResourceUsageCount(componentMesh->mesh, 1);
+
 				if (!meshes[meshIndex]->diffuseTexturePath.empty())
 				{
 					std::string extension = app->fileSystem->GetExtension(meshes[meshIndex]->diffuseTexturePath);
@@ -484,8 +502,6 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 					Resource* newResource = app->resources->FindResourceInLibrary(meshes[meshIndex]->diffuseTexturePath, resourceType);
 					if (!newResource)
 						newResource = app->importer->ImportFileToLibrary(meshes[meshIndex]->diffuseTexturePath, resourceType);
-
-					app->resources->ModifyResourceUsageCount(newResource, 1);
 
 					Texture* newTexture = dynamic_cast<Texture*>(newResource);
 					if (newTexture && newTexture->textureId == 0)
