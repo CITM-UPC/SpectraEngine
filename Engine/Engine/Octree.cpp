@@ -7,6 +7,11 @@
 Octree::Octree(const AABB& sceneBounds, uint maxDepth, uint maxObjects)
     : root(std::make_unique<OctreeNode>(sceneBounds)), maxDepth(maxDepth), maxObjects(maxObjects) {}
 
+Octree::~Octree()
+{
+	Clear();
+}
+
 void Octree::Insert(GameObject* object, const AABB& objectBounds)
 {
     Insert(root.get(), object, objectBounds, 0);

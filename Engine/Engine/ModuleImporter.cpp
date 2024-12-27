@@ -51,6 +51,12 @@ bool ModuleImporter::CleanUp()
 	glDeleteTextures(1, &icons.warningIcon);
 	glDeleteTextures(1, &icons.errorIcon);
 
+	delete modelImporter;
+	modelImporter = nullptr;
+
+	delete textureImporter;
+	textureImporter = nullptr;
+
 	return true;
 }
 

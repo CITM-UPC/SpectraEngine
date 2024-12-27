@@ -20,6 +20,15 @@ GameObject::~GameObject()
     }
     children.clear();
 
+    if (std::find(components.begin(), components.end(), transform) == components.end() && transform)
+        delete transform;
+
+    if (std::find(components.begin(), components.end(), mesh) == components.end() && mesh)
+        delete mesh;
+
+    if (std::find(components.begin(), components.end(), material) == components.end() && material)
+        delete material;
+
     for (auto& component : components)
     {
         delete component;

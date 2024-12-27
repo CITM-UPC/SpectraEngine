@@ -21,7 +21,7 @@ void Model::DeleteMesh(const Mesh* mesh)
     if (meshInfos.empty())
     {
         app->resources->ModifyResourceUsageCount(this, -1);
-        //app->resources->RemoveUnusedResource(this);
+        app->resources->RemoveUnusedResource(this);
     }
 }
 

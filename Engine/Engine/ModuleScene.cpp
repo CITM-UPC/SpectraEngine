@@ -101,6 +101,12 @@ bool ModuleScene::CleanUp()
 {
 	LOG(LogType::LOG_INFO, "Cleaning ModuleScene");
 
+	delete sceneOctree;
+	sceneOctree = nullptr;
+
+	delete root;
+	root = nullptr;
+
 	return true;
 }
 

@@ -34,6 +34,7 @@ class Octree
 {
 public:
     Octree(const AABB& sceneBounds, uint maxDepth = 5, uint maxObjects = 5);
+	~Octree();
 
     void Insert(GameObject* object, const AABB& objectBounds);
     void Draw(const glm::vec3& color = glm::vec3(1.0f, 1.0f , 0.0f)) const;

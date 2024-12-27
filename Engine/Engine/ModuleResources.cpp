@@ -20,6 +20,22 @@ bool ModuleResources::Awake()
 
 bool ModuleResources::CleanUp()
 {
+	std::vector<Resource*> unusedResources;
+	for (const auto& resource : resources)
+	{
+		if (GetResourceUsageCount(resource) == 0)
+		{
+			unusedResources.push_back(resource);
+		}
+	}
+
+	for (Resource* resource : unusedResources)
+	{
+		RemoveUnusedResource(resource);
+	}
+	resources.clear();
+	resourceUsageCount.clear();
+
 	return true;
 }
 
