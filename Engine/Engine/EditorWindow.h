@@ -11,6 +11,7 @@ enum class WindowType
 	CONSOLE,
 	PROJECT,
 	SCENE,
+	GAME,
 	PERFORMANCE,
 	PREFERENCES,
 	ABOUT,

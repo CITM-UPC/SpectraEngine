@@ -132,6 +132,9 @@
     <ClCompile Include="ComponentCamera.cpp">
       <Filter>Sources\Components</Filter>
     </ClCompile>
+    <ClCompile Include="GameWindow.cpp">
+      <Filter>Sources\Modules\EditorWindows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ModuleInput.h">
@@ -247,6 +250,9 @@
     </ClInclude>
     <ClInclude Include="ComponentCamera.h">
       <Filter>Sources\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GameWindow.h">
+      <Filter>Sources\Modules\EditorWindows</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

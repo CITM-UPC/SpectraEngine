@@ -46,6 +46,8 @@ bool ModuleEditor::Awake()
 	editorWindows.push_back(projectWindow);
 	sceneWindow = new SceneWindow(WindowType::SCENE, "Scene");
 	editorWindows.push_back(sceneWindow);
+	gameWindow = new GameWindow(WindowType::GAME, "Game");
+	editorWindows.push_back(gameWindow);
 	performanceWindow = new PerformanceWindow(WindowType::PERFORMANCE, "Performance");
 	editorWindows.push_back(performanceWindow);
 	preferencesWindow = new PreferencesWindow(WindowType::PREFERENCES, "Preferences");
