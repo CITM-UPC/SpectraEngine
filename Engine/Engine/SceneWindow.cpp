@@ -112,9 +112,9 @@ void SceneWindow::DrawWindow()
 			{
 				ImGui::Text("FPS: %.2f", currentFps);
 				ImGui::Text("CPU: %.2f ms", ms);
-				ImGui::Text("Tris: %s", formatNumber(app->camera->triangleCount).c_str());
-				ImGui::Text("Verts: %s", formatNumber(app->camera->vertexCount).c_str());
-				ImGui::Text("Meshes: %d", app->camera->meshCount);
+				ImGui::Text("Tris: %s", formatNumber(app->scene->sceneCamera->triangleCount).c_str());
+				ImGui::Text("Verts: %s", formatNumber(app->scene->sceneCamera->vertexCount).c_str());
+				ImGui::Text("Meshes: %d", app->scene->sceneCamera->meshCount);
 				ImGui::Text("Screen: %.fx%.f", windowSize.x, windowSize.y);
 			}
 			ImGui::End();
@@ -138,11 +138,11 @@ void SceneWindow::HandleMousePicking() const
 	float normalizedY = 1.0f - (2.0f * mouseY) / windowSize.y;
 
 	glm::vec4 rayClip = glm::vec4(normalizedX, normalizedY, -1.0f, 1.0f);
-	glm::vec4 rayEye = glm::inverse(app->camera->GetProjectionMatrix()) * rayClip;
+	glm::vec4 rayEye = glm::inverse(app->scene->sceneCamera->GetProjectionMatrix()) * rayClip;
 	rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0f, 0.0f);
-	glm::vec3 rayWorld = glm::normalize(glm::vec3(glm::inverse(app->camera->GetViewMatrix()) * rayEye));
+	glm::vec3 rayWorld = glm::normalize(glm::vec3(glm::inverse(app->scene->sceneCamera->GetViewMatrix()) * rayEye));
 
-	glm::vec3 rayOrigin = app->camera->GetPosition();
+	glm::vec3 rayOrigin = app->scene->sceneCamera->position;
 	GameObject* selectedObject = nullptr;
 
 	float closestDistance = (std::numeric_limits<size_t>::max)();

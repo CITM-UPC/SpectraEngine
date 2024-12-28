@@ -24,11 +24,11 @@ void ComponentMesh::Update()
 
         if (!gameObject->isOctreeInFrustum) return;
 
-        if (app->camera->IsAABBInFrustum(meshAABB))
+        if (app->scene->sceneCamera->IsAABBInFrustum(meshAABB))
         {
-            app->camera->meshCount++;
-            app->camera->vertexCount += mesh->verticesCount;
-            app->camera->triangleCount += mesh->indicesCount / 3;
+            app->scene->sceneCamera->meshCount++;
+            app->scene->sceneCamera->vertexCount += mesh->verticesCount;
+            app->scene->sceneCamera->triangleCount += mesh->indicesCount / 3;
 
             glPushMatrix();
             glMultMatrixf(glm::value_ptr(transform->globalTransform));

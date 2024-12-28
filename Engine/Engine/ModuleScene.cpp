@@ -3,6 +3,7 @@
 
 ModuleScene::ModuleScene(App* app) : Module(app), root(nullptr)
 {
+	sceneCamera = new ComponentCamera(nullptr);
 }
 
 ModuleScene::~ModuleScene()
@@ -24,7 +25,7 @@ bool ModuleScene::Update(float dt)
 	if (octreeNeedsUpdate)
 	{
 		UpdateOctree();
-		app->camera->frustumNeedsUpdate = true;
+		sceneCamera->frustumNeedsUpdate = true;
 		octreeNeedsUpdate = false;
 	}
 

@@ -124,13 +124,13 @@ bool ModuleRenderer3D::PreUpdate(float dt)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glm::mat4 projectionMatrix = app->camera->GetProjectionMatrix();
+	glm::mat4 projectionMatrix = app->scene->sceneCamera->GetProjectionMatrix();
 	glLoadMatrixf(glm::value_ptr(projectionMatrix));
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glm::mat4 viewMatrix = app->camera->GetViewMatrix();
+	glm::mat4 viewMatrix = app->scene->sceneCamera->GetViewMatrix();
 	glLoadMatrixf(glm::value_ptr(viewMatrix));
 
 	return true;
@@ -165,13 +165,13 @@ void ModuleRenderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
 
-	app->camera->screenWidth = width;
-	app->camera->screenHeight = height;
+	app->scene->sceneCamera->screenWidth = width;
+	app->scene->sceneCamera->screenHeight = height;
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glm::mat4 projectionMatrix = app->camera->GetProjectionMatrix();
+	glm::mat4 projectionMatrix = app->scene->sceneCamera->GetProjectionMatrix();
 	glLoadMatrixf(glm::value_ptr(projectionMatrix));
 
 	glMatrixMode(GL_MODELVIEW);

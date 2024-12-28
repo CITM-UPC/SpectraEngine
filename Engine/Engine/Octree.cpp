@@ -19,7 +19,7 @@ void Octree::Insert(GameObject* object, const AABB& objectBounds)
 
 void OctreeNode::UpdateIsOnFrustum()
 {
-    isOnFrustum = app->camera->IsAABBInFrustum(bounds);
+    isOnFrustum = app->scene->sceneCamera->IsAABBInFrustum(bounds);
 
 	for (const auto& object : objects)
 	{

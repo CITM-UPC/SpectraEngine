@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ComponentCamera.h"
 #include "Module.h"
 #include "GameObject.h"
 #include "Octree.h"
@@ -35,4 +36,6 @@ public:
 	bool drawOctree = false;
 
 	bool octreeNeedsUpdate = true;
+
+	ComponentCamera* sceneCamera = nullptr;
 };
