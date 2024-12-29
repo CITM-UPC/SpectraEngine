@@ -39,12 +39,29 @@ void ComponentCamera::Update()
 	{
 		position = gameObject->transform->position;
 
-		gameObject->transform->localTransform;
-
 		X = glm::vec3(gameObject->transform->localTransform[0]);
 		Y = glm::vec3(gameObject->transform->localTransform[1]);
 		Z = glm::vec3(gameObject->transform->localTransform[2]);
 
+	}
+}
+
+void ComponentCamera::OnEditor()
+{
+	if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Text("Fov ");
+		ImGui::SameLine();
+		if (ImGui::SliderFloat("##Fov", &app->scene->activeGameCamera->fov, 4.0f, 120.0f))
+			app->scene->activeGameCamera->frustumNeedsUpdate = true;
+
+		ImGui::Text("Near");
+		ImGui::SameLine();
+		ImGui::InputFloat("##Near", &app->scene->activeGameCamera->nearPlane);
+
+		ImGui::Text("Far ");
+		ImGui::SameLine();
+		ImGui::InputFloat("##Far", &app->scene->activeGameCamera->farPlane);
 	}
 }
 

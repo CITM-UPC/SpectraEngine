@@ -19,6 +19,7 @@ public:
 	~ComponentCamera();
 
 	void Update() override;
+	void OnEditor() override;
 
 	const glm::mat4& GetViewMatrix() const { return viewMatrix; }
 	glm::mat4 GetProjectionMatrix() const;

@@ -41,15 +41,15 @@ void ComponentMesh::Draw(ComponentCamera* camera)
 
             const auto& preferences = app->editor->preferencesWindow;
 
-            mesh->DrawMesh(
-                material->textureId,
-                preferences->drawTextures,
-                preferences->wireframe,
-                preferences->shadedWireframe
-            );
-
             if (camera == app->scene->sceneCamera)
             {
+                mesh->DrawMesh(
+                    material->textureId,
+                    preferences->drawTextures,
+                    preferences->wireframe,
+                    preferences->shadedWireframe
+                );
+
                 if (drawOutline)
                     mesh->DrawOutline(gameObject->isParentSelected);
 
@@ -72,6 +72,15 @@ void ComponentMesh::Draw(ComponentCamera* camera)
                     if (showOBB)
                         mesh->DrawOBB(transform->globalTransform);
                 }
+            }
+            else
+            {
+                mesh->DrawMesh(
+                    material->textureId,
+                    preferences->drawTextures,
+                    false,
+                    false
+                );
             }
 
             glPopMatrix();
