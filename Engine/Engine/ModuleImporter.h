@@ -22,6 +22,9 @@ struct Icons
 	GLuint infoIcon = 0;
 	GLuint warningIcon = 0;
 	GLuint errorIcon = 0;
+	GLuint playIcon = 0;
+	GLuint pauseIcon = 0;
+	GLuint stepIcon = 0;
 };
 
 class ModuleImporter : public Module

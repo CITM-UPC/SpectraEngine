@@ -15,6 +15,17 @@ void GameWindow::DrawWindow()
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 	ImGui::Begin(name.c_str(), nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_MenuBar);
 
+	if (ImGui::BeginMenuBar())
+	{
+		ImGui::ImageButton((ImTextureID)(uintptr_t)app->importer->icons.playIcon, ImVec2(12,12));
+		ImGui::SameLine();
+		ImGui::ImageButton((ImTextureID)(uintptr_t)app->importer->icons.pauseIcon, ImVec2(12, 12));
+		ImGui::SameLine();
+		ImGui::ImageButton((ImTextureID)(uintptr_t)app->importer->icons.stepIcon, ImVec2(12, 12));
+
+		ImGui::EndMenuBar();
+	}
+
 	UpdateMouseState();
 
 	const ImVec2 newWindowSize = ImGui::GetContentRegionAvail();

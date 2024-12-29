@@ -34,6 +34,11 @@ bool ModuleImporter::Awake()
 	icons.warningIcon = textureImporter->LoadIconImage("Engine/Icons/warning.png");
 	icons.errorIcon = textureImporter->LoadIconImage("Engine/Icons/error.png");
 
+	// Game
+	icons.playIcon = textureImporter->LoadIconImage("Engine/Icons/play.png");
+	icons.pauseIcon = textureImporter->LoadIconImage("Engine/Icons/pause.png");
+	icons.stepIcon = textureImporter->LoadIconImage("Engine/Icons/step.png");
+
 	return true;
 }
 
@@ -50,6 +55,9 @@ bool ModuleImporter::CleanUp()
 	glDeleteTextures(1, &icons.infoIcon);
 	glDeleteTextures(1, &icons.warningIcon);
 	glDeleteTextures(1, &icons.errorIcon);
+	glDeleteTextures(1, &icons.playIcon);
+	glDeleteTextures(1, &icons.pauseIcon);
+	glDeleteTextures(1, &icons.stepIcon);
 
 	delete modelImporter;
 	modelImporter = nullptr;
