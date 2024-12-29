@@ -34,6 +34,18 @@ void ComponentCamera::Update()
 	meshCount = 0;
 	vertexCount = 0;
 	triangleCount = 0;
+
+	if (gameObject)
+	{
+		position = gameObject->transform->position;
+
+		gameObject->transform->localTransform;
+
+		X = glm::vec3(gameObject->transform->localTransform[0]);
+		Y = glm::vec3(gameObject->transform->localTransform[1]);
+		Z = glm::vec3(gameObject->transform->localTransform[2]);
+
+	}
 }
 
 void ComponentCamera::CalculateViewMatrix()
@@ -76,7 +88,7 @@ void ComponentCamera::CalculateFrustumPlanes()
 		frustumPlanes[i].distance /= length;
 	}
 
-	app->scene->sceneOctree->UpdateAllNodesVisibility();
+	app->scene->sceneOctree->UpdateAllNodesVisibility(this);
 }
 
 bool ComponentCamera::IsAABBInFrustum(const AABB& aabb) const

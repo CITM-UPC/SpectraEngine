@@ -38,4 +38,5 @@ public:
 	bool octreeNeedsUpdate = true;
 
 	ComponentCamera* sceneCamera = nullptr;
+	ComponentCamera* activeGameCamera = nullptr;
 };

@@ -17,14 +17,14 @@ void Octree::Insert(GameObject* object, const AABB& objectBounds)
     Insert(root.get(), object, objectBounds, 0);
 }
 
-void OctreeNode::UpdateIsOnFrustum()
+void OctreeNode::UpdateIsOnFrustum(ComponentCamera* camera)
 {
-    isOnFrustum = app->scene->sceneCamera->IsAABBInFrustum(bounds);
+    isOnFrustum = camera->IsAABBInFrustum(bounds);
 
 	for (const auto& object : objects)
 	{
         if (isOnFrustum)
-            object->isOctreeInFrustum = isOnFrustum;
+            (camera == app->scene->sceneCamera ? object->isOctreeInSceneFrustum : object->isOctreeInGameFrustum) = true;
 	}
 
     if (IsLeaf()) return;
@@ -33,26 +33,24 @@ void OctreeNode::UpdateIsOnFrustum()
     {
         if (child)
         {
-            child->UpdateIsOnFrustum();
+            child->UpdateIsOnFrustum(camera);
         }
     }
 }
 
-void Octree::UpdateAllNodesVisibility() const
+void Octree::UpdateAllNodesVisibility(ComponentCamera* camera) const
 {
     std::vector<GameObject*> objects;
     app->scene->CollectObjects(app->scene->root, objects);
     for (const auto& object : objects)
     {
         if (object != nullptr)
-        {
-            object->isOctreeInFrustum = false;
-        }
+			(camera == app->scene->sceneCamera ? object->isOctreeInSceneFrustum : object->isOctreeInGameFrustum) = false;
     }
 
     if (root)
     {
-        root->UpdateIsOnFrustum();
+        root->UpdateIsOnFrustum(camera);
     }
 }
 
@@ -329,7 +327,7 @@ void Octree::CollectIntersectingObjects(const OctreeNode* node, const glm::vec3&
 	{
 		for (const auto& object : node->objects)
 		{
-			if (object->isOctreeInFrustum)
+			if (object->isOctreeInSceneFrustum)
                 objects.push_back(object);
 		}
 

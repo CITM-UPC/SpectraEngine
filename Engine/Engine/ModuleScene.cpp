@@ -14,6 +14,13 @@ bool ModuleScene::Awake()
 {
 	root = CreateGameObject("Untitled Scene", nullptr);
 
+	GameObject* camera = CreateGameObject("Camera", root);
+	activeGameCamera = new ComponentCamera(camera);
+	camera->AddComponent(activeGameCamera);
+	camera->transform->position = glm::vec3(0.0f, 6.0f, 8.0f);
+	camera->transform->eulerRotation = glm::vec3(-30.0f, 0.0f, 0.0f);
+	camera->transform->UpdateTransform();
+
 	sceneBounds = AABB(glm::vec3(-15.0f), glm::vec3(15.0f));
 	sceneOctree = new Octree(sceneBounds, octreeMaxDepth, octreeMaxObjects);
 
@@ -30,9 +37,6 @@ bool ModuleScene::Update(float dt)
 	}
 
 	root->Update();
-
-	if (drawOctree)
-		sceneOctree->Draw(octreeColor);
 
 	return true;
 }

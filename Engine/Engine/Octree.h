@@ -27,7 +27,7 @@ struct OctreeNode
         return true;
     }
 
-    void UpdateIsOnFrustum();
+    void UpdateIsOnFrustum(ComponentCamera* camera);
 };
 
 class Octree
@@ -39,7 +39,7 @@ public:
     void Insert(GameObject* object, const AABB& objectBounds);
     void Draw(const glm::vec3& color = glm::vec3(1.0f, 1.0f , 0.0f)) const;
     void DrawView(ImDrawList* drawList, const ImVec2& windowSize, const ImVec2& windowPos, int type) const;
-    void UpdateAllNodesVisibility() const;
+    void UpdateAllNodesVisibility(ComponentCamera* camera) const;
     void Clear();
 	void CollectIntersectingObjects(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, std::vector<GameObject*>& objects) const;
 	void SetMaxDepth(const int newDepth) { maxDepth = newDepth; }

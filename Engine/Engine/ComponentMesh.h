@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Component.h"
+#include "ComponentCamera.h"
 #include "Mesh.h"
 
 class Mesh;
@@ -13,6 +14,7 @@ public:
 
 	void Update() override;
 	void OnEditor() override;
+	void Draw(ComponentCamera* camera);
 
 public:
 	Mesh* mesh;

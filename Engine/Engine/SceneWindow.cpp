@@ -75,7 +75,7 @@ void SceneWindow::DrawWindow()
 		HandleMousePicking();
 	}
 
-	ImGui::Image((void*)(intptr_t)app->renderer3D->fboTexture, windowSize, ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image((void*)(intptr_t)app->renderer3D->fboSceneTexture, windowSize, ImVec2(0, 1), ImVec2(1, 0));
 
 	if (ImGui::BeginDragDropTarget())
 	{
@@ -108,7 +108,7 @@ void SceneWindow::DrawWindow()
 			ImGui::SetNextWindowPos(topRightPos);
 			ImGui::SetNextWindowSize(ImVec2(130, 125));
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
-			if (ImGui::Begin("FPSOverlay", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize))
+			if (ImGui::Begin("SceneStatsOverlay", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize))
 			{
 				ImGui::Text("FPS: %.2f", currentFps);
 				ImGui::Text("CPU: %.2f ms", ms);

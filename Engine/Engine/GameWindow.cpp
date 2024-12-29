@@ -25,7 +25,7 @@ void GameWindow::DrawWindow()
 		app->renderer3D->updateFramebuffer = true;
 	}
 
-	ImGui::Image((void*)(intptr_t)app->renderer3D->fboTexture, windowSize, ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image((void*)(intptr_t)app->renderer3D->fboGameTexture, windowSize, ImVec2(0, 1), ImVec2(1, 0));
 
 	ImGui::End();
 	ImGui::PopStyleVar();

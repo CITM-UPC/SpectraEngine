@@ -41,7 +41,8 @@ public:
 	bool isActive = true;
 	bool isStatic = false;
 	bool isEditing = false;
-	bool isOctreeInFrustum = true;
+	bool isOctreeInSceneFrustum = true;
+	bool isOctreeInGameFrustum = true;
 	bool isParentSelected = false;
 
 private:

@@ -11,7 +11,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-ModuleRenderer3D::ModuleRenderer3D(App* app) : Module(app), rbo(0), fboTexture(0), fbo(0), checkerTextureId(0)
+ModuleRenderer3D::ModuleRenderer3D(App* app) : Module(app), rboScene(0), fboSceneTexture(0), fboScene(0), checkerTextureId(0)
 {
 }
 
@@ -118,7 +118,13 @@ bool ModuleRenderer3D::PreUpdate(float dt)
 		updateFramebuffer = false;
 	}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	return true;
+}
+
+bool ModuleRenderer3D::PostUpdate(float dt)
+{
+	// Render first camera
+	glBindFramebuffer(GL_FRAMEBUFFER, fboScene);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_PROJECTION);
@@ -133,12 +139,33 @@ bool ModuleRenderer3D::PreUpdate(float dt)
 	glm::mat4 viewMatrix = app->scene->sceneCamera->GetViewMatrix();
 	glLoadMatrixf(glm::value_ptr(viewMatrix));
 
-	return true;
-}
-
-bool ModuleRenderer3D::PostUpdate(float dt)
-{
 	grid.Render();
+
+	DrawQueuedMeshes(app->scene->sceneCamera);
+
+	if (app->scene->drawOctree)
+		app->scene->sceneOctree->Draw(app->scene->octreeColor);
+
+	if (app->scene->activeGameCamera)
+	{
+		// Render second camera
+		glBindFramebuffer(GL_FRAMEBUFFER, fboGame);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+
+		projectionMatrix = app->scene->activeGameCamera->GetProjectionMatrix();
+		glLoadMatrixf(glm::value_ptr(projectionMatrix));
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		viewMatrix = app->scene->activeGameCamera->GetViewMatrix();
+		glLoadMatrixf(glm::value_ptr(viewMatrix));
+
+		DrawQueuedMeshes(app->scene->activeGameCamera);
+	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -147,16 +174,31 @@ bool ModuleRenderer3D::PostUpdate(float dt)
 
 	SDL_GL_SwapWindow(app->window->window);
 
+	meshQueue.clear();
+
 	return true;
+}
+
+void ModuleRenderer3D::DrawQueuedMeshes(ComponentCamera* camera)
+{
+	for (ComponentMesh* mesh : meshQueue)
+	{
+		if (camera == app->scene->sceneCamera ? mesh->gameObject->isOctreeInSceneFrustum : mesh->gameObject->isOctreeInGameFrustum)
+			mesh->Draw(camera);
+	}
 }
 
 bool ModuleRenderer3D::CleanUp()
 {
 	LOG(LogType::LOG_INFO, "Destroying 3D Renderer");
 
-	glDeleteFramebuffers(1, &fbo);
-	glDeleteTextures(1, &fboTexture);
-	glDeleteRenderbuffers(1, &rbo);
+	glDeleteFramebuffers(1, &fboScene);
+	glDeleteTextures(1, &fboSceneTexture);
+	glDeleteRenderbuffers(1, &rboScene);
+
+	glDeleteFramebuffers(1, &fboGame);
+	glDeleteTextures(1, &fboGameTexture);
+	glDeleteRenderbuffers(1, &rboGame);
 
 	return true;
 }
@@ -177,39 +219,69 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	if (fbo > 0)
-		glDeleteFramebuffers(1, &fbo);
+	if (fboScene > 0)
+		glDeleteFramebuffers(1, &fboScene);
 
-	if (fboTexture > 0)
-		glDeleteTextures(1, &fboTexture);
+	if (fboSceneTexture > 0)
+		glDeleteTextures(1, &fboSceneTexture);
 
-	if (rbo > 0)
-		glDeleteRenderbuffers(1, &rbo);
+	if (rboScene > 0)
+		glDeleteRenderbuffers(1, &rboScene);
+
+	if (fboGame > 0)
+		glDeleteFramebuffers(1, &fboGame);
+
+	if (fboGameTexture > 0)
+		glDeleteTextures(1, &fboGameTexture);
+
+	if (rboGame > 0)
+		glDeleteRenderbuffers(1, &rboGame);
 
 	CreateFramebuffer();
 }
 
 void ModuleRenderer3D::CreateFramebuffer()
 {
-	glGenFramebuffers(1, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glGenFramebuffers(1, &fboScene);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboScene);
 
-	glGenTextures(1, &fboTexture);
-	glBindTexture(GL_TEXTURE_2D, fboTexture);
+	glGenTextures(1, &fboSceneTexture);
+	glBindTexture(GL_TEXTURE_2D, fboSceneTexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, app->editor->sceneWindow->windowSize.x, app->editor->sceneWindow->windowSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fboTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fboSceneTexture, 0);
 
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glGenRenderbuffers(1, &rboScene);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboScene);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, app->editor->sceneWindow->windowSize.x, app->editor->sceneWindow->windowSize.y);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboScene);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		LOG(LogType::LOG_ERROR, "Framebuffer is not complete!");
+		LOG(LogType::LOG_ERROR, "Scene Framebuffer is not complete!");
+	}
+
+	glGenFramebuffers(1, &fboGame);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboGame);
+
+	glGenTextures(1, &fboGameTexture);
+	glBindTexture(GL_TEXTURE_2D, fboGameTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, app->editor->sceneWindow->windowSize.x, app->editor->sceneWindow->windowSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fboGameTexture, 0);
+
+	glGenRenderbuffers(1, &rboGame);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboGame);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, app->editor->sceneWindow->windowSize.x, app->editor->sceneWindow->windowSize.y);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboGame);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		LOG(LogType::LOG_ERROR, "Game Framebuffer is not complete!");
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
