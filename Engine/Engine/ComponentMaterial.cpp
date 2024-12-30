@@ -51,6 +51,8 @@ void ComponentMaterial::OnEditor()
 			{
 				textureId = showCheckersTexture ? app->renderer3D->checkerTextureId : materialTexture->textureId;
 			}
+
+			ImGui::ColorEdit4("Material Color", &gameObject->mesh->mesh->diffuseColor[0]);
 		}
 	}
 }
