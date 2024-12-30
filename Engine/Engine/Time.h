@@ -33,6 +33,7 @@ public:
 	GameState GetState() const { return state; }
 
 	void SetTimeScale(float scale) { timeScale = scale; }
+	void SetState(GameState newState) { state = newState; }
 
 	bool IsPlaying() const { return hasStarted; }
 

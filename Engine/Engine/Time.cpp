@@ -1,5 +1,8 @@
 #include "Time.h"
 
+#include "App.h"
+#include "ComponentScript.h"
+
 Time::Time()
 	: gameTimer(new Timer()), realTimer(new Timer()), state(GameState::STOP),
 	frameCount(0), timeSinceStartup(0), timeScale(1.0f), deltaTime(0), realTimeSinceStartup(0), realDeltaTime(0), hasStarted(false)
@@ -16,6 +19,30 @@ void Time::Start()
 {
 	gameTimer->Start();
 	realTimer->Start();
+
+	std::vector<GameObject*> objects;
+	app->scene->CollectObjects(app->scene->root, objects);
+
+	for (const auto& object : objects)
+	{
+		if (object != nullptr)
+		{
+			if (object->GetComponent(ComponentType::SCRIPT))
+			{
+				dynamic_cast<ComponentScript*>(object->GetComponent(ComponentType::SCRIPT))->Init();
+			}
+		}
+	}
+	for (const auto& object : objects)
+	{
+		if (object != nullptr && object->GetComponent(ComponentType::SCRIPT))
+			dynamic_cast<ComponentScript*>(object->GetComponent(ComponentType::SCRIPT))->Awake();
+	}
+	for (const auto& object : objects)
+	{
+		if (object != nullptr && object->GetComponent(ComponentType::SCRIPT))
+			dynamic_cast<ComponentScript*>(object->GetComponent(ComponentType::SCRIPT))->Start();
+	}
 }
 
 void Time::Update()
@@ -36,11 +63,6 @@ void Time::Update()
 		deltaTime = realDeltaTime * timeScale;
 		timeSinceStartup += deltaTime / 1000.0f;
 		frameCount++;
-
-		if (state == GameState::STEP)
-		{
-			state = GameState::PAUSE;
-		}
 	}
 	else
 	{
@@ -77,6 +99,14 @@ void Time::Stop()
 	frameCount = 0;
 	realTimeSinceStartup = 0;
 	hasStarted = false;
+
+	std::vector<GameObject*> objects;
+	app->scene->CollectObjects(app->scene->root, objects);
+	for (const auto& object : objects)
+	{
+		if (object != nullptr && object->GetComponent(ComponentType::SCRIPT))
+			dynamic_cast<ComponentScript*>(object->GetComponent(ComponentType::SCRIPT))->Reset();
+	}
 }
 
 void Time::Step()

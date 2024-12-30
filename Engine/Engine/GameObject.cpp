@@ -47,6 +47,9 @@ void GameObject::Update()
 	{
 		for (std::vector<Component*>::iterator it = components.begin(); it != components.end(); ++it)
 		{
+			if ((*it)->type == ComponentType::SCRIPT && !(app->time.GetState() == GameState::PLAY || app->time.GetState() == GameState::STEP))
+				continue;
+
 			(*it)->Update();
 		}
 		for (std::vector<GameObject*>::iterator it = children.begin(); it != children.end(); ++it)

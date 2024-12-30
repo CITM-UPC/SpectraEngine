@@ -33,10 +33,14 @@ bool ModuleScene::Update(float dt)
 	{
 		UpdateOctree();
 		sceneCamera->frustumNeedsUpdate = true;
+		activeGameCamera->frustumNeedsUpdate = true;
 		octreeNeedsUpdate = false;
 	}
 
 	root->Update();
+
+	if (app->time.GetState() == GameState::STEP)
+		app->time.SetState(GameState::PAUSE);
 
 	return true;
 }
@@ -81,7 +85,7 @@ void ModuleScene::AddGameObjectToOctree(const GameObject* gameObject) const
 
 	for (const auto& object : objects)
 	{
-		if (object != nullptr)
+		if (object != nullptr && object->GetAABB().min != glm::vec3(0,0,0) && object->GetAABB().max != glm::vec3(0,0,0))
 		{
 			sceneOctree->Insert(object, object->GetAABB());
 		}
@@ -95,7 +99,7 @@ void ModuleScene::CollectObjects(const GameObject* gameObject, std::vector<GameO
 
 	for (auto* child : gameObject->children)
 	{
-		if (gameObject->parent != nullptr)
+		if (child->parent != nullptr)
 			objects.push_back(child);
 
 		CollectObjects(child, objects);

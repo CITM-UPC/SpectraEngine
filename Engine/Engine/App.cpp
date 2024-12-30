@@ -71,7 +71,6 @@ bool App::Start()
 
 void App::PrepareUpdate()
 {
-	time.Update();
 	dt = timer.ReadMs() / 1000.0f;
 	timer.Start();
 }
@@ -140,6 +139,8 @@ void App::FinishUpdate()
 		if (frameTime < frameDelay)
 			SDL_Delay((Uint32)(frameDelay - frameTime));
 	}
+
+	time.Update();
 }
 
 bool App::CleanUp()
