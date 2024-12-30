@@ -138,6 +138,12 @@
     <ClCompile Include="Time.cpp">
       <Filter>Sources\Tools</Filter>
     </ClCompile>
+    <ClCompile Include="ComponentScript.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptMoveInCircle.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ModuleInput.h">
@@ -259,6 +265,12 @@
     </ClInclude>
     <ClInclude Include="Time.h">
       <Filter>Sources\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentScript.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptMoveInCircle.h">
+      <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

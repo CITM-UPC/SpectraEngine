@@ -137,6 +137,7 @@
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentMaterial.cpp" />
     <ClCompile Include="ComponentMesh.cpp" />
+    <ClCompile Include="ComponentScript.cpp" />
     <ClCompile Include="ComponentTransform.cpp" />
     <ClCompile Include="ConsoleWindow.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="Octree.cpp" />
     <ClCompile Include="ResourcesWindow.cpp" />
     <ClCompile Include="SceneWindow.cpp" />
+    <ClCompile Include="ScriptMoveInCircle.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureImporter.cpp" />
     <ClCompile Include="Time.cpp" />
@@ -177,6 +179,7 @@
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentMaterial.h" />
     <ClInclude Include="ComponentMesh.h" />
+    <ClInclude Include="ComponentScript.h" />
     <ClInclude Include="ComponentTransform.h" />
     <ClInclude Include="ConsoleWindow.h" />
     <ClInclude Include="EditorWindow.h" />
@@ -207,6 +210,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourcesWindow.h" />
     <ClInclude Include="SceneWindow.h" />
+    <ClInclude Include="ScriptMoveInCircle.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureImporter.h" />
     <ClInclude Include="Time.h" />
