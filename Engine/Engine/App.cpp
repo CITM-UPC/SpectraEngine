@@ -71,7 +71,8 @@ bool App::Start()
 
 void App::PrepareUpdate()
 {
-	dt = (float)timer.ReadMs() / 1000.0f;
+	time.Update();
+	dt = timer.ReadMs() / 1000.0f;
 	timer.Start();
 }
 
@@ -134,7 +135,7 @@ void App::FinishUpdate()
 	{
 		const float frameDelay = 1000.0f / maxFps;
 
-		float frameTime = (float)timer.ReadMs();
+		float frameTime = timer.ReadMs();
 
 		if (frameTime < frameDelay)
 			SDL_Delay((Uint32)(frameDelay - frameTime));

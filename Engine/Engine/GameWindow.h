@@ -10,6 +10,7 @@ public:
 	~GameWindow();
 
 	void DrawWindow() override;
+	void DrawTimeOverlay();
 
 public:
 	ImVec2 windowSize = ImVec2(SCREEN_WIDTH, SCREEN_HEIGHT);

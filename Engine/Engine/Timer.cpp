@@ -11,7 +11,12 @@ void Timer::Start()
 	startTime = SDL_GetPerformanceCounter();
 }
 
-double Timer::ReadMs() const
+float Timer::ReadMs() const
 {
-	return ((double)(SDL_GetPerformanceCounter() - startTime) / frequency * 1000);
+	return ((float)(SDL_GetPerformanceCounter() - startTime) / frequency * 1000.0f);
+}
+
+void Timer::Reset()
+{
+	startTime = SDL_GetPerformanceCounter();
 }

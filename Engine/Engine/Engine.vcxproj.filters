@@ -135,6 +135,9 @@
     <ClCompile Include="GameWindow.cpp">
       <Filter>Sources\Modules\EditorWindows</Filter>
     </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Sources\Tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ModuleInput.h">
@@ -253,6 +256,9 @@
     </ClInclude>
     <ClInclude Include="GameWindow.h">
       <Filter>Sources\Modules\EditorWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Sources\Tools</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
