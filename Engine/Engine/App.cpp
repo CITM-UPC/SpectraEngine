@@ -25,6 +25,8 @@ App::App(int argc, char* argv[])
 	AddModule(scene);
 	AddModule(editor);
 	AddModule(renderer3D);
+
+	window->loadingBarWidth = 335 / (modules.size() * 2);
 }
 
 App::~App()
@@ -47,6 +49,7 @@ bool App::Awake()
 			continue;
 
 		ret = module->Awake();
+		window->RenderInitialScreen();
 	}
 
 	timer.Start();
@@ -64,7 +67,10 @@ bool App::Start()
 			continue;
 
 		ret = module->Start();
+		window->RenderInitialScreen();
 	}
+
+	ret = window->StartWindow();
 
 	return ret;
 }
