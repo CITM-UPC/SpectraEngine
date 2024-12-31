@@ -22,6 +22,9 @@
     <Filter Include="Sources\Resources">
       <UniqueIdentifier>{4e6b0dc0-7c0b-4a00-a392-41642e384ea8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Components\Scripts">
+      <UniqueIdentifier>{07e7bc6f-84b5-4a40-8122-40b3118dd5ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -138,14 +141,14 @@
     <ClCompile Include="Time.cpp">
       <Filter>Sources\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentScript.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptMoveInCircle.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="InfoTag.cpp">
       <Filter>Sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentScript.cpp">
+      <Filter>Sources\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptMoveInCircle.cpp">
+      <Filter>Sources\Components\Scripts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -269,14 +272,14 @@
     <ClInclude Include="Time.h">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentScript.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="ScriptMoveInCircle.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
     <ClInclude Include="InfoTag.h">
       <Filter>Sources\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentScript.h">
+      <Filter>Sources\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptMoveInCircle.h">
+      <Filter>Sources\Components\Scripts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
