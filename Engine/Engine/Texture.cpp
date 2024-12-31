@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-Texture::Texture(GLuint id, int width, int height, const char* path) : textureId(id), textureWidth(width), textureHeight(height), texturePath(nullptr)
+Texture::Texture(GLuint id, int width, int height, const char* path) : Resource(ResourceType::TEXTURE), textureId(id), textureWidth(width), textureHeight(height), texturePath(nullptr)
 {
 	if (path != nullptr)
 	{

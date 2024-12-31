@@ -57,7 +57,11 @@ Texture* TextureImporter::LoadTextureImage(Resource* resource)
 		return nullptr;
 	}
 
-	Texture* newTexture = new Texture(ilutGLBindTexImage(), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), resource->GetAssetFileDir().c_str());
+	Texture* newTexture = dynamic_cast<Texture*>(resource);
+	
+	newTexture->textureId = ilutGLBindTexImage();
+	newTexture->textureWidth = ilGetInteger(IL_IMAGE_WIDTH);
+	newTexture->textureHeight = ilGetInteger(IL_IMAGE_HEIGHT);
 
 	ilDeleteImages(1, &image);
 

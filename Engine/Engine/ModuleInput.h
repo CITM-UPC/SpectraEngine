@@ -79,7 +79,7 @@ public:
 	}
 
 private:
-	void SetCursor();
+	void SetCursor() const;
 	void CreateCursors();
 	void MakeCursorTransparent(SDL_Surface* surface);
 

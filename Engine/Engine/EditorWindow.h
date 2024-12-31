@@ -3,6 +3,7 @@
 #include <string>
 
 #include "imgui.h"
+#include "InfoTag.h"
 
 enum class WindowType
 {
@@ -11,9 +12,12 @@ enum class WindowType
 	CONSOLE,
 	PROJECT,
 	SCENE,
+	GAME,
 	PERFORMANCE,
 	PREFERENCES,
-	ABOUT
+	ABOUT,
+	OCTREE,
+	RESOURCES
 };
 
 class EditorWindow
@@ -35,4 +39,5 @@ protected:
 	std::string name;
 	bool enabled = true;
 	bool isMouseInside = false;
+	InfoTag infoTag;
 };

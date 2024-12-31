@@ -1,7 +1,7 @@
 #include "ModuleWindow.h"
 #include "App.h"
 
-ModuleWindow::ModuleWindow(App* app) : Module(app), window(NULL), screenSurface(NULL), width(SCREEN_WIDTH), height(SCREEN_HEIGHT), context(NULL)
+ModuleWindow::ModuleWindow(App* app) : Module(app), window(nullptr), screenSurface(nullptr), width(SCREEN_WIDTH), height(SCREEN_HEIGHT), context(nullptr)
 {
 }
 
@@ -21,35 +21,30 @@ bool ModuleWindow::Awake()
 	}
 	else
 	{
-		width = SCREEN_WIDTH;
-		height = SCREEN_HEIGHT;
 		Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
 
-		if (fullscreen)
-			flags |= SDL_WINDOW_FULLSCREEN;
+		window = SDL_CreateWindow("SpectraEngine", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 600, 400, flags);
 
-		if (resizable)
-			flags |= SDL_WINDOW_RESIZABLE;
+		SDL_SetWindowBordered(window, SDL_FALSE);
 
-		if (borderless)
-			flags |= SDL_WINDOW_BORDERLESS;
-
-		if (fulldesktop)
-			flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-
-		window = SDL_CreateWindow("SpectraEngine", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
-
-		if (window == NULL)
+		if (window == nullptr)
 		{
 			LOG(LogType::LOG_ERROR, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
 			ret = false;
 		}
 		else
 		{
-			screenSurface = SDL_GetWindowSurface(window);
-		}
+			renderer = SDL_CreateRenderer(window, -1, 0);
+			screenSurface = SDL_LoadBMP("Engine/Textures/loading_screen.bmp");
+			loadingBarTexture = SDL_CreateTextureFromSurface(renderer, screenSurface);
+			screenSurface = SDL_LoadBMP("Engine/Textures/loading_bar.bmp");
+			backgroundTexture = SDL_CreateTextureFromSurface(renderer, screenSurface);
+			SDL_RenderCopy(renderer, loadingBarTexture, nullptr, nullptr);
+			SDL_RenderCopy(renderer, backgroundTexture, nullptr, nullptr);
+			SDL_RenderPresent(renderer);
 
-		context = SDL_GL_CreateContext(window);
+			context = SDL_GL_CreateContext(window);
+		}
 	}
 
 	return ret;
@@ -59,11 +54,18 @@ bool ModuleWindow::CleanUp()
 {
 	LOG(LogType::LOG_INFO, "Destroying SDL window and quitting all SDL systems");
 
-	if (context != NULL)
+	if (context != nullptr)
+	{
 		SDL_GL_DeleteContext(context);
-
-	if (window != NULL)
+		context = nullptr;
+	}
+	if (window != nullptr)
+	{
 		SDL_DestroyWindow(window);
+		window = nullptr;
+	}
+
+	screenSurface = nullptr;
 
 	SDL_Quit();
 	return true;
@@ -93,4 +95,60 @@ void ModuleWindow::SetFullDesktop(bool enabled)
 void ModuleWindow::SetResizable(bool enabled)
 {
 	SDL_SetWindowResizable(window, resizable ? SDL_TRUE : SDL_FALSE);
+}
+
+bool ModuleWindow::StartWindow()
+{
+	bool ret = true;
+
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderClear(renderer);
+	SDL_RenderPresent(renderer);
+
+	SDL_DestroyTexture(loadingBarTexture);
+	SDL_DestroyTexture(backgroundTexture);
+	SDL_FreeSurface(screenSurface);
+	SDL_DestroyRenderer(renderer);
+
+	width = SCREEN_WIDTH;
+	height = SCREEN_HEIGHT;
+
+	SDL_DisplayMode currentDisplayMode;
+	if (SDL_GetCurrentDisplayMode(0, &currentDisplayMode) == 0)
+	{
+		int x = (currentDisplayMode.w - width) / 2;
+		int y = (currentDisplayMode.h - height) / 2;
+
+		SDL_SetWindowPosition(window, x, y);
+	}
+
+	SDL_SetWindowSize(window, width, height);
+	SDL_SetWindowBordered(window, SDL_TRUE);
+
+	if (fullscreen)
+		SetFullScreen(fullscreen);
+
+	if (fulldesktop)
+		SetFullDesktop(fulldesktop);
+
+	if (resizable)
+		SetResizable(resizable);
+
+	if (borderless)
+		SetBorderless(borderless);
+
+	screenSurface = SDL_GetWindowSurface(window);
+
+	return ret;
+}
+
+void ModuleWindow::RenderInitialScreen()
+{
+	SDL_Rect rect = { 0, 350 - loadingBarWidth * loadingBarPercentage, 600, loadingBarWidth };
+	loadingBarPercentage++;
+	SDL_SetRenderDrawColor(renderer, 160, 160, 180, 255);
+	SDL_RenderFillRect(renderer, &rect);
+	SDL_RenderCopy(renderer, loadingBarTexture, nullptr, nullptr);
+	SDL_RenderPresent(renderer);
+	SDL_Delay(60);
 }

@@ -231,7 +231,6 @@ void PerformanceWindow::DrawWindow()
 			ImVec2(ImGui::GetColumnWidth() - 20, 80.0f)
 		);
 
-		ImGui::Checkbox("FPS Overlay", &showFpsOverlay);
 		if (ImGui::Checkbox("VSync", &app->vsync))
 			SDL_GL_SetSwapInterval(app->vsync ? 1 : 0);
 

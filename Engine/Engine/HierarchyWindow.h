@@ -13,9 +13,14 @@ public:
 
 	void HierarchyTree(GameObject* node, bool isRoot = false, const char* searchText = "");
 	bool FilterNode(GameObject* node, const char* searchText);
+	void RemoveNodeFromParent(const GameObject* node) const;
+	void HandleDragAndDrop(GameObject* node) const;
 
 private:
 	char searchInput[256] = "";
 	char inputName[256] = "GameObject";
 	ImGuiInputTextFlags inputTextFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll;
+
+	GameObject* selectedNode = nullptr;
+	bool showNodePopup = false;
 };

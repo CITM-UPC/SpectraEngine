@@ -25,6 +25,8 @@ App::App(int argc, char* argv[])
 	AddModule(scene);
 	AddModule(editor);
 	AddModule(renderer3D);
+
+	window->loadingBarWidth = static_cast<int>(335 / (modules.size() * 2));
 }
 
 App::~App()
@@ -47,6 +49,7 @@ bool App::Awake()
 			continue;
 
 		ret = module->Awake();
+		window->RenderInitialScreen();
 	}
 
 	timer.Start();
@@ -64,14 +67,17 @@ bool App::Start()
 			continue;
 
 		ret = module->Start();
+		window->RenderInitialScreen();
 	}
+
+	ret = window->StartWindow();
 
 	return ret;
 }
 
 void App::PrepareUpdate()
 {
-	dt = (float)timer.ReadMs() / 1000.0f;
+	dt = timer.ReadMs() / 1000.0f;
 	timer.Start();
 }
 
@@ -134,11 +140,13 @@ void App::FinishUpdate()
 	{
 		const float frameDelay = 1000.0f / maxFps;
 
-		float frameTime = (float)timer.ReadMs();
+		float frameTime = timer.ReadMs();
 
 		if (frameTime < frameDelay)
 			SDL_Delay((Uint32)(frameDelay - frameTime));
 	}
+
+	time.Update();
 }
 
 bool App::CleanUp()

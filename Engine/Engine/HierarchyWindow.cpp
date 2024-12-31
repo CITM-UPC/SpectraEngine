@@ -22,12 +22,14 @@ void HierarchyWindow::DrawWindow()
 		ImGui::OpenPopup("GameObject");
 	}
 
+	infoTag.ShowInfoTag("Create");
+
 	if (ImGui::BeginPopup("GameObject"))
 	{
 		if (ImGui::MenuItem("Create Empty"))
 		{
-			app->scene->CreateGameObject("GameObject", app->scene->root);
-			app->editor->selectedGameObject = app->scene->root->children.back();
+			GameObject* newEmpty = app->scene->CreateGameObject("GameObject", app->scene->root);
+			app->editor->selectedGameObject = newEmpty;
 		}
 		if (ImGui::BeginMenu("3D Object"))
 		{
@@ -45,6 +47,8 @@ void HierarchyWindow::DrawWindow()
 					if (!resource)
 						resource = app->importer->ImportFileToLibrary(fullPath, ResourceType::MODEL);
 
+					app->resources->ModifyResourceUsageCount(resource, 1);
+
 					app->importer->modelImporter->LoadModel(resource, app->scene->root);
 					app->editor->selectedGameObject = app->scene->root->children.back();
 				}
@@ -59,11 +63,48 @@ void HierarchyWindow::DrawWindow()
 	ImGui::SameLine();
 
 	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-	ImGui::InputTextWithHint("##Search", "Search", searchInput, 256);
+	ImGui::InputTextWithHint("##Search", "Search text", searchInput, 256);
 
 	ImGui::BeginGroup();
 
 	HierarchyTree(app->scene->root, true, searchInput);
+
+	if (showNodePopup)
+	{
+		ImGui::OpenPopup("nodePopup");
+		showNodePopup = false;
+	}
+
+	if (ImGui::BeginPopup("nodePopup"))
+	{
+		if (ImGui::MenuItem("Create Empty Child"))
+		{
+			GameObject* newChild = app->scene->CreateGameObject("GameObject", selectedNode);
+			app->editor->selectedGameObject = newChild;
+		}
+		if (ImGui::MenuItem("Create Empty Parent", nullptr, false, selectedNode->parent != nullptr))
+		{
+			GameObject* newParent = app->scene->CreateGameObject("GameObject", selectedNode->parent);
+
+			RemoveNodeFromParent(selectedNode);
+
+			selectedNode->parent = newParent;
+			newParent->children.push_back(selectedNode);
+
+			app->editor->selectedGameObject = newParent;
+		}
+		if (ImGui::MenuItem("Delete", nullptr, false, selectedNode != app->scene->root))
+		{
+			RemoveNodeFromParent(selectedNode);
+
+			delete selectedNode;
+			selectedNode = nullptr;
+
+			app->editor->selectedGameObject = nullptr;
+			app->scene->octreeNeedsUpdate = true;
+		}
+		ImGui::EndPopup();
+	}
 
 	ImVec2 availableSize = ImGui::GetContentRegionAvail();
 
@@ -82,6 +123,60 @@ void HierarchyWindow::DrawWindow()
 	}
 
 	ImGui::End();
+}
+
+void HierarchyWindow::HandleDragAndDrop(GameObject* node) const
+{
+	if (node == app->scene->root)
+		return;
+
+	if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+	{
+		ImGui::SetDragDropPayload("GAMEOBJECT", &node, sizeof(GameObject*));
+		ImGui::Text("Dragging %s", node->name.c_str());
+		ImGui::EndDragDropSource();
+	}
+
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECT"))
+		{
+			GameObject* droppedNode = *(GameObject**)payload->Data;
+			if (droppedNode != node && droppedNode->parent != node)
+			{
+				GameObject* current = node;
+				bool isDescendant = false;
+				while (current != nullptr)
+				{
+					if (current == droppedNode)
+					{
+						isDescendant = true;
+						break;
+					}
+					current = current->parent;
+				}
+
+				if (!isDescendant && node && node->transform)
+				{
+					glm::mat4 parentGlobalTransformInverse = glm::inverse(node->transform->globalTransform);
+					glm::mat4 newLocalTransform = parentGlobalTransformInverse * droppedNode->transform->globalTransform;
+
+					glm::vec3 newPosition, newScale;
+					glm::quat newRotation;
+					droppedNode->transform->Decompose(newLocalTransform, newPosition, newRotation, newScale);
+
+					RemoveNodeFromParent(droppedNode);
+					droppedNode->parent = node;
+					node->children.push_back(droppedNode);
+
+					droppedNode->transform->SetTransformMatrix(newPosition, newRotation, newScale, node->transform);
+					droppedNode->transform->updateTransform = true;
+					node->transform->updateTransform = true;
+				}
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
 }
 
 void HierarchyWindow::HierarchyTree(GameObject* node, bool isRoot, const char* searchText)
@@ -128,6 +223,12 @@ void HierarchyWindow::HierarchyTree(GameObject* node, bool isRoot, const char* s
 			node->isEditing = true;
 		}
 
+		if (ImGui::IsItemClicked(1))
+		{
+			selectedNode = node;
+			showNodePopup = true;
+		}
+
 		// Rename node
 		if (node->isEditing)
 		{
@@ -143,14 +244,19 @@ void HierarchyWindow::HierarchyTree(GameObject* node, bool isRoot, const char* s
 			ImGui::SetKeyboardFocusHere(-1);
 		}
 
+		HandleDragAndDrop(node);
+
 		// Create child nodes
-		if (isOpen && !node->children.empty())
+		if (isOpen)
 		{
 			for (unsigned int i = 0; i < node->children.size(); i++)
 			{
 				HierarchyTree(node->children[i], false, searchText);
 			}
-			ImGui::TreePop();
+			if (!(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen))
+			{
+				ImGui::TreePop();
+			}
 		}
 
 		if (!node->isActive)
@@ -176,4 +282,16 @@ bool HierarchyWindow::FilterNode(GameObject* node, const char* searchText)
 	std::transform(searchTextLower.begin(), searchTextLower.end(), searchTextLower.begin(), ::tolower);
 
 	return nodeNameLower.find(searchTextLower) != std::string::npos;
+}
+
+void HierarchyWindow::RemoveNodeFromParent(const GameObject* node) const
+{
+	if (node->parent)
+	{
+		auto it = std::find(node->parent->children.begin(),
+			node->parent->children.end(),
+			node);
+		if (it != node->parent->children.end())
+			node->parent->children.erase(it);
+	}
 }

@@ -15,12 +15,16 @@ struct Icons
 	GLuint openFolderIcon = 0;
 	GLuint fileIcon = 0;
 	GLuint pngFileIcon = 0;
+	GLuint tgaFileIcon = 0;
 	GLuint ddsFileIcon = 0;
 	GLuint fbxFileIcon = 0;
 	GLuint dotsIcon = 0;
 	GLuint infoIcon = 0;
 	GLuint warningIcon = 0;
 	GLuint errorIcon = 0;
+	GLuint playIcon = 0;
+	GLuint pauseIcon = 0;
+	GLuint stepIcon = 0;
 };
 
 class ModuleImporter : public Module

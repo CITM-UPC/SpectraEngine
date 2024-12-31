@@ -13,6 +13,8 @@ ComponentMaterial::ComponentMaterial(GameObject* gameObject) : Component(gameObj
 
 ComponentMaterial::~ComponentMaterial()
 {
+	app->resources->ModifyResourceUsageCount(materialTexture, -1);
+	materialTexture = nullptr;
 }
 
 void ComponentMaterial::Update()
@@ -31,35 +33,26 @@ void ComponentMaterial::OnEditor()
 
 			if (ImGui::MenuItem("Show in Explorer"))
 			{
-				char buffer[MAX_PATH];
-				GetModuleFileName(NULL, buffer, MAX_PATH);
-				std::string::size_type pos = std::string(buffer).find_last_of("\\/");
-				std::string exeDir = std::string(buffer).substr(0, pos);
-
-				std::string path = exeDir + "\\..\\..\\Engine\\" + materialTexture->texturePath;
-
+				std::string path = std::string(materialTexture->texturePath);
 				std::replace(path.begin(), path.end(), '/', '\\');
-
-				std::string command = "/select," + path;
-				ShellExecute(NULL, "open", "explorer.exe", command.c_str(), NULL, SW_SHOWDEFAULT);
+				std::string command = "explorer /select,\"" + path + "\"";
+				system(command.c_str());
 			}
 
 			if (ImGui::MenuItem("Open Image"))
 			{
-				char buffer[MAX_PATH];
-				GetModuleFileName(NULL, buffer, MAX_PATH);
-				std::string::size_type pos = std::string(buffer).find_last_of("\\/");
-				std::string exeDir = std::string(buffer).substr(0, pos);
-
-				std::string path = exeDir + "\\..\\..\\Engine\\" + materialTexture->texturePath;
-
-				ShellExecute(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWDEFAULT);
+				std::string path = std::string(materialTexture->texturePath);
+				std::replace(path.begin(), path.end(), '/', '\\');
+				std::string command = "explorer \"" + path + "\"";
+				system(command.c_str());
 			}
 
 			if (ImGui::Checkbox("Show Checkers Texture", &showCheckersTexture))
 			{
 				textureId = showCheckersTexture ? app->renderer3D->checkerTextureId : materialTexture->textureId;
 			}
+
+			ImGui::ColorEdit4("Material Color", &gameObject->mesh->mesh->diffuseColor[0]);
 		}
 	}
 }
@@ -73,6 +66,8 @@ void ComponentMaterial::AddTexture(Texture* texture)
 			gameObject->AddComponent(gameObject->material);
 		}
 
+		app->resources->ModifyResourceUsageCount(materialTexture, -1);
+		app->resources->ModifyResourceUsageCount(texture, 1);
 		materialTexture = texture;
 		textureId = materialTexture->textureId;
 	}
@@ -84,6 +79,8 @@ void ComponentMaterial::AddTexture(Texture* texture)
 			child->AddComponent(child->material);
 		}
 
+		app->resources->ModifyResourceUsageCount(child->material->materialTexture, -1);
+		app->resources->ModifyResourceUsageCount(texture, 1);
 		child->material->materialTexture = texture;
 		child->material->textureId = texture->textureId;
 	}

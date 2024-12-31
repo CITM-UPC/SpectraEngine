@@ -26,10 +26,22 @@ public:
 	void SetFullDesktop(bool enabled);
 	void SetResizable(bool enabled);
 
+	void OnResize(int width, int height) { this->width = width; this->height = height; }
+
+	bool StartWindow();
+	void RenderInitialScreen();
+
 public:
 	SDL_Window* window;
 	SDL_GLContext context;
 	SDL_Surface* screenSurface;
+
+	SDL_Renderer* renderer = nullptr;
+	SDL_Texture* backgroundTexture = nullptr;
+	SDL_Texture* loadingBarTexture = nullptr;
+
+	int loadingBarWidth = 0;
+	int loadingBarPercentage = 0;
 
 	int width;
 	int height;

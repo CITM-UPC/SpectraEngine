@@ -4,6 +4,7 @@
 #include "glm/glm.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/euler_angles.hpp"
+#include "InfoTag.h"
 
 class ComponentTransform : public Component
 {
@@ -34,4 +35,8 @@ public:
 	bool constrainedProportions = false;
 	float initialScale[3] = { 1.0f, 1.0f, 1.0f };
 	bool updateTransform = false;
+	
+private:
+	InfoTag resetInfoTag;
+	InfoTag scaleInfoTag;
 };

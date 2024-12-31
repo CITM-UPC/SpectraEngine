@@ -33,6 +33,8 @@ void ConsoleWindow::DrawMenuBar()
 	if (ImGui::Button("Clear"))
 		logger.Clear();
 
+	infoTag.ShowInfoTag("Clear Console Log");
+
 	ImGui::EndMenuBar();
 }
 
@@ -43,6 +45,7 @@ void ConsoleWindow::DrawLogTypeCheckboxes()
 	ImGui::SameLine();
 	ImGui::Image((ImTextureID)(uintptr_t)app->importer->icons.infoIcon, ImVec2(20, 20));
 	ImGui::PopStyleColor();
+
 
 	ImGui::SameLine();
 	ImGui::PushStyleColor(ImGuiCol_CheckMark, warningColor);
@@ -85,7 +88,7 @@ std::string ConsoleWindow::GetSearchTerm() const
 	return searchTerm;
 }
 
-bool ConsoleWindow::ShouldDisplayLog(const LogInfo& log, ImTextureID& logType, const std::string& searchTerm)
+bool ConsoleWindow::ShouldDisplayLog(const LogInfo& log, ImTextureID& logType, const std::string& searchTerm) const
 {
 	bool showLog = false;
 

@@ -8,7 +8,8 @@ public:
 	Timer();
 
 	void Start();
-	double ReadMs() const;
+	float ReadMs() const;
+	void Reset();
 
 private:
 	Uint64 startTime;

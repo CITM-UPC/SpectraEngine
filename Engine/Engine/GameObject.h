@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <glm/glm.hpp>
 
 class GameObject
 {
@@ -22,6 +23,10 @@ public:
 	Component* AddComponent(Component* component);
 	Component* GetComponent(ComponentType type);
 
+	AABB GetAABB();
+
+	bool IntersectsRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, float& intersectionDistance) const;
+
 public:
 	GameObject* parent;
 	std::string name;
@@ -34,5 +39,12 @@ public:
 	std::vector<GameObject*> children;
 
 	bool isActive = true;
+	bool isStatic = false;
 	bool isEditing = false;
+	bool isOctreeInSceneFrustum = true;
+	bool isOctreeInGameFrustum = true;
+	bool isParentSelected = false;
+
+private:
+	AABB aabb;
 };

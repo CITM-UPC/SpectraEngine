@@ -7,6 +7,8 @@
 #include <GL/glew.h>
 #include <vector>
 
+#include "ComponentMesh.h"
+
 #define CHECKERS_WIDTH 128*2
 #define CHECKERS_HEIGHT 128*2
 
@@ -23,6 +25,9 @@ public:
 
 	void OnResize(int width, int height);
 	void CreateFramebuffer();
+	void DrawQueuedMeshes(ComponentCamera* camera) const;
+
+	bool updateFramebuffer = false;
 
 public:
 	GLubyte checkerImage[CHECKERS_WIDTH][CHECKERS_HEIGHT][4];
@@ -30,7 +35,12 @@ public:
 
 	Grid grid;
 
-	GLuint fbo;
-	GLuint fboTexture;
-	GLuint rbo;
+	GLuint fboScene;
+	GLuint fboSceneTexture;
+	GLuint rboScene;
+	GLuint fboGame;
+	GLuint fboGameTexture;
+	GLuint rboGame;
+
+	std::vector<ComponentMesh*> meshQueue;
 };

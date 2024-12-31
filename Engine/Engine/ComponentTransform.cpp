@@ -1,4 +1,6 @@
 #include "ComponentTransform.h"
+
+#include "App.h"
 #include "GameObject.h"
 
 ComponentTransform::ComponentTransform(GameObject* gameObject) : Component(gameObject, ComponentType::TRANSFORM)
@@ -75,12 +77,14 @@ void ComponentTransform::OnEditor()
 		ImGui::SameLine();
 
 		ImGui::Checkbox("##Constrained", &constrainedProportions);
+		scaleInfoTag.ShowInfoTag("Constrained Proportions");
+
 		if (constrainedProportions) {
 			for (int i = 0; i < 3; ++i) {
 				initialScale[i] = scale[i];
 			}
 		}
-
+		
 		static float previousScales[3];
 		previousScales[0] = scale.x;
 		previousScales[1] = scale.y;
@@ -128,6 +132,7 @@ void ComponentTransform::OnEditor()
 			scale = glm::float3(1.f);
 			updateTransform = true;
 		}
+		resetInfoTag.ShowInfoTag("Reset Transform Values");
 	}
 
 	if (updateTransform) UpdateTransform();
@@ -177,6 +182,7 @@ void ComponentTransform::UpdateTransform()
 	}
 
 	updateTransform = false;
+	app->scene->octreeNeedsUpdate = true;
 }
 
 bool ComponentTransform::Decompose(const glm::float4x4& transform, glm::vec3& translation, glm::quat& rotation, glm::vec3& scale)

@@ -46,12 +46,18 @@ bool ModuleEditor::Awake()
 	editorWindows.push_back(projectWindow);
 	sceneWindow = new SceneWindow(WindowType::SCENE, "Scene");
 	editorWindows.push_back(sceneWindow);
+	gameWindow = new GameWindow(WindowType::GAME, "Game");
+	editorWindows.push_back(gameWindow);
 	performanceWindow = new PerformanceWindow(WindowType::PERFORMANCE, "Performance");
 	editorWindows.push_back(performanceWindow);
 	preferencesWindow = new PreferencesWindow(WindowType::PREFERENCES, "Preferences");
 	editorWindows.push_back(preferencesWindow);
 	aboutWindow = new AboutWindow(WindowType::ABOUT, "About");
 	editorWindows.push_back(aboutWindow);
+	octreeWindow = new OctreeWindow(WindowType::OCTREE, "Octree");
+	editorWindows.push_back(octreeWindow);
+	resourcesWindow = new ResourcesWindow(WindowType::RESOURCES, "Resources");
+	editorWindows.push_back(resourcesWindow);
 
 	return ret;
 }
@@ -149,14 +155,9 @@ void ModuleEditor::MainMenuBar()
 	{
 		if (ImGui::MenuItem("Show in Explorer"))
 		{
-			char buffer[MAX_PATH];
-			GetModuleFileName(NULL, buffer, MAX_PATH);
-			std::string::size_type pos = std::string(buffer).find_last_of("\\/");
-			std::string exeDir = std::string(buffer).substr(0, pos);
-
-			std::string path = exeDir + "\\..\\..\\Engine\\Assets";
-
-			ShellExecute(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWDEFAULT);
+			std::string folderPath = "Assets";
+			std::string command = "explorer \"" + folderPath + "\"";
+			system(command.c_str());
 		}
 		ImGui::EndMenu();
 	}
@@ -182,6 +183,8 @@ void ModuleEditor::MainMenuBar()
 					Resource* resource = app->resources->FindResourceInLibrary(fullPath, ResourceType::MODEL);
 					if (!resource)
 						resource = app->importer->ImportFileToLibrary(fullPath, ResourceType::MODEL);
+
+					app->resources->ModifyResourceUsageCount(resource, 1);
 
 					app->importer->modelImporter->LoadModel(resource, app->scene->root);
 

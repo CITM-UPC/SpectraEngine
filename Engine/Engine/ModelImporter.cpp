@@ -5,6 +5,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "Model.h"
+
 ModelImporter::ModelImporter()
 {
 	struct aiLogStream stream;
@@ -67,12 +69,13 @@ bool ModelImporter::LoadModel(Resource* resource, GameObject* root)
 void ModelImporter::SaveMeshToCustomFile(aiMesh* newMesh, const aiScene* scene, const std::string& filePath)
 {
 	// Validate mesh data
-	if (!newMesh || !newMesh->HasPositions() || !newMesh->HasNormals() ||
-		!newMesh->HasTextureCoords(0) || !newMesh->HasFaces())
+	if (!newMesh || !newMesh->HasPositions() || !newMesh->HasNormals() || !newMesh->HasFaces())
 	{
 		LOG(LogType::LOG_ERROR, "Invalid aiMesh data");
 		return;
 	}
+
+	bool hasTextureCoords = newMesh->HasTextureCoords(0);
 
 	// Get counts
 	const uint32_t ranges[4] =
@@ -80,15 +83,19 @@ void ModelImporter::SaveMeshToCustomFile(aiMesh* newMesh, const aiScene* scene, 
 		newMesh->mNumFaces * 3,
 		newMesh->mNumVertices,
 		newMesh->mNumVertices,
-		newMesh->mNumVertices
+		hasTextureCoords ? newMesh->mNumVertices : 0
 	};
 
 	// Process texture coordinates
-	std::unique_ptr<float[]> texCoords(new float[static_cast<size_t>(newMesh->mNumVertices) * 2]);
-	for (size_t i = 0; i < newMesh->mNumVertices; i++)
+	std::unique_ptr<float[]> texCoords;
+	if (hasTextureCoords)
 	{
-		texCoords[i * 2] = newMesh->mTextureCoords[0][i].x;
-		texCoords[i * 2 + 1] = newMesh->mTextureCoords[0][i].y;
+		texCoords = std::make_unique<float[]>(static_cast<size_t>(newMesh->mNumVertices) * 2);
+		for (size_t i = 0; i < newMesh->mNumVertices; i++)
+		{
+			texCoords[i * 2] = newMesh->mTextureCoords[0][i].x;
+			texCoords[i * 2 + 1] = newMesh->mTextureCoords[0][i].y;
+		}
 	}
 
 	// Process indices
@@ -136,21 +143,28 @@ void ModelImporter::SaveMeshToCustomFile(aiMesh* newMesh, const aiScene* scene, 
 		aiString texturePath;
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == AI_SUCCESS)
 		{
+			std::string fullPath = texturePath.C_Str();
+
+			size_t lastSlashPos = fullPath.find_last_of("\\/");
+
+			std::string filename = (lastSlashPos != std::string::npos) ? fullPath.substr(lastSlashPos + 1) : fullPath;
+
 			std::string basePath = "Assets/Textures/";
-			if (app->fileSystem->FileExists(basePath + texturePath.C_Str()))
+			if (app->fileSystem->FileExists(basePath + filename))
 			{
-				diffuseTexturePath = basePath + texturePath.C_Str();
-				app->importer->ImportFile(diffuseTexturePath.c_str());
+				diffuseTexturePath = basePath + filename;
+				//if (!app->resources->FindResourceInLibrary(diffuseTexturePath, ResourceType::TEXTURE))
+				//	app->importer->ImportFile(diffuseTexturePath);
 			}
 		}
 	}
 
 	// Calculate total size needed
-	const size_t size = sizeof(ranges)
+	size_t size = sizeof(ranges)
 		+ (sizeof(uint32_t) * ranges[0])
 		+ (sizeof(float) * ranges[1] * 3)
 		+ (sizeof(float) * ranges[2] * 3)
-		+ (sizeof(float) * ranges[3] * 2)
+		+ (hasTextureCoords ? (sizeof(float) * ranges[3] * 2) : 0)
 		+ (sizeof(glm::vec4) * 3)
 		+ sizeof(uint32_t)
 		+ diffuseTexturePath.size() + 1;
@@ -170,7 +184,10 @@ void ModelImporter::SaveMeshToCustomFile(aiMesh* newMesh, const aiScene* scene, 
 	writeData(indices.get(), sizeof(uint32_t) * ranges[0]);
 	writeData(newMesh->mVertices, sizeof(float) * ranges[1] * 3);
 	writeData(newMesh->mNormals, sizeof(float) * ranges[2] * 3);
-	writeData(texCoords.get(), sizeof(float) * ranges[3] * 2);
+
+	if (newMesh->HasTextureCoords(0))
+		writeData(texCoords.get(), sizeof(float) * ranges[3] * 2);
+
 	writeData(&diffuseColor, sizeof(glm::vec4));
 	writeData(&specularColor, sizeof(glm::vec4));
 	writeData(&ambientColor, sizeof(glm::vec4));
@@ -193,19 +210,17 @@ void ModelImporter::SaveMeshToCustomFile(aiMesh* newMesh, const aiScene* scene, 
 	}
 }
 
-Mesh* ModelImporter::LoadMeshFromCustomFile(const std::string& filePath)
+void ModelImporter::LoadMeshFromCustomFile(const std::string& filePath, Mesh* mesh)
 {
 	std::ifstream file(filePath, std::ios::binary);
 	if (!file.is_open())
 	{
 		LOG(LogType::LOG_ERROR, "Failed to open file for loading data.");
-		return nullptr;
 	}
 
 	uint32_t ranges[4] = { 0,0,0,0 };
 	file.read(reinterpret_cast<char*>(ranges), sizeof(ranges));
 
-	Mesh* mesh = new Mesh();
 	mesh->indicesCount = ranges[0];
 	mesh->verticesCount = ranges[1];
 	mesh->normalsCount = ranges[2];
@@ -238,11 +253,9 @@ Mesh* ModelImporter::LoadMeshFromCustomFile(const std::string& filePath)
 	mesh->diffuseTexturePath.resize(texturePathLength);
 	file.read(&mesh->diffuseTexturePath[0], texturePathLength);
 
-	file.close();
-
 	mesh->InitMesh();
 
-	return mesh;
+	file.close();
 }
 
 void ModelImporter::SaveModelToCustomFile(const aiScene* scene, const std::string& fileName)
@@ -312,6 +325,9 @@ void ModelImporter::SaveNodeToBuffer(const aiNode* node, std::vector<char>& buff
 	memcpy(buffer.data() + currentPos, node->mName.C_Str(), static_cast<size_t>(nameLength) + 1);
 	currentPos += static_cast<size_t>(nameLength) + 1;
 
+	memcpy(buffer.data() + currentPos, &node->mTransformation, sizeof(aiMatrix4x4));
+	currentPos += sizeof(aiMatrix4x4);
+
 	// Save number of meshes
 	uint32_t numMeshes = node->mNumMeshes;
 	memcpy(buffer.data() + currentPos, &numMeshes, sizeof(uint32_t));
@@ -361,8 +377,16 @@ void ModelImporter::LoadModelFromCustomFile(const std::string& filePath, GameObj
 	memcpy(&numMeshes, buffer.data() + currentPos, sizeof(uint32_t));
 	currentPos += sizeof(uint32_t);
 
+	Resource* newModelResource = app->resources->FindResourceInLibrary(filePath, ResourceType::MODEL);
+	if (!newModelResource)
+		newModelResource = app->importer->ImportFileToLibrary(filePath, ResourceType::MODEL);
+
+	Model* model = dynamic_cast<Model*>(newModelResource);
+
+	if (app->resources->GetResourceUsageCount(model) == 0)
+		app->resources->ModifyResourceUsageCount(model, 1);
+
 	// Load meshes
-	std::vector<Mesh*> meshes;
 	for (uint32_t i = 0; i < numMeshes; i++)
 	{
 		// Mesh path
@@ -373,11 +397,23 @@ void ModelImporter::LoadModelFromCustomFile(const std::string& filePath, GameObj
 		std::string meshPath(buffer.data() + currentPos, static_cast<size_t>(pathLength));
 		currentPos += static_cast<size_t>(pathLength) + 1;
 
-		// Load mesh from file
-		Mesh* mesh = LoadMeshFromCustomFile(meshPath);
-		if (mesh)
+		if (!model->HasMeshAtIndex(i))
 		{
-			meshes.push_back(mesh);
+			Resource* newMeshResource = app->resources->FindResourceInLibrary(meshPath, ResourceType::MESH);
+			if (!newMeshResource)
+				newMeshResource = app->importer->ImportFileToLibrary(meshPath, ResourceType::MESH);
+
+			Mesh* mesh = dynamic_cast<Mesh*>(newMeshResource);
+
+			if (mesh)
+			{
+				// Load mesh from file
+				if (mesh->indicesCount == 0)
+					LoadMeshFromCustomFile(meshPath, mesh);
+
+				model->AddMesh(mesh, i);
+				mesh->SetParentModel(model);
+			}
 		}
 	}
 
@@ -386,8 +422,16 @@ void ModelImporter::LoadModelFromCustomFile(const std::string& filePath, GameObj
 	fileName = fileName.substr(fileName.find_last_of("/\\") + 1);
 	fileName = fileName.substr(0, fileName.find_last_of("."));
 
+	std::vector<Mesh*> orderedMeshes;
+	for (uint32_t i = 0; i < numMeshes; i++)
+	{
+		Mesh* mesh = model->GetMeshByIndex(i);
+		if (mesh)
+			orderedMeshes.push_back(mesh);
+	}
+
 	// Load root node
-	LoadNodeFromBuffer(buffer.data(), currentPos, meshes, root, fileName.c_str());
+	LoadNodeFromBuffer(buffer.data(), currentPos, orderedMeshes, root, fileName.c_str());
 }
 
 void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, std::vector<Mesh*>& meshes, GameObject* parent, const char* fileName)
@@ -400,6 +444,25 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 	std::string nodeName(buffer + currentPos, static_cast<size_t>(nameLength));
 	currentPos += static_cast<size_t>(nameLength) + 1;
 
+	aiMatrix4x4 transformation;
+	memcpy(&transformation, buffer + currentPos, sizeof(aiMatrix4x4));
+	currentPos += sizeof(aiMatrix4x4);
+
+	glm::vec3 position(transformation.a4, transformation.b4, transformation.c4);
+
+	glm::mat3 rotationMatrix(
+		transformation.a1, transformation.b1, transformation.c1,
+		transformation.a2, transformation.b2, transformation.c2,
+		transformation.a3, transformation.b3, transformation.c3
+	);
+
+	glm::quat rotation = glm::quat_cast(rotationMatrix);
+	glm::vec3 scale(
+		glm::length(glm::vec3(transformation.a1, transformation.b1, transformation.c1)),
+		glm::length(glm::vec3(transformation.a2, transformation.b2, transformation.c2)),
+		glm::length(glm::vec3(transformation.a3, transformation.b3, transformation.c3))
+	);
+
 	// Node meshes number
 	uint32_t numMeshes;
 	memcpy(&numMeshes, buffer + currentPos, sizeof(uint32_t));
@@ -407,13 +470,20 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 
 	// Create GameObject if there are meshes
 	GameObject* gameObjectNode = nullptr;
+
+	if (nodeName == "RootNode")
+		nodeName = fileName;
+
 	if (numMeshes > 0)
 	{
-		gameObjectNode = new GameObject(nodeName.c_str(), parent);
-
 		// Process meshes
 		for (uint32_t i = 0; i < numMeshes; i++)
 		{
+			gameObjectNode = new GameObject(nodeName.c_str(), parent);
+
+			gameObjectNode->transform->SetTransformMatrix(position, rotation, scale, gameObjectNode->parent->transform);
+			gameObjectNode->transform->UpdateTransform();
+
 			uint32_t meshIndex;
 			memcpy(&meshIndex, buffer + currentPos, sizeof(uint32_t));
 			currentPos += sizeof(uint32_t);
@@ -423,19 +493,30 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 				ComponentMesh* componentMesh = dynamic_cast<ComponentMesh*>(gameObjectNode->AddComponent(gameObjectNode->mesh));
 				componentMesh->mesh = meshes[meshIndex];
 
+				app->resources->ModifyResourceUsageCount(componentMesh->mesh, 1);
+
 				if (!meshes[meshIndex]->diffuseTexturePath.empty())
 				{
 					std::string extension = app->fileSystem->GetExtension(meshes[meshIndex]->diffuseTexturePath);
 					ResourceType resourceType = app->resources->GetResourceTypeFromExtension(extension);
 					Resource* newResource = app->resources->FindResourceInLibrary(meshes[meshIndex]->diffuseTexturePath, resourceType);
-					Texture* newTexture = app->importer->textureImporter->LoadTextureImage(newResource);
+					if (!newResource)
+						newResource = app->importer->ImportFileToLibrary(meshes[meshIndex]->diffuseTexturePath, resourceType);
+
+					Texture* newTexture = dynamic_cast<Texture*>(newResource);
+					if (newTexture && newTexture->textureId == 0)
+					{
+						newTexture = app->importer->textureImporter->LoadTextureImage(newResource);
+					}
 					if (newTexture != nullptr)
 						gameObjectNode->material->AddTexture(newTexture);
 				}
 			}
+
+			parent->children.push_back(gameObjectNode);
 		}
 
-		parent->children.push_back(gameObjectNode);
+		app->scene->octreeNeedsUpdate = true;
 	}
 
 	uint32_t numChildren;
@@ -445,9 +526,14 @@ void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, s
 	// Processs children nodes
 	if (numChildren > 0)
 	{
-		GameObject* holder = gameObjectNode ? gameObjectNode : new GameObject(fileName, parent);
+		GameObject* holder = gameObjectNode ? gameObjectNode : new GameObject(nodeName.c_str(), parent);
 		if (!gameObjectNode)
+		{
+			holder->transform->SetTransformMatrix(position, rotation, scale, holder->parent->transform);
+			holder->transform->UpdateTransform();
 			parent->children.push_back(holder);
+			app->scene->octreeNeedsUpdate = true;
+		}
 
 		for (uint32_t i = 0; i < numChildren; i++)
 		{
@@ -462,6 +548,8 @@ size_t ModelImporter::CalculateNodeSize(const aiNode* node)
 
 	// Node name size
 	size += sizeof(uint32_t) + strlen(node->mName.C_Str()) + 1;
+
+	size += sizeof(aiMatrix4x4);
 
 	// Meshes size
 	size += sizeof(uint32_t);
