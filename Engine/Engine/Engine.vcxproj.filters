@@ -279,4 +279,7 @@
       <Filter>Sources\Tools</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources.rc" />
+  </ItemGroup>
 </Project>
