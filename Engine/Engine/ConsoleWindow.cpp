@@ -88,7 +88,7 @@ std::string ConsoleWindow::GetSearchTerm() const
 	return searchTerm;
 }
 
-bool ConsoleWindow::ShouldDisplayLog(const LogInfo& log, ImTextureID& logType, const std::string& searchTerm)
+bool ConsoleWindow::ShouldDisplayLog(const LogInfo& log, ImTextureID& logType, const std::string& searchTerm) const
 {
 	bool showLog = false;
 

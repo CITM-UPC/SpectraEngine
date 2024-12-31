@@ -194,7 +194,7 @@ void ProjectWindow::DrawDirectoryContents()
 	}
 }
 
-void ProjectWindow::ConfigureColumns()
+void ProjectWindow::ConfigureColumns() const
 {
 	if (tilesSelected)
 	{

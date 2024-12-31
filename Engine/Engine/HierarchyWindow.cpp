@@ -125,7 +125,7 @@ void HierarchyWindow::DrawWindow()
 	ImGui::End();
 }
 
-void HierarchyWindow::HandleDragAndDrop(GameObject* node)
+void HierarchyWindow::HandleDragAndDrop(GameObject* node) const
 {
 	if (node == app->scene->root)
 		return;
@@ -156,7 +156,7 @@ void HierarchyWindow::HandleDragAndDrop(GameObject* node)
 					current = current->parent;
 				}
 
-				if (!isDescendant)
+				if (!isDescendant && node && node->transform)
 				{
 					glm::mat4 parentGlobalTransformInverse = glm::inverse(node->transform->globalTransform);
 					glm::mat4 newLocalTransform = parentGlobalTransformInverse * droppedNode->transform->globalTransform;

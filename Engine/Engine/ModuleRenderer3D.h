@@ -25,7 +25,7 @@ public:
 
 	void OnResize(int width, int height);
 	void CreateFramebuffer();
-	void DrawQueuedMeshes(ComponentCamera* camera);
+	void DrawQueuedMeshes(ComponentCamera* camera) const;
 
 	bool updateFramebuffer = false;
 

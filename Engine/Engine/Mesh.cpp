@@ -45,7 +45,7 @@ void Mesh::InitMesh()
 	}
 }
 
-void Mesh::DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool shadedWireframe)
+void Mesh::DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool shadedWireframe) const
 {
 	if (!shadedWireframe)
 		glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
@@ -59,7 +59,7 @@ void Mesh::DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool sh
 		glBindTexture(GL_TEXTURE_2D, textureID);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glBindBuffer(GL_ARRAY_BUFFER, texCoordsId);
-		glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+		glTexCoordPointer(2, GL_FLOAT, 0, nullptr);
 	}
 	else
 	{
@@ -68,13 +68,13 @@ void Mesh::DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool sh
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, verticesId);
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glVertexPointer(3, GL_FLOAT, 0, nullptr);
 
 	if (normalsCount > 0)
 	{
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glBindBuffer(GL_ARRAY_BUFFER, normalsId);
-		glNormalPointer(GL_FLOAT, 0, NULL);
+		glNormalPointer(GL_FLOAT, 0, nullptr);
 	}
 	else
 	{
@@ -82,7 +82,7 @@ void Mesh::DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool sh
 	}
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesId);
-	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, NULL);
+	glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -100,9 +100,9 @@ void Mesh::DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool sh
 
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glBindBuffer(GL_ARRAY_BUFFER, verticesId);
-		glVertexPointer(3, GL_FLOAT, 0, NULL);
+		glVertexPointer(3, GL_FLOAT, 0, nullptr);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesId);
-		glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, NULL);
+		glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr);
 
 		glPopAttrib();
 
@@ -114,7 +114,7 @@ void Mesh::DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool sh
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void Mesh::DrawOutline(bool parentSelected)
+void Mesh::DrawOutline(bool parentSelected) const
 {
 	glEnable(GL_STENCIL_TEST);
 
@@ -148,7 +148,7 @@ void Mesh::DrawOutline(bool parentSelected)
 	glColor3f(1.0f, 1.0f, 1.0f);
 }
 
-void Mesh::DrawNormals(bool vertexNormals, bool faceNormals, float vertexNormalLength, float faceNormalLength, glm::vec3 vertexNormalColor, glm::vec3 faceNormalColor)
+void Mesh::DrawNormals(bool vertexNormals, bool faceNormals, float vertexNormalLength, float faceNormalLength, glm::vec3 vertexNormalColor, glm::vec3 faceNormalColor) const
 {
 	if (vertexNormals && verticesCount > 0 && normalsCount > 0)
 	{
@@ -225,7 +225,7 @@ void Mesh::CleanUpMesh()
 	}
 }
 
-void Mesh::DrawAABB(const glm::mat4& modelTransform)
+void Mesh::DrawAABB(const glm::mat4& modelTransform) const
 {
 	AABB transformedAABB = GetAABB(modelTransform);
 

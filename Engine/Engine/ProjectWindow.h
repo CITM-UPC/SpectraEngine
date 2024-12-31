@@ -44,7 +44,7 @@ private:
 	void DrawSelectionBar();
 
 	void SetupInitialColumnWidth();
-	void ConfigureColumns();
+	void ConfigureColumns() const;
 
 	void DrawTile(const std::filesystem::directory_entry& entry, bool& shouldBreakLoop);
 	void DrawListItem(const std::filesystem::directory_entry& entry, bool& shouldBreakLoop);

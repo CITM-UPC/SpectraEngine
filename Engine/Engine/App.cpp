@@ -26,7 +26,7 @@ App::App(int argc, char* argv[])
 	AddModule(editor);
 	AddModule(renderer3D);
 
-	window->loadingBarWidth = 335 / (modules.size() * 2);
+	window->loadingBarWidth = static_cast<int>(335 / (modules.size() * 2));
 }
 
 App::~App()

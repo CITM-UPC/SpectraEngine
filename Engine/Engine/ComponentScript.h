@@ -25,12 +25,12 @@ public:
 protected:
     struct ScriptVariable {
         std::string name;
-        void* ptr;
-        enum class Type { FLOAT, INT, BOOL, STRING } type;
+        void* ptr = nullptr;
+        enum class Type : uint8_t { FLOAT, INT, BOOL, STRING } type = Type::FLOAT;
         union {
             struct { float min; float max; } f;
             struct { int min; int max; } i;
-        } limits;
+        } limits{ { 0.0f, 10.0f } };
     };
     std::vector<ScriptVariable> exposedVariables;
 

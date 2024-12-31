@@ -145,7 +145,7 @@ void SceneWindow::HandleMousePicking() const
 	glm::vec3 rayOrigin = app->scene->sceneCamera->position;
 	GameObject* selectedObject = nullptr;
 
-	float closestDistance = (std::numeric_limits<size_t>::max)();
+	float closestDistance = static_cast<float>((std::numeric_limits<size_t>::max)());
 
 	std::vector<GameObject*> objects;
 	app->scene->sceneOctree->CollectIntersectingObjects(rayOrigin, rayWorld, objects);

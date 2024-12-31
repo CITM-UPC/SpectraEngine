@@ -16,7 +16,7 @@ private:
 	void DrawLogTypeCheckboxes();
 	void DrawLogEntries();
 	std::string GetSearchTerm() const;
-	bool ShouldDisplayLog(const LogInfo& log, ImTextureID& logType, const std::string& searchTerm);
+	bool ShouldDisplayLog(const LogInfo& log, ImTextureID& logType, const std::string& searchTerm) const;
 
 private:
 	bool showLogInfo = true;

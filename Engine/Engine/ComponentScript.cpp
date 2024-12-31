@@ -4,7 +4,7 @@
 
 
 ComponentScript::ComponentScript(GameObject* gameObject)
-	: Component(gameObject, ComponentType::SCRIPT)
+	: Component(gameObject, ComponentType::SCRIPT), initialTransform(glm::mat4(1.0f))
 {
 }
 

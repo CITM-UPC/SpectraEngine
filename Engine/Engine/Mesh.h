@@ -78,16 +78,16 @@ public:
 	Mesh() : Resource(ResourceType::MESH) {}
 	~Mesh() { CleanUpMesh(); }
 	void InitMesh();
-	void DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool shadedWireframe);
-	void DrawNormals(bool vertexNormals, bool faceNormals, float vertexNormalLength, float faceNormalLength, glm::vec3 vertexNormalColor, glm::vec3 faceNormalColor);
-	void DrawOutline(bool parentSelected);
+	void DrawMesh(GLuint textureID, bool drawTextures, bool wireframe, bool shadedWireframe) const;
+	void DrawNormals(bool vertexNormals, bool faceNormals, float vertexNormalLength, float faceNormalLength, glm::vec3 vertexNormalColor, glm::vec3 faceNormalColor) const;
+	void DrawOutline(bool parentSelected) const;
 	void CleanUpMesh();
 
 	const AABB& GetAABB() const { return aabb; }
-	AABB GetAABB(const glm::mat4& transform) { return aabb.Transformed(transform); }
+	AABB GetAABB(const glm::mat4& transform) const { return aabb.Transformed(transform); }
 	OBB GetOBB(const glm::mat4& transform) { return { transform, GetAABB() }; }
 
-	void DrawAABB(const glm::mat4& transform);
+	void DrawAABB(const glm::mat4& transform) const;
 	void DrawOBB(const glm::mat4& transform);
 
 	void SetParentModel(Model* model) { parentModel = model; }
@@ -112,8 +112,8 @@ public:
 	glm::vec4 ambientColor = glm::vec4(1.0f);
 	std::string diffuseTexturePath;
 
-	AABB aabb;
-	OBB obb;
+	AABB aabb = AABB();
+	OBB obb = OBB();
 
 private:
 	Model* parentModel = nullptr;

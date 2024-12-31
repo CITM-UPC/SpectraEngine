@@ -154,7 +154,7 @@ void ModuleInput::ChangeCursor(CursorType newCursor)
 	}
 }
 
-void ModuleInput::SetCursor()
+void ModuleInput::SetCursor() const
 {
 	SDL_Cursor* sdlCursor = nullptr;
 

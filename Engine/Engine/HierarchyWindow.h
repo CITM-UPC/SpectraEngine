@@ -14,7 +14,7 @@ public:
 	void HierarchyTree(GameObject* node, bool isRoot = false, const char* searchText = "");
 	bool FilterNode(GameObject* node, const char* searchText);
 	void RemoveNodeFromParent(const GameObject* node) const;
-	void HandleDragAndDrop(GameObject* node);
+	void HandleDragAndDrop(GameObject* node) const;
 
 private:
 	char searchInput[256] = "";

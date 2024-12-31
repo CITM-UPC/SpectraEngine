@@ -11,7 +11,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-ModuleRenderer3D::ModuleRenderer3D(App* app) : Module(app), rboScene(0), fboSceneTexture(0), fboScene(0), checkerTextureId(0)
+ModuleRenderer3D::ModuleRenderer3D(App* app) : Module(app), rboScene(0), fboSceneTexture(0), fboScene(0), rboGame(0), fboGameTexture(0), fboGame(0), checkerTextureId(0), checkerImage{}
 {
 }
 
@@ -111,7 +111,7 @@ bool ModuleRenderer3D::PreUpdate(float dt)
 {
 	if (updateFramebuffer)
 	{
-		OnResize(app->editor->sceneWindow->windowSize.x, app->editor->sceneWindow->windowSize.y);
+		OnResize(static_cast<int>(app->editor->sceneWindow->windowSize.x), static_cast<int>(app->editor->sceneWindow->windowSize.y));
 		updateFramebuffer = false;
 	}
 
@@ -176,7 +176,7 @@ bool ModuleRenderer3D::PostUpdate(float dt)
 	return true;
 }
 
-void ModuleRenderer3D::DrawQueuedMeshes(ComponentCamera* camera)
+void ModuleRenderer3D::DrawQueuedMeshes(ComponentCamera* camera) const
 {
 	for (ComponentMesh* mesh : meshQueue)
 	{
@@ -246,13 +246,15 @@ void ModuleRenderer3D::CreateFramebuffer()
 	glBindTexture(GL_TEXTURE_2D, fboSceneTexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, app->editor->sceneWindow->windowSize.x, app->editor->sceneWindow->windowSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(app->editor->sceneWindow->windowSize.x),
+		static_cast<GLsizei>(app->editor->sceneWindow->windowSize.y), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fboSceneTexture, 0);
 
 	glGenRenderbuffers(1, &rboScene);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboScene);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, app->editor->sceneWindow->windowSize.x, app->editor->sceneWindow->windowSize.y);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8,
+		static_cast<GLsizei>(app->editor->sceneWindow->windowSize.x), static_cast<GLsizei>(app->editor->sceneWindow->windowSize.y));
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboScene);
 
@@ -267,13 +269,15 @@ void ModuleRenderer3D::CreateFramebuffer()
 	glBindTexture(GL_TEXTURE_2D, fboGameTexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, app->editor->sceneWindow->windowSize.x, app->editor->sceneWindow->windowSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(app->editor->sceneWindow->windowSize.x), 
+		static_cast<GLsizei>(app->editor->sceneWindow->windowSize.y), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fboGameTexture, 0);
 
 	glGenRenderbuffers(1, &rboGame);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboGame);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, app->editor->sceneWindow->windowSize.x, app->editor->sceneWindow->windowSize.y);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 
+		static_cast<GLsizei>(app->editor->sceneWindow->windowSize.x), static_cast<GLsizei>(app->editor->sceneWindow->windowSize.y));
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboGame);
 

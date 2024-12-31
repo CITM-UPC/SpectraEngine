@@ -2,7 +2,7 @@
 #include "App.h"
 #include "ScriptMoveInCircle.h"
 
-ModuleScene::ModuleScene(App* app) : Module(app), root(nullptr)
+ModuleScene::ModuleScene(App* app) : Module(app), sceneBounds(glm::vec3(-15.0f), glm::vec3(15.0f))
 {
 	sceneCamera = new ComponentCamera(nullptr);
 }
@@ -22,7 +22,6 @@ bool ModuleScene::Awake()
 	camera->transform->eulerRotation = glm::vec3(-30.0f, 0.0f, 0.0f);
 	camera->transform->UpdateTransform();
 
-	sceneBounds = AABB(glm::vec3(-15.0f), glm::vec3(15.0f));
 	sceneOctree = new Octree(sceneBounds, octreeMaxDepth, octreeMaxObjects);
 
 	return true;
