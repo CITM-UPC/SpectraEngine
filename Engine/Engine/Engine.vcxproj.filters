@@ -144,6 +144,9 @@
     <ClCompile Include="ScriptMoveInCircle.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="InfoTag.cpp">
+      <Filter>Sources\Tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ModuleInput.h">
@@ -271,6 +274,9 @@
     </ClInclude>
     <ClInclude Include="ScriptMoveInCircle.h">
       <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="InfoTag.h">
+      <Filter>Sources\Tools</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

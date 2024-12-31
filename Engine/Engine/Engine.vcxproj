@@ -144,6 +144,7 @@
     <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="HierarchyWindow.cpp" />
+    <ClCompile Include="InfoTag.cpp" />
     <ClCompile Include="InspectorWindow.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="GameWindow.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="HierarchyWindow.h" />
+    <ClInclude Include="InfoTag.h" />
     <ClInclude Include="InspectorWindow.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Mesh.h" />
