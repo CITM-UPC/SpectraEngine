@@ -65,6 +65,8 @@ void ComponentMesh::Draw(ComponentCamera* camera)
                     );
                 }
 
+                glPopMatrix();
+
                 if (app->editor->selectedGameObject == gameObject)
                 {
                     if (showAABB)
@@ -81,9 +83,10 @@ void ComponentMesh::Draw(ComponentCamera* camera)
                     false,
                     false
                 );
+
+                glPopMatrix();
             }
 
-            glPopMatrix();
         }
     }
 }
