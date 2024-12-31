@@ -19,4 +19,6 @@ private:
 	InfoTag playInfoTag;
 	InfoTag pauseInfoTag;
 	InfoTag stepInfoTag;
+
+	bool showTimeOverlay = false;
 };

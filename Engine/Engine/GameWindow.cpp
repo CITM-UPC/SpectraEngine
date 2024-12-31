@@ -52,6 +52,21 @@ void GameWindow::DrawWindow()
 
 		stepInfoTag.ShowInfoTag("Step");
 
+
+		float timeScale = app->time.GetTimeScale();
+
+		if (ImGui::Selectable("Time", showTimeOverlay, 0, ImVec2(30, 0)))
+		{
+			showTimeOverlay = !showTimeOverlay;
+		}
+
+		ImGui::PushItemWidth(80.0f);
+
+		if (ImGui::DragFloat("Time Scale", &timeScale, 0.1f, 0.1f, 10.0f, "%.2f"))
+			app->time.SetTimeScale(timeScale);
+
+		ImGui::PopItemWidth();
+
         ImGui::EndMenuBar();
     }
 
@@ -67,7 +82,8 @@ void GameWindow::DrawWindow()
 
 	ImGui::Image((void*)(intptr_t)app->renderer3D->fboGameTexture, windowSize, ImVec2(0, 1), ImVec2(1, 0));
 
-	DrawTimeOverlay();
+	if (showTimeOverlay)
+		DrawTimeOverlay();
 
 	ImGui::End();
 	ImGui::PopStyleVar();
