@@ -29,6 +29,8 @@ void GameWindow::DrawWindow()
         if (isPlaying)
         	ImGui::PopStyleColor();
 
+		playInfoTag.ShowInfoTag("Play");
+
         ImGui::SameLine();
 
         bool isPaused = app->time.GetState() == GameState::PAUSE;
@@ -41,10 +43,14 @@ void GameWindow::DrawWindow()
         if (isPaused)
         	ImGui::PopStyleColor();
 
+		pauseInfoTag.ShowInfoTag("Pause");
+
         ImGui::SameLine();
 
         if (ImGui::ImageButton((ImTextureID)(uintptr_t)app->importer->icons.stepIcon, ImVec2(12, 12)))
         	app->time.Step();
+
+		stepInfoTag.ShowInfoTag("Step");
 
         ImGui::EndMenuBar();
     }

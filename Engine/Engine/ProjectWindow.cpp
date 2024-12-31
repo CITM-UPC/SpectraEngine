@@ -421,13 +421,7 @@ void ProjectWindow::DrawMenuBar()
 			}
 		}
 
-		if (ImGui::BeginItemTooltip())
-		{
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-			ImGui::TextUnformatted("IMPORT TEXT");
-			ImGui::PopTextWrapPos();
-			ImGui::EndTooltip();
-		}
+		infoTag.ShowInfoTag("Import Assets");
 
 		std::vector<std::string> pathParts = GetPathParts();
 		std::vector<std::filesystem::path> fullPaths;

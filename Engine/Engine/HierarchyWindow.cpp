@@ -22,13 +22,7 @@ void HierarchyWindow::DrawWindow()
 		ImGui::OpenPopup("GameObject");
 	}
 
-	if (ImGui::BeginItemTooltip())
-	{
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-		ImGui::TextUnformatted("+ TEXT");
-		ImGui::PopTextWrapPos();
-		ImGui::EndTooltip();
-	}
+	infoTag.ShowInfoTag("Create");
 
 	if (ImGui::BeginPopup("GameObject"))
 	{

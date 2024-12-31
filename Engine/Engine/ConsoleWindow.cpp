@@ -28,26 +28,12 @@ void ConsoleWindow::DrawMenuBar()
 	ImGui::SetNextItemWidth(300.0f);
 	ImGui::InputTextWithHint("##Search", "Search Log", searchBuffer, IM_ARRAYSIZE(searchBuffer));
 
-	if (ImGui::BeginItemTooltip())
-	{
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-		ImGui::TextUnformatted("Search Log TEXT");
-		ImGui::PopTextWrapPos();
-		ImGui::EndTooltip();
-	}
-
 	DrawLogTypeCheckboxes();
 
 	if (ImGui::Button("Clear"))
 		logger.Clear();
 
-	if (ImGui::BeginItemTooltip())
-	{
-		ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-		ImGui::TextUnformatted("Clear TEXT");
-		ImGui::PopTextWrapPos();
-		ImGui::EndTooltip();
-	}
+	infoTag.ShowInfoTag("Clear Console Log");
 
 	ImGui::EndMenuBar();
 }
