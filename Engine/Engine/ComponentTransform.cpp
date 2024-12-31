@@ -77,12 +77,14 @@ void ComponentTransform::OnEditor()
 		ImGui::SameLine();
 
 		ImGui::Checkbox("##Constrained", &constrainedProportions);
+		scaleInfoTag.ShowInfoTag("Constrained Proportions");
+
 		if (constrainedProportions) {
 			for (int i = 0; i < 3; ++i) {
 				initialScale[i] = scale[i];
 			}
 		}
-
+		
 		static float previousScales[3];
 		previousScales[0] = scale.x;
 		previousScales[1] = scale.y;
@@ -130,14 +132,7 @@ void ComponentTransform::OnEditor()
 			scale = glm::float3(1.f);
 			updateTransform = true;
 		}
-
-		if (ImGui::BeginItemTooltip())
-		{
-			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-			ImGui::TextUnformatted("Reset TEXT");
-			ImGui::PopTextWrapPos();
-			ImGui::EndTooltip();
-		}
+		resetInfoTag.ShowInfoTag("Reset Transform Values");
 	}
 
 	if (updateTransform) UpdateTransform();
