@@ -15,6 +15,7 @@ public:
 	virtual ~ModuleScene();
 
 	bool Awake();
+	bool Start();
 	bool Update(float dt);
 	bool CleanUp();
 

@@ -11,8 +11,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "ScriptMoveInCircle.h"
-
 ModuleRenderer3D::ModuleRenderer3D(App* app) : Module(app), rboScene(0), fboSceneTexture(0), fboScene(0), checkerTextureId(0)
 {
 }
@@ -101,23 +99,6 @@ bool ModuleRenderer3D::Awake()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHECKERS_WIDTH, CHECKERS_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, checkerImage);
-
-	app->importer->ImportFile("Assets/Models/Street environment_V01.fbx", true);
-	app->editor->selectedGameObject = app->scene->root->children[0];
-
-	std::string fullPath = "Engine/Primitives/Capsule.fbx";
-
-	Resource* resource = app->resources->FindResourceInLibrary(fullPath, ResourceType::MODEL);
-	if (!resource)
-		resource = app->importer->ImportFileToLibrary(fullPath, ResourceType::MODEL);
-
-	app->resources->ModifyResourceUsageCount(resource, 1);
-	app->importer->modelImporter->LoadModel(resource, app->scene->root);
-	app->editor->selectedGameObject = app->scene->root->children.back();
-	app->editor->selectedGameObject->transform->position = glm::vec3(0.0f, 1.0f, 0.0f);
-	app->editor->selectedGameObject->transform->UpdateTransform();
-	app->editor->selectedGameObject->AddComponent(new ScriptMoveInCircle(app->editor->selectedGameObject));
-	app->editor->selectedGameObject->name = "Player";
 
 	CreateFramebuffer();
 

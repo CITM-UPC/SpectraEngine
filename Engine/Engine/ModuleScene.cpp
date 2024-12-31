@@ -1,5 +1,6 @@
 #include "ModuleScene.h"
 #include "App.h"
+#include "ScriptMoveInCircle.h"
 
 ModuleScene::ModuleScene(App* app) : Module(app), root(nullptr)
 {
@@ -23,6 +24,28 @@ bool ModuleScene::Awake()
 
 	sceneBounds = AABB(glm::vec3(-15.0f), glm::vec3(15.0f));
 	sceneOctree = new Octree(sceneBounds, octreeMaxDepth, octreeMaxObjects);
+
+	return true;
+}
+
+bool ModuleScene::Start()
+{
+	app->importer->ImportFile("Assets/Models/Street environment_V01.fbx", true);
+	app->editor->selectedGameObject = app->scene->root->children[0];
+
+	std::string fullPath = "Engine/Primitives/Capsule.fbx";
+
+	Resource* resource = app->resources->FindResourceInLibrary(fullPath, ResourceType::MODEL);
+	if (!resource)
+		resource = app->importer->ImportFileToLibrary(fullPath, ResourceType::MODEL);
+
+	app->resources->ModifyResourceUsageCount(resource, 1);
+	app->importer->modelImporter->LoadModel(resource, app->scene->root);
+	app->editor->selectedGameObject = app->scene->root->children.back();
+	app->editor->selectedGameObject->transform->position = glm::vec3(0.0f, 1.0f, 0.0f);
+	app->editor->selectedGameObject->transform->UpdateTransform();
+	app->editor->selectedGameObject->AddComponent(new ScriptMoveInCircle(app->editor->selectedGameObject));
+	app->editor->selectedGameObject->name = "Player";
 
 	return true;
 }
