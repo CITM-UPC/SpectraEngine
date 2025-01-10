@@ -2,6 +2,7 @@
 #include "App.h"
 #include "ScriptMoveInCircle.h"
 #include <fstream>
+#include <iostream>
 
 ModuleScene::ModuleScene(App* app) : Module(app), sceneBounds(glm::vec3(-15.0f), glm::vec3(15.0f))
 {
@@ -31,7 +32,7 @@ bool ModuleScene::Awake()
 bool ModuleScene::Start()
 {
 	app->importer->ImportFile("Assets/Models/Street environment_V01.fbx", true);
-	//LoadScene("Assets/Scenes/Scene.json");
+	//LoadScene("Assets/Scenes/Scene.scene");
 	app->editor->selectedGameObject = app->scene->root->children[0];
 
 	std::string fullPath = "Engine/Primitives/Capsule.fbx";
@@ -47,6 +48,8 @@ bool ModuleScene::Start()
 	app->editor->selectedGameObject->transform->UpdateTransform();
 	app->editor->selectedGameObject->AddComponent(new ScriptMoveInCircle(app->editor->selectedGameObject));
 	app->editor->selectedGameObject->name = "Player";
+
+	currentScene = "Assets/Scenes/" + root->name + ".scene";
 
 	return true;
 }
@@ -68,19 +71,12 @@ bool ModuleScene::Update(float dt)
 
 	if (app->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
 	{
-		SaveScene("Assets/Scenes/Scene.json");
+		currentScene = "Assets/Scenes/" + root->name + ".scene";
+		SaveScene(currentScene);
 	}
 	if (app->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && app->input->GetKey(SDL_SCANCODE_O) == KEY_DOWN)
 	{
-		const char* filter =
-			"Scene Files (*.json)\0*.json\0"
-			"\0";
-
-		std::string selectedFile = app->fileSystem->OpenFileDialog(filter);
-		if (!selectedFile.empty())
-		{
-			app->scene->LoadScene(selectedFile);
-		}
+		OpenScene();
 	}
 
 	return true;
@@ -169,9 +165,14 @@ GameObject* ModuleScene::CreateGameObject(const char* name, GameObject* parent)
 	return gameObject;
 }
 
-void ModuleScene::SaveScene(const std::string& filePath) const
+void ModuleScene::SaveScene(const std::string& filePath)
 {
+	app->fileSystem->CopyFileIfNotExists(filePath);
+
 	nlohmann::json sceneJson;
+
+	sceneJson["name"] = root->name;
+
 	std::vector<GameObject*> objects;
 	CollectObjects(root, objects);
 
@@ -217,6 +218,8 @@ void ModuleScene::LoadScene(const std::string& filePath)
 	nlohmann::json sceneJson;
 	file >> sceneJson;
 	file.close();
+
+	root->name = sceneJson["name"].get<std::string>();
 
 	for (auto* child : root->children) {
 		delete child;
@@ -278,5 +281,30 @@ void ModuleScene::LoadScene(const std::string& filePath)
 		}
 
 		object->Deserialize(objectJson);
+	}
+}
+
+void ModuleScene::SaveSceneAs()
+{
+	const char* filter = "Scene Files (*.scene)\0*.scene\0";
+
+	std::string selectedFile = app->fileSystem->SaveFileDialog(filter, "Save Scene");
+	if (!selectedFile.empty())
+	{
+		root->name = app->fileSystem->GetFileNameWithoutExtension(selectedFile);
+		SaveScene(selectedFile + ".scene");
+		app->editor->projectWindow->UpdateDirectoryContent();
+	}
+}
+
+void ModuleScene::OpenScene() const
+{
+	const char* filter = "Scene Files (*.scene)\0*.scene\0";
+
+	std::string selectedFile = app->fileSystem->OpenFileDialog(filter, "Load Scene");
+	if (!selectedFile.empty())
+	{
+		selectedFile = app->fileSystem->CopyFileIfNotExists(selectedFile);
+		app->scene->LoadScene(selectedFile);
 	}
 }

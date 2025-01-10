@@ -150,23 +150,16 @@ void ModuleEditor::MainMenuBar()
 		}
 		if (ImGui::MenuItem("Open Scene", "Ctrl+O"))
 		{
-			const char* filter =
-				"Scene Files (*.json)\0*.json\0"
-				"\0";
-
-			std::string selectedFile = app->fileSystem->OpenFileDialog(filter);
-			if (!selectedFile.empty())
-			{
-				app->scene->LoadScene(selectedFile);
-			}
+			app->scene->OpenScene();
 		}
 		if (ImGui::MenuItem("Save", "Ctrl+S"))
 		{
-			app->scene->SaveScene("Assets/Scenes/Scene.json");
+			app->scene->currentScene = "Assets/Scenes/" + app->scene->root->name + ".scene";
+			app->scene->SaveScene(app->scene->currentScene);
 		}
 		if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
 		{
-
+			app->scene->SaveSceneAs();
 		}		
 		if (ImGui::MenuItem("Exit", "Alt+F4"))
 		{

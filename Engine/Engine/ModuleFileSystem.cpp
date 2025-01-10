@@ -25,7 +25,7 @@ bool ModuleFileSystem::CleanUp()
 	return true;
 }
 
-std::string ModuleFileSystem::OpenFileDialog(const char* filter)
+std::string ModuleFileSystem::OpenFileDialog(const char* filter, const char* titleText)
 {
 	OPENFILENAMEA ofn;
 	CHAR sizeFile[260] = { 0 };
@@ -38,10 +38,33 @@ std::string ModuleFileSystem::OpenFileDialog(const char* filter)
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFile = sizeFile;
 	ofn.nMaxFile = sizeof(sizeFile);
-	ofn.lpstrTitle = "Open File";
+	ofn.lpstrTitle = titleText;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
 	if (GetOpenFileNameA(&ofn) == TRUE)
+	{
+		return std::string(ofn.lpstrFile);
+	}
+	return "";
+}
+
+std::string ModuleFileSystem::SaveFileDialog(const char* filter, const char* titleText)
+{
+	OPENFILENAMEA ofn;
+	CHAR sizeFile[260] = { 0 };
+
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = NULL;
+
+	ofn.lpstrFilter = filter;
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFile = sizeFile;
+	ofn.nMaxFile = sizeof(sizeFile);
+	ofn.lpstrTitle = titleText;
+	ofn.Flags = OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
+
+	if (GetSaveFileNameA(&ofn) == TRUE)
 	{
 		return std::string(ofn.lpstrFile);
 	}
@@ -60,6 +83,8 @@ std::string ModuleFileSystem::CopyFileIfNotExists(const std::string& source)
 		assetsDir = "Assets/Models/";
 	else if (extension == "png" || extension == "dds" || extension == "tga")
 		assetsDir = "Assets/Textures/";
+	else if (extension == "scene")
+		assetsDir = "Assets/Scenes/";
 
 	std::string destination = assetsDir + GetNameFromPath(source);
 

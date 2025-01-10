@@ -17,14 +17,17 @@ public:
 
 	bool Awake();
 	bool Start();
+
 	bool Update(float dt);
 	bool CleanUp();
 
 	GameObject* CreateGameObject(const char* name, GameObject* parent);
 	void CollectObjects(const GameObject* gameObject, std::vector<GameObject*>& objects) const;
 
-	void SaveScene(const std::string& filePath) const;
+	void SaveScene(const std::string& filePath);
 	void LoadScene(const std::string& filePath);
+	void SaveSceneAs();
+	void OpenScene() const;
 
 private:
 	void UpdateOctree() const;
@@ -44,4 +47,6 @@ public:
 
 	ComponentCamera* sceneCamera = nullptr;
 	ComponentCamera* activeGameCamera = nullptr;
+
+	std::string currentScene;
 };
