@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Octree.h"
 #include "Mesh.h"
+#include <nlohmann/json.hpp>
 
 class GameObject;
 
@@ -21,6 +22,9 @@ public:
 
 	GameObject* CreateGameObject(const char* name, GameObject* parent);
 	void CollectObjects(const GameObject* gameObject, std::vector<GameObject*>& objects) const;
+
+	void SaveScene(const std::string& filePath) const;
+	void LoadScene(const std::string& filePath);
 
 private:
 	void UpdateOctree() const;

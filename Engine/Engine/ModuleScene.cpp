@@ -1,6 +1,7 @@
 #include "ModuleScene.h"
 #include "App.h"
 #include "ScriptMoveInCircle.h"
+#include <fstream>
 
 ModuleScene::ModuleScene(App* app) : Module(app), sceneBounds(glm::vec3(-15.0f), glm::vec3(15.0f))
 {
@@ -63,6 +64,15 @@ bool ModuleScene::Update(float dt)
 
 	if (app->time.GetState() == GameState::STEP)
 		app->time.SetState(GameState::PAUSE);
+
+	if (app->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN)
+	{
+		SaveScene("Assets/Scenes/Scene.json");
+	}
+	if (app->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN)
+	{
+		LoadScene("Assets/Scenes/Scene.json");
+	}
 
 	return true;
 }
@@ -148,4 +158,105 @@ GameObject* ModuleScene::CreateGameObject(const char* name, GameObject* parent)
 	if (parent != nullptr) parent->children.push_back(gameObject);
 
 	return gameObject;
+}
+
+void ModuleScene::SaveScene(const std::string& filePath) const
+{
+	nlohmann::json sceneJson;
+	std::vector<GameObject*> objects;
+	CollectObjects(root, objects);
+
+	for (const auto& object : objects)
+	{
+		if (object != nullptr)
+		{
+			nlohmann::json objectJson;
+			object->Serialize(objectJson);
+			sceneJson["objects"].push_back(objectJson);
+		}
+	}
+
+	nlohmann::json resourcesJson;
+	const auto& resources = app->resources->GetResources();
+	for (const auto& resource : resources)
+	{
+		if (resource != nullptr)
+		{
+			nlohmann::json resourceJson;
+			resourceJson["type"] = static_cast<int>(resource->GetType());
+			resourceJson["assetFileDir"] = resource->GetAssetFileDir();
+			resourceJson["libraryFileDir"] = resource->GetLibraryFileDir();
+			resourcesJson.push_back(resourceJson);
+		}
+	}
+	sceneJson["resources"] = resourcesJson;
+
+	std::ofstream file(filePath);
+	if (file.is_open())
+	{
+		file << sceneJson.dump(4);
+		file.close();
+	}
+}
+
+void ModuleScene::LoadScene(const std::string& filePath)
+{
+	std::ifstream file(filePath);
+	if (!file.is_open())
+		return;
+
+	nlohmann::json sceneJson;
+	file >> sceneJson;
+	file.close();
+
+	for (auto* child : root->children) {
+		delete child;
+	}
+	root->children.clear();
+
+	app->renderer3D->meshQueue.clear();
+
+	app->editor->selectedGameObject = nullptr;
+
+	const auto& resourcesJson = sceneJson["resources"];
+	for (const auto& resourceJson : resourcesJson)
+	{
+		ResourceType type = static_cast<ResourceType>(resourceJson["type"].get<int>());
+		std::string assetFileDir = resourceJson["assetFileDir"].get<std::string>();
+		std::string libraryFileDir = resourceJson["libraryFileDir"].get<std::string>();
+
+		Resource* resource = app->resources->FindResourceInLibrary(libraryFileDir, type);
+		if (!resource)
+		{
+			resource = app->resources->CreateResource(assetFileDir, type);
+			resource->SetLibraryFileDir(libraryFileDir);
+		}
+		app->resources->ModifyResourceUsageCount(resource, 1);
+	}
+
+	std::unordered_map<std::string, GameObject*> objectMap;
+	for (const auto& objectJson : sceneJson["objects"])
+	{
+		std::string name = objectJson["name"].get<std::string>();
+		std::string uuid = objectJson["uuid"].get<std::string>();
+		GameObject* object = CreateGameObject(name.c_str(), nullptr);
+		objectMap[uuid] = object;
+	}
+
+	for (const auto& objectJson : sceneJson["objects"])
+	{
+		std::string name = objectJson["name"].get<std::string>();
+		std::string uuid = objectJson["uuid"].get<std::string>();
+		std::string parentUuid = objectJson["parent"].get<std::string>();
+		GameObject* object = objectMap[uuid];
+
+		GameObject* parent = parentUuid.empty() ? root : objectMap[parentUuid];
+		if (parent && object)
+		{
+			object->parent = parent;
+			parent->children.push_back(object);
+		}
+
+		object->Deserialize(objectJson);
+	}
 }

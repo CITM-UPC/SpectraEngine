@@ -4,6 +4,7 @@
 #include "ComponentTransform.h"
 #include "ComponentMesh.h"
 #include "ComponentMaterial.h"
+#include <nlohmann/json.hpp>
 
 #include <string>
 #include <vector>
@@ -27,9 +28,16 @@ public:
 
 	bool IntersectsRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, float& intersectionDistance) const;
 
+	void Serialize(nlohmann::json& json) const;
+	void Deserialize(const nlohmann::json& json);
+
+	std::string GenerateUUID();
+
 public:
 	GameObject* parent;
 	std::string name;
+
+	std::string uuid;
 
 	ComponentTransform* transform;
 	ComponentMesh* mesh;
