@@ -14,6 +14,10 @@ public:
 
 	void Update() override;
 	void OnEditor() override;
+
+	void Serialize(nlohmann::json& json) const override;
+	void Deserialize(const nlohmann::json& json) override;
+
 	void Draw(ComponentCamera* camera);
 
 public:

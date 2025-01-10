@@ -237,3 +237,22 @@ void ComponentTransform::SetButtonColor(const char* label)
 
 	ImGui::PopStyleColor(3);
 }
+
+void ComponentTransform::Serialize(nlohmann::json& json) const
+{
+	Component::Serialize(json);
+	json["position"] = { position.x, position.y, position.z };
+	json["rotation"] = { rotation.x, rotation.y, rotation.z, rotation.w };
+	json["scale"] = { scale.x, scale.y, scale.z };
+}
+
+void ComponentTransform::Deserialize(const nlohmann::json& json)
+{
+	Component::Deserialize(json);
+	position = { json["position"][0], json["position"][1], json["position"][2] };
+	rotation = { json["rotation"][3], json["rotation"][0], json["rotation"][1], json["rotation"][2] };
+	scale = { json["scale"][0], json["scale"][1], json["scale"][2] };
+
+	SetTransformMatrix(position, rotation, scale, gameObject->parent->transform);
+	UpdateTransform();
+}

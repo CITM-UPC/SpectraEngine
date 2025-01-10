@@ -31,6 +31,7 @@ bool ModuleScene::Awake()
 bool ModuleScene::Start()
 {
 	app->importer->ImportFile("Assets/Models/Street environment_V01.fbx", true);
+	//LoadScene("Assets/Scenes/Scene.json");
 	app->editor->selectedGameObject = app->scene->root->children[0];
 
 	std::string fullPath = "Engine/Primitives/Capsule.fbx";
@@ -230,8 +231,19 @@ void ModuleScene::LoadScene(const std::string& filePath)
 		{
 			resource = app->resources->CreateResource(assetFileDir, type);
 			resource->SetLibraryFileDir(libraryFileDir);
+			if (type == ResourceType::MODEL)
+			{
+				app->importer->modelImporter->LoadModelFromCustomFile(libraryFileDir, root, false);
+			}
+			if (type == ResourceType::MESH)
+			{
+				app->importer->modelImporter->LoadMeshFromCustomFile(libraryFileDir, dynamic_cast<Mesh*>(resource));
+			}
+			else if (type == ResourceType::TEXTURE)
+			{
+				resource = app->importer->textureImporter->LoadTextureImage(resource);
+			}
 		}
-		app->resources->ModifyResourceUsageCount(resource, 1);
 	}
 
 	std::unordered_map<std::string, GameObject*> objectMap;

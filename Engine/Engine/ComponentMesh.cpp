@@ -111,3 +111,17 @@ void ComponentMesh::OnEditor()
 		ImGui::Checkbox("Show OBB", &showOBB);
 	}
 }
+
+void ComponentMesh::Serialize(nlohmann::json& json) const
+{
+	Component::Serialize(json);
+	json["mesh"] = mesh->GetLibraryFileDir();
+}
+
+void ComponentMesh::Deserialize(const nlohmann::json& json)
+{
+	Component::Deserialize(json);
+    std::string meshPath = json["mesh"].get<std::string>();
+    mesh = dynamic_cast<Mesh*>(app->resources->FindResourceInLibrary(meshPath, ResourceType::MESH));
+    app->resources->ModifyResourceUsageCount(mesh, 1);
+}

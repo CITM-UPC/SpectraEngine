@@ -21,6 +21,9 @@ public:
 	void Update() override;
 	void OnEditor() override;
 
+	void Serialize(nlohmann::json& json) const override;
+	void Deserialize(const nlohmann::json& json) override;
+
 	const glm::mat4& GetViewMatrix() const { return viewMatrix; }
 	glm::mat4 GetProjectionMatrix() const;
 

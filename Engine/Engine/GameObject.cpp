@@ -3,6 +3,7 @@
 #include <random>
 
 #include "App.h"
+#include "ComponentScript.h"
 
 GameObject::GameObject(const char* name, GameObject* parent) : parent(parent), name(name), uuid(GenerateUUID())
 {
@@ -166,39 +167,52 @@ void GameObject::Serialize(nlohmann::json& json) const
     json["name"] = name;
 	json["uuid"] = uuid;
 
-    json["position"] = { transform->position.x, transform->position.y, transform->position.z };
-    json["rotation"] = { transform->rotation.x, transform->rotation.y, transform->rotation.z, transform->rotation.w };
-    json["scale"] = { transform->scale.x, transform->scale.y, transform->scale.z };
-
     json["parent"] = (parent != nullptr && parent->parent != nullptr) ? parent->uuid : "";
 
-	json["mesh"] = mesh->mesh ? mesh->mesh->GetLibraryFileDir() : "";
-
-	json["texture"] = material->materialTexture ? material->materialTexture->GetLibraryFileDir() : "";
+	json["components"] = nlohmann::json::array();
+    for (auto& component : components)
+    {
+        nlohmann::json componentJson;
+        component->Serialize(componentJson);
+        json["components"].push_back(componentJson);
+    }
 }
 
 void GameObject::Deserialize(const nlohmann::json& json)
 {
-	glm::vec3 position = { json["position"][0], json["position"][1], json["position"][2] };
-	glm::quat rotation = { json["rotation"][3], json["rotation"][0], json["rotation"][1], json["rotation"][2] };
-	glm::vec3 scale = { json["scale"][0], json["scale"][1], json["scale"][2] };
+    for (const auto& componentJson : json["components"])
+    {
+        ComponentType type = static_cast<ComponentType>(componentJson["type"].get<int>());
 
-    transform->SetTransformMatrix(position, rotation, scale, parent->transform);
-	transform->UpdateTransform();
+        Component* component = nullptr;
+        switch (type)
+        {
+        case ComponentType::TRANSFORM:
+			component = transform;
+            break;
+        case ComponentType::MESH:
+            component = mesh;
+            break;
+        case ComponentType::MATERIAL:
+            component = material;
+            break;
+        case ComponentType::CAMERA:
+            component = new ComponentCamera(this);
+            app->scene->activeGameCamera = dynamic_cast<ComponentCamera*>(component);
+            break;
+        case ComponentType::SCRIPT:
+            component = new ComponentScript(this);
+            break;
+        }
 
-	std::string meshPath = json["mesh"].get<std::string>();
-    if (!meshPath.empty())
-	{
-		AddComponent(mesh);
-		mesh->mesh = dynamic_cast<Mesh*>(app->resources->FindResourceInLibrary(meshPath, ResourceType::MESH));
-	}
+        if (component)
+        {
+            if (type != ComponentType::TRANSFORM)
+				AddComponent(component);
 
-	std::string texturePath = json["texture"].get<std::string>();
-	if (!texturePath.empty())
-	{
-		AddComponent(material);
-		material->AddTexture(dynamic_cast<Texture*>(app->resources->FindResourceInLibrary(texturePath, ResourceType::TEXTURE)));
-	}
+			component->Deserialize(componentJson);
+        }
+    }
 }
 
 std::string GameObject::GenerateUUID()

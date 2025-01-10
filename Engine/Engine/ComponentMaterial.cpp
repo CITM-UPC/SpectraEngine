@@ -85,3 +85,19 @@ void ComponentMaterial::AddTexture(Texture* texture)
 		child->material->textureId = texture->textureId;
 	}
 }
+
+void ComponentMaterial::Serialize(nlohmann::json& json) const
+{
+	Component::Serialize(json);
+	json["texture"] = materialTexture ? materialTexture->GetLibraryFileDir() : "";
+}
+
+void ComponentMaterial::Deserialize(const nlohmann::json& json)
+{
+	Component::Deserialize(json);
+	std::string texturePath = json["texture"].get<std::string>();
+	if (!texturePath.empty())
+	{
+		AddTexture(dynamic_cast<Texture*>(app->resources->FindResourceInLibrary(texturePath, ResourceType::TEXTURE)));
+	}
+}

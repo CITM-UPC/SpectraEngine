@@ -15,6 +15,9 @@ public:
 	void Update() override;
 	void OnEditor() override;
 
+	void Serialize(nlohmann::json& json) const override;
+	void Deserialize(const nlohmann::json& json) override;
+
 	void SetTransformMatrix(glm::float3 position, glm::quat rotation, glm::float3 scale, ComponentTransform* parent);
 	void UpdateTransform();
 

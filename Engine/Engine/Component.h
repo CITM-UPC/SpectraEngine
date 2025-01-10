@@ -4,6 +4,8 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
 
+#include <nlohmann/json.hpp>
+
 class GameObject;
 
 enum class ComponentType
@@ -25,8 +27,8 @@ public:
 	virtual void Update();
 	virtual void OnEditor();
 
-	void Enable();
-	void Disable();
+	virtual void Serialize(nlohmann::json& json) const;
+	virtual void Deserialize(const nlohmann::json& json);
 
 public:
 	bool active;
