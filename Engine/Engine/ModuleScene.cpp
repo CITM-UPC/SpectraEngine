@@ -66,13 +66,21 @@ bool ModuleScene::Update(float dt)
 	if (app->time.GetState() == GameState::STEP)
 		app->time.SetState(GameState::PAUSE);
 
-	if (app->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN)
+	if (app->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && app->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
 	{
 		SaveScene("Assets/Scenes/Scene.json");
 	}
-	if (app->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN)
+	if (app->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && app->input->GetKey(SDL_SCANCODE_O) == KEY_DOWN)
 	{
-		LoadScene("Assets/Scenes/Scene.json");
+		const char* filter =
+			"Scene Files (*.json)\0*.json\0"
+			"\0";
+
+		std::string selectedFile = app->fileSystem->OpenFileDialog(filter);
+		if (!selectedFile.empty())
+		{
+			app->scene->LoadScene(selectedFile);
+		}
 	}
 
 	return true;
