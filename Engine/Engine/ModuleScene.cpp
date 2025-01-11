@@ -78,6 +78,10 @@ bool ModuleScene::Update(float dt)
 	{
 		OpenScene();
 	}
+	if (app->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT && app->input->GetKey(SDL_SCANCODE_N) == KEY_DOWN)
+	{
+		NewScene();
+	}
 
 	return true;
 }
@@ -307,4 +311,24 @@ void ModuleScene::OpenScene() const
 		selectedFile = app->fileSystem->CopyFileIfNotExists(selectedFile);
 		app->scene->LoadScene(selectedFile);
 	}
+}
+
+void ModuleScene::NewScene()
+{
+	delete root;
+	app->renderer3D->meshQueue.clear();
+	app->editor->selectedGameObject = nullptr;
+
+	root = CreateGameObject("Untitled Scene", nullptr);
+
+	GameObject* camera = CreateGameObject("Camera", root);
+	activeGameCamera = new ComponentCamera(camera);
+	camera->AddComponent(activeGameCamera);
+	camera->transform->position = glm::vec3(0.0f, 6.0f, 8.0f);
+	camera->transform->eulerRotation = glm::vec3(-30.0f, 0.0f, 0.0f);
+	camera->transform->UpdateTransform();
+
+	sceneOctree = new Octree(sceneBounds, octreeMaxDepth, octreeMaxObjects);
+
+	currentScene = "Assets/Scenes/" + root->name + ".scene";
 }

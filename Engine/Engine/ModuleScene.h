@@ -28,6 +28,7 @@ public:
 	void LoadScene(const std::string& filePath);
 	void SaveSceneAs();
 	void OpenScene() const;
+	void NewScene();
 
 private:
 	void UpdateOctree() const;

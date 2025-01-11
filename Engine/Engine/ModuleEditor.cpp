@@ -146,7 +146,7 @@ void ModuleEditor::MainMenuBar()
 	{
 		if (ImGui::MenuItem("New Scene", "Ctrl+N"))
 		{
-			
+			app->scene->NewScene();
 		}
 		if (ImGui::MenuItem("Open Scene", "Ctrl+O"))
 		{
