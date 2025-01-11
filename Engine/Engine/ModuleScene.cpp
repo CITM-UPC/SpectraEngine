@@ -46,7 +46,7 @@ bool ModuleScene::Start()
 	app->editor->selectedGameObject = app->scene->root->children.back();
 	app->editor->selectedGameObject->transform->position = glm::vec3(0.0f, 1.0f, 0.0f);
 	app->editor->selectedGameObject->transform->UpdateTransform();
-	app->editor->selectedGameObject->AddComponent(new ScriptMoveInCircle(app->editor->selectedGameObject));
+	app->editor->selectedGameObject->AddComponent(ComponentScript::CreateScriptByType("ScriptMoveInCircle", app->editor->selectedGameObject));
 	app->editor->selectedGameObject->name = "Player";
 
 	currentScene = "Assets/Scenes/" + root->name + ".scene";

@@ -201,7 +201,8 @@ void GameObject::Deserialize(const nlohmann::json& json)
             app->scene->activeGameCamera = dynamic_cast<ComponentCamera*>(component);
             break;
         case ComponentType::SCRIPT:
-            component = new ComponentScript(this);
+            std::string scriptType = componentJson["scriptType"].get<std::string>();
+            component = ComponentScript::CreateScriptByType(scriptType.c_str(), this);
             break;
         }
 
