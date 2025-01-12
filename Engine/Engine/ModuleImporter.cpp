@@ -27,6 +27,7 @@ bool ModuleImporter::Awake()
 	icons.ddsFileIcon = textureImporter->LoadIconImage("Engine/Icons/file_dds.png");
 	icons.tgaFileIcon = textureImporter->LoadIconImage("Engine/Icons/file_tga.png");
 	icons.fbxFileIcon = textureImporter->LoadIconImage("Engine/Icons/file_fbx.png");
+	icons.sceneFileIcon = textureImporter->LoadIconImage("Engine/Icons/file_scene.png");
 	icons.dotsIcon = textureImporter->LoadIconImage("Engine/Icons/dots.png");
 
 	// Console
@@ -51,6 +52,7 @@ bool ModuleImporter::CleanUp()
 	glDeleteTextures(1, &icons.tgaFileIcon);
 	glDeleteTextures(1, &icons.ddsFileIcon);
 	glDeleteTextures(1, &icons.fbxFileIcon);
+	glDeleteTextures(1, &icons.sceneFileIcon);
 	glDeleteTextures(1, &icons.dotsIcon);
 	glDeleteTextures(1, &icons.infoIcon);
 	glDeleteTextures(1, &icons.warningIcon);

@@ -614,5 +614,8 @@ GLuint ProjectWindow::GetFileIcon(const std::filesystem::path& entry) const
 	if (extension == "fbx")
 		return app->importer->icons.fbxFileIcon;
 
+	if (extension == "scene")
+		return app->importer->icons.sceneFileIcon;
+
 	return app->importer->icons.fileIcon;
 }
