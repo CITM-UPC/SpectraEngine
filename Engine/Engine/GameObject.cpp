@@ -1,8 +1,11 @@
 #include "GameObject.h"
 
-#include "App.h"
+#include <random>
 
-GameObject::GameObject(const char* name, GameObject* parent) : parent(parent), name(name)
+#include "App.h"
+#include "ComponentScript.h"
+
+GameObject::GameObject(const char* name, GameObject* parent) : parent(parent), name(name), uuid(GenerateUUID())
 {
 	transform = new ComponentTransform(this);
 	mesh = new ComponentMesh(this);
@@ -157,4 +160,77 @@ bool GameObject::IntersectsRay(const glm::vec3& rayOrigin, const glm::vec3& rayD
     }
 
     return false;
+}
+
+void GameObject::Serialize(nlohmann::json& json) const
+{
+    json["name"] = name;
+	json["uuid"] = uuid;
+
+    json["parent"] = (parent != nullptr && parent->parent != nullptr) ? parent->uuid : "";
+
+	json["components"] = nlohmann::json::array();
+    for (auto& component : components)
+    {
+        nlohmann::json componentJson;
+        component->Serialize(componentJson);
+        json["components"].push_back(componentJson);
+    }
+}
+
+void GameObject::Deserialize(const nlohmann::json& json)
+{
+    for (const auto& componentJson : json["components"])
+    {
+        ComponentType type = static_cast<ComponentType>(componentJson["type"].get<int>());
+
+        Component* component = nullptr;
+        switch (type)
+        {
+        case ComponentType::TRANSFORM:
+			component = transform;
+            break;
+        case ComponentType::MESH:
+            component = mesh;
+            break;
+        case ComponentType::MATERIAL:
+            component = material;
+            break;
+        case ComponentType::CAMERA:
+            component = new ComponentCamera(this);
+            app->scene->activeGameCamera = dynamic_cast<ComponentCamera*>(component);
+            break;
+        case ComponentType::SCRIPT:
+            std::string scriptType = componentJson["scriptType"].get<std::string>();
+            component = ComponentScript::CreateScriptByType(scriptType.c_str(), this);
+            break;
+        }
+
+        if (component)
+        {
+            if (type != ComponentType::TRANSFORM)
+				AddComponent(component);
+
+			component->Deserialize(componentJson);
+        }
+    }
+}
+
+std::string GameObject::GenerateUUID()
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> dis(0, 15);
+    std::uniform_int_distribution<int> dis2(8, 11);
+
+    std::string uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
+    for (char& c : uuid) {
+        if (c == 'x') {
+            c = "0123456789abcdef"[dis(gen)];
+        }
+        else if (c == 'y') {
+            c = "89ab"[dis2(gen)];
+        }
+    }
+    return uuid;
 }

@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "Octree.h"
 #include "Mesh.h"
+#include <nlohmann/json.hpp>
 
 class GameObject;
 
@@ -16,11 +17,18 @@ public:
 
 	bool Awake();
 	bool Start();
+
 	bool Update(float dt);
 	bool CleanUp();
 
 	GameObject* CreateGameObject(const char* name, GameObject* parent);
 	void CollectObjects(const GameObject* gameObject, std::vector<GameObject*>& objects) const;
+
+	void SaveScene(const std::string& filePath);
+	void LoadScene(const std::string& filePath);
+	void SaveSceneAs();
+	void OpenScene() const;
+	void NewScene();
 
 private:
 	void UpdateOctree() const;
@@ -40,4 +48,6 @@ public:
 
 	ComponentCamera* sceneCamera = nullptr;
 	ComponentCamera* activeGameCamera = nullptr;
+
+	std::string currentScene;
 };

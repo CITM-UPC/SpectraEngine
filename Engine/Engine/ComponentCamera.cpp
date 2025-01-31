@@ -133,3 +133,19 @@ bool ComponentCamera::IsAABBInFrustum(const AABB& aabb) const
 
 	return true;
 }
+
+void ComponentCamera::Serialize(nlohmann::json& json) const
+{
+	Component::Serialize(json);
+	json["fov"] = fov;
+	json["nearPlane"] = nearPlane;
+	json["farPlane"] = farPlane;
+}
+
+void ComponentCamera::Deserialize(const nlohmann::json& json)
+{
+	Component::Deserialize(json);
+	fov = json["fov"];
+	nearPlane = json["nearPlane"];
+	farPlane = json["farPlane"];
+}

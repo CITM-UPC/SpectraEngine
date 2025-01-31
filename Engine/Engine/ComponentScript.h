@@ -22,6 +22,12 @@ public:
 	void Update() override;
 	void OnEditor() override;
 
+    void Serialize(nlohmann::json& json) const override;
+    void Deserialize(const nlohmann::json& json) override;
+
+    const char* GetScriptTypeName() const;
+    static ComponentScript* CreateScriptByType(const char* typeName, GameObject* gameObject);
+
 protected:
     struct ScriptVariable {
         std::string name;

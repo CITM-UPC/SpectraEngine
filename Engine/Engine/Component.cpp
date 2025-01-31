@@ -16,10 +16,12 @@ void Component::OnEditor()
 {
 }
 
-void Component::Enable()
+void Component::Serialize(nlohmann::json& json) const
 {
+	json["type"] = type;
 }
 
-void Component::Disable()
+void Component::Deserialize(const nlohmann::json& json)
 {
+	type = json["type"];
 }

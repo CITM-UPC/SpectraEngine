@@ -18,6 +18,7 @@ struct Icons
 	GLuint tgaFileIcon = 0;
 	GLuint ddsFileIcon = 0;
 	GLuint fbxFileIcon = 0;
+	GLuint sceneFileIcon = 0;
 	GLuint dotsIcon = 0;
 	GLuint infoIcon = 0;
 	GLuint warningIcon = 0;

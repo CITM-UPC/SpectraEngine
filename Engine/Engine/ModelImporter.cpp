@@ -353,7 +353,7 @@ void ModelImporter::SaveNodeToBuffer(const aiNode* node, std::vector<char>& buff
 	}
 }
 
-void ModelImporter::LoadModelFromCustomFile(const std::string& filePath, GameObject* root)
+void ModelImporter::LoadModelFromCustomFile(const std::string& filePath, GameObject* root, bool loadNode)
 {
 	std::ifstream file(filePath, std::ios::binary);
 	if (!file.is_open())
@@ -431,7 +431,8 @@ void ModelImporter::LoadModelFromCustomFile(const std::string& filePath, GameObj
 	}
 
 	// Load root node
-	LoadNodeFromBuffer(buffer.data(), currentPos, orderedMeshes, root, fileName.c_str());
+	if (loadNode)
+		LoadNodeFromBuffer(buffer.data(), currentPos, orderedMeshes, root, fileName.c_str());
 }
 
 void ModelImporter::LoadNodeFromBuffer(const char* buffer, size_t& currentPos, std::vector<Mesh*>& meshes, GameObject* parent, const char* fileName)

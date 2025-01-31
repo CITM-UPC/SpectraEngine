@@ -332,6 +332,14 @@ void ProjectWindow::HandleItemClick(const std::filesystem::directory_entry& entr
 			shouldBreakLoop = true;
 			return;
 		}
+
+		if (entry.is_regular_file() && ImGui::IsMouseDoubleClicked(0))
+		{
+			if (app->fileSystem->GetExtension(entry.path().string()) == "scene")
+			{
+				app->scene->LoadScene(entry.path().string());
+			}
+		}
 	}
 
 	if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1))
@@ -352,8 +360,15 @@ void ProjectWindow::HandleItemClick(const std::filesystem::directory_entry& entr
 			}
 			else if (entry.is_regular_file())
 			{
-				std::string command = "explorer \"" + entry.path().string() + "\"";
-				system(command.c_str());
+				if (app->fileSystem->GetExtension(entry.path().string()) == "scene")
+				{
+					app->scene->LoadScene(entry.path().string());
+				}
+				else
+				{
+					std::string command = "explorer \"" + entry.path().string() + "\"";
+					system(command.c_str());
+				}
 			}
 		}
 		if (ImGui::MenuItem("Show in Explorer"))
@@ -598,6 +613,9 @@ GLuint ProjectWindow::GetFileIcon(const std::filesystem::path& entry) const
 
 	if (extension == "fbx")
 		return app->importer->icons.fbxFileIcon;
+
+	if (extension == "scene")
+		return app->importer->icons.sceneFileIcon;
 
 	return app->importer->icons.fileIcon;
 }

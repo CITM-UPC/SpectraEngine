@@ -144,6 +144,23 @@ void ModuleEditor::MainMenuBar()
 
 	if (ImGui::BeginMenu("File"))
 	{
+		if (ImGui::MenuItem("New Scene", "Ctrl+N"))
+		{
+			app->scene->NewScene();
+		}
+		if (ImGui::MenuItem("Open Scene", "Ctrl+O"))
+		{
+			app->scene->OpenScene();
+		}
+		if (ImGui::MenuItem("Save", "Ctrl+S"))
+		{
+			app->scene->currentScene = "Assets/Scenes/" + app->scene->root->name + ".scene";
+			app->scene->SaveScene(app->scene->currentScene);
+		}
+		if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+		{
+			app->scene->SaveSceneAs();
+		}		
 		if (ImGui::MenuItem("Exit", "Alt+F4"))
 		{
 			app->exit = true;

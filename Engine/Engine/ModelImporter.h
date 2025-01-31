@@ -21,6 +21,9 @@ public:
 	bool SaveModel(Resource* resource);
 	bool LoadModel(Resource* resource, GameObject* root);
 
+	void LoadMeshFromCustomFile(const std::string& filePath, Mesh* mesh);
+	void LoadModelFromCustomFile(const std::string& filePath, GameObject* root, bool loadNode = true);
+
 private:
 	// Save functions
 	void SaveMeshToCustomFile(aiMesh* mesh, const aiScene* scene, const std::string& filePath);
@@ -29,7 +32,5 @@ private:
 	size_t CalculateNodeSize(const aiNode* node);
 
 	// Loading functions
-	void LoadMeshFromCustomFile(const std::string& filePath, Mesh* mesh);
-	void LoadModelFromCustomFile(const std::string& filePath, GameObject* root);
 	void LoadNodeFromBuffer(const char* buffer, size_t& currentPos, std::vector<Mesh*>& meshes, GameObject* parent, const char* fileName);
 };
