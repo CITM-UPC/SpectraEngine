@@ -1,0 +1,21 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "154",
+  "SoundBanks": [
+   {
+    "Id": "2258090029",
+    "Type": "User",
+    "GUID": "{A1174B28-989D-43D7-A865-D8E078D6B57D}",
+    "Language": "SFX",
+    "Hash": "{5358B4D9-1417-2C56-062A-8B33DD381088}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\SpectraEngine",
+    "ShortName": "SpectraEngine",
+    "Path": "SpectraEngine.bnk"
+   }
+  ],
+  "FileHash": "{A2FAC5FF-55D3-BA54-F4F8-B09878C3FE06}"
+ }
+}

@@ -34,6 +34,8 @@ bool ModuleAudio::Start()
 	if (!InitCommunication())
 		return false;
 
+	g_lowLevelIO->SetBasePath(AKTEXT("Assets\\Audio\\WwiseProject\\GeneratedSoundBanks\\Windows"));
+
 	AkBankID bankID;
 	AK::SoundEngine::LoadBank("Init.bnk", bankID);
 	AK::SoundEngine::LoadBank("SpectraEngine.bnk", bankID);
