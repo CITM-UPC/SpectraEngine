@@ -25,6 +25,9 @@
     <Filter Include="Sources\Components\Scripts">
       <UniqueIdentifier>{07e7bc6f-84b5-4a40-8122-40b3118dd5ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Wwise">
+      <UniqueIdentifier>{d72aad1d-e834-4f54-bdc3-4b433551740c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -149,6 +152,39 @@
     </ClCompile>
     <ClCompile Include="ScriptMoveInCircle.cpp">
       <Filter>Sources\Components\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleAudio.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="$(WWISESDK)\samples\SoundEngine\Win32\AkDefaultIOHookDeferred.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="$(WWISESDK)\samples\SoundEngine\Common\AkDefaultLowLevelIODispatcher.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="$(WWISESDK)\samples\SoundEngine\Common\AkFileLocationBase.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="$(WWISESDK)\samples\SoundEngine\Common\AkFilePackage.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="$(WWISESDK)\samples\SoundEngine\Common\AkFilePackageLUT.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="$(WWISESDK)\samples\SoundEngine\Common\AkGeneratedSoundBanksResolver.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="$(WWISESDK)\samples\SoundEngine\Common\AkJobWorkerMgr.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="$(WWISESDK)\samples\SoundEngine\Common\AkMultipleFileLocation.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="$(WWISESDK)\samples\SoundEngine\Win32\AkPlatformProfilerHooks.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="$(WWISESDK)\samples\SoundEngine\Win32\stdafx.cpp">
+      <Filter>Sources\Wwise</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -280,6 +316,9 @@
     </ClInclude>
     <ClInclude Include="ScriptMoveInCircle.h">
       <Filter>Sources\Components\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleAudio.h">
+      <Filter>Sources\Modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

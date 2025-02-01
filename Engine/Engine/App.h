@@ -10,6 +10,7 @@
 #include "ModuleImporter.h"
 #include "ModuleFileSystem.h"
 #include "ModuleResources.h"
+#include "ModuleAudio.h"
 #include "Time.h"
 
 #include "Timer.h"
@@ -45,6 +46,7 @@ public:
 	ModuleEditor* editor = nullptr;
 	ModuleFileSystem* fileSystem = nullptr;
 	ModuleResources* resources = nullptr;
+	ModuleAudio* audio = nullptr;
 
 	bool exit = false;
 	int maxFps = 60;

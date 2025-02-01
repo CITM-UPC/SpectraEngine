@@ -15,6 +15,7 @@ App::App(int argc, char* argv[])
 	editor = new ModuleEditor(this);
 	fileSystem = new ModuleFileSystem(this);
 	resources = new ModuleResources(this);
+	audio = new ModuleAudio(this);
 
 	AddModule(window);
 	AddModule(camera);
@@ -24,6 +25,7 @@ App::App(int argc, char* argv[])
 	AddModule(importer);
 	AddModule(scene);
 	AddModule(editor);
+	AddModule(audio);
 	AddModule(renderer3D);
 
 	window->loadingBarWidth = static_cast<int>(335 / (modules.size() * 2));

@@ -379,7 +379,7 @@ void ProjectWindow::HandleItemClick(const std::filesystem::directory_entry& entr
 		if (ImGui::MenuItem("Copy Path"))
 		{
 			char fullPath[MAX_PATH];
-			GetFullPathName(entry.path().string().c_str(), MAX_PATH, fullPath, nullptr);
+			GetFullPathName((const wchar_t*)entry.path().string().c_str(), MAX_PATH, (wchar_t*)fullPath, nullptr);
 			ImGui::SetClipboardText(fullPath);
 		}
 		ImGui::EndPopup();

@@ -25,7 +25,7 @@ void TextureImporter::SaveTextureFile(Resource* resource)
 	ilGenImages(1, &imageID);
 	ilBindImage(imageID);
 
-	ilLoadImage(resource->GetAssetFileDir().c_str());
+	ilLoadImage((const wchar_t*)resource->GetAssetFileDir().c_str());
 
 	ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);
 	ILuint size = ilSaveL(IL_DDS, nullptr, 0);
@@ -51,7 +51,7 @@ Texture* TextureImporter::LoadTextureImage(Resource* resource)
 	ilGenImages(1, &image);
 	ilBindImage(image);
 
-	if (!ilLoadImage(resource->GetLibraryFileDir().c_str()))
+	if (!ilLoadImage((const wchar_t*)resource->GetLibraryFileDir().c_str()))
 	{
 		LOG(LogType::LOG_WARNING, "Image not loaded");
 		return nullptr;
@@ -76,7 +76,7 @@ GLuint TextureImporter::LoadIconImage(const std::string& filePath)
 	ilGenImages(1, &imageID);
 	ilBindImage(imageID);
 
-	if (ilLoadImage(filePath.c_str()) == IL_FALSE)
+	if (ilLoadImage((const wchar_t*)filePath.c_str()) == IL_FALSE)
 	{
 		ilDeleteImages(1, &imageID);
 		return 0;
