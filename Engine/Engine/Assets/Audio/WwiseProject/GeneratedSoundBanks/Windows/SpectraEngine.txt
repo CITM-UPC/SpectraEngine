@@ -1,0 +1,16 @@
+Event	ID	Name			Wwise Object Path	Notes
+	3563596677	Play_Test_Audio			\Default Work Unit\Play_Test_Audio	
+
+Game Parameter	ID	Name			Wwise Object Path	Notes
+	129	MIDI note velocity			\MIDI note velocity	
+
+Modulator Envelope	ID	Name			Wwise Object Path	Notes
+	697116909	Modulator Envelope (Custom)				
+
+Effect plug-ins	ID	Name	Type				Notes
+	53494169	Wwise Pitch Shifter (Custom)	Wwise Pitch Shifter			
+	232030741	Wwise Pitch Shifter (Custom)	Wwise Pitch Shifter			
+
+Source plug-ins	ID	Name	Type		Wwise Object Path	Notes
+	497150206	MAGIC 01	Wwise Synth One		\Actor-Mixer Hierarchy\Factory Synth One\SFX\MAGIC 01\MAGIC 01	Audiokinetic Inc. All rights reserved. Content provided by Vincent Gagnon © 2014 Vincent Gagnon
+

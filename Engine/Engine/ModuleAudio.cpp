@@ -40,6 +40,12 @@ bool ModuleAudio::Start()
 	AK::SoundEngine::LoadBank("Init.bnk", bankID);
 	AK::SoundEngine::LoadBank("SpectraEngine.bnk", bankID);
 
+	AK::SoundEngine::RegisterGameObj(0);
+
+	AkGameObjectID listenerID = 1;
+	AK::SoundEngine::RegisterGameObj(listenerID);
+	AK::SoundEngine::SetDefaultListeners(&listenerID, 1);
+
 	return true;
 }
 
@@ -67,6 +73,11 @@ void ModuleAudio::Terminate() const
 void ModuleAudio::ProcessAudio()
 {
 	AK::SoundEngine::RenderAudio();
+}
+
+void ModuleAudio::PlayEvent(const char* eventName, AkGameObjectID gameObjectID)
+{
+	AK::SoundEngine::PostEvent(eventName, gameObjectID);
 }
 
 bool ModuleAudio::InitMemoryManager()

@@ -10,12 +10,63 @@
     "Type": "User",
     "GUID": "{A1174B28-989D-43D7-A865-D8E078D6B57D}",
     "Language": "SFX",
-    "Hash": "{5358B4D9-1417-2C56-062A-8B33DD381088}",
+    "Hash": "{5CBD08CD-385B-B757-E9CD-3EB3FA4980C3}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\SpectraEngine",
     "ShortName": "SpectraEngine",
-    "Path": "SpectraEngine.bnk"
+    "Path": "SpectraEngine.bnk",
+    "Plugins": {
+     "Custom": [
+      {
+       "Id": "53494169",
+       "Name": "Wwise Pitch Shifter (Custom)",
+       "ObjectPath": "\\Actor-Mixer Hierarchy\\Factory Synth One\\SFX\\MAGIC 01\\[Effect Slot [0]: (Pitch Shifter)]\\Wwise Pitch Shifter (Custom)",
+       "GUID": "{70F13F68-0D40-42E7-AA07-69C8EB748F5C}",
+       "LibName": "Wwise Pitch Shifter",
+       "LibId": "8912899"
+      },
+      {
+       "Id": "232030741",
+       "Name": "Wwise Pitch Shifter (Custom)",
+       "ObjectPath": "\\Actor-Mixer Hierarchy\\Factory Synth One\\SFX\\MAGIC 01\\[Effect Slot [1]: (Pitch Shifter)]\\Wwise Pitch Shifter (Custom)",
+       "GUID": "{2F998142-D03F-4AFA-853A-C67559473955}",
+       "LibName": "Wwise Pitch Shifter",
+       "LibId": "8912899"
+      },
+      {
+       "Id": "497150206",
+       "Name": "MAGIC 01",
+       "ObjectPath": "\\Actor-Mixer Hierarchy\\Factory Synth One\\SFX\\MAGIC 01\\MAGIC 01",
+       "GUID": "{F1F04EF3-C61F-436D-AE89-CE32B659AE1F}",
+       "LibName": "Wwise Synth One",
+       "LibId": "9699330"
+      }
+     ]
+    },
+    "Events": [
+     {
+      "Id": "3563596677",
+      "Name": "Play_Test_Audio",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_Test_Audio",
+      "GUID": "{EB19AE41-7067-4FDE-A995-ED8710EA3995}",
+      "DurationType": "Unknown",
+      "PluginRefs": {
+       "Custom": [
+        {
+         "Id": "53494169"
+        },
+        {
+         "Id": "232030741"
+        },
+        {
+         "Id": "497150206"
+        }
+       ]
+      }
+     }
+    ],
+    "GameParameters": []
    }
   ],
-  "FileHash": "{A2FAC5FF-55D3-BA54-F4F8-B09878C3FE06}"
+  "FileHash": "{571EFE6D-DD44-3B8D-7469-6889D0C350F3}"
  }
 }

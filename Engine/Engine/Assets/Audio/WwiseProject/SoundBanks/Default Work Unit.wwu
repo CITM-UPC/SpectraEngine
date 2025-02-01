@@ -4,7 +4,9 @@
 		<WorkUnit Name="Default Work Unit" ID="{DCC8E177-95A3-4728-B6B0-7584208752F8}" PersistMode="Standalone">
 			<ChildrenList>
 				<SoundBank Name="SpectraEngine" ID="{A1174B28-989D-43D7-A865-D8E078D6B57D}">
-					<ObjectInclusionList/>
+					<ObjectInclusionList>
+						<ObjectRef Name="Play_Test_Audio" ID="{EB19AE41-7067-4FDE-A995-ED8710EA3995}" WorkUnitID="{47A6C931-C661-46EA-8FE1-76590F1B1DE0}" Origin="Manual" Filter="7"/>
+					</ObjectInclusionList>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>
 				</SoundBank>

@@ -83,6 +83,16 @@ bool ModuleScene::Update(float dt)
 		NewScene();
 	}
 
+	if (app->time.GetState() == GameState::PLAY)
+	{
+		if (app->input->GetKey(SDL_SCANCODE_Y) == KEY_DOWN)
+		{
+			app->audio->PlayEvent("Play_Test_Audio", 0);
+		}
+
+		app->audio->ProcessAudio();
+	}
+
 	return true;
 }
 

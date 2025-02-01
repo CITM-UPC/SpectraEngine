@@ -35,6 +35,8 @@ public:
 
 	void ProcessAudio();
 
+	void PlayEvent(const char* eventName, AkGameObjectID gameObjectID);
+
 private:
 	bool InitMemoryManager();
 	bool InitStreamingManager();
