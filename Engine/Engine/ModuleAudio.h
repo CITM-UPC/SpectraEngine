@@ -22,6 +22,16 @@
 
 #include <AkFilePackageLowLevelIODeferred.h>
 
+#include <map>
+#include <vector>
+#include <string>
+
+struct AudioBank
+{
+	std::string bankName;
+	std::vector<std::string> events;
+};
+
 class ModuleAudio : public Module
 {
 public:
@@ -37,6 +47,8 @@ public:
 
 	void PlayEvent(const char* eventName, AkGameObjectID gameObjectID);
 
+	std::vector<AudioBank*> audioBanks;
+
 private:
 	bool InitMemoryManager();
 	bool InitStreamingManager();
@@ -45,6 +57,8 @@ private:
 	bool InitMusicEngine();
 	bool InitSpatialAudio();
 	bool InitCommunication();
+
+	bool LoadAudioBanks();
 
 	CAkFilePackageLowLevelIODeferred* g_lowLevelIO = nullptr;
 };

@@ -1,6 +1,7 @@
 #include "ModuleAudio.h"
-
 #include "App.h"
+
+#include <fstream>
 
 ModuleAudio::ModuleAudio(App* app) : Module(app)
 {
@@ -36,15 +37,66 @@ bool ModuleAudio::Start()
 
 	g_lowLevelIO->SetBasePath(AKTEXT("Assets\\Audio\\WwiseProject\\GeneratedSoundBanks\\Windows"));
 
-	AkBankID bankID;
-	AK::SoundEngine::LoadBank("Init.bnk", bankID);
-	AK::SoundEngine::LoadBank("SpectraEngine.bnk", bankID);
+	LoadAudioBanks();
 
 	AK::SoundEngine::RegisterGameObj(0);
 
 	AkGameObjectID listenerID = 1;
 	AK::SoundEngine::RegisterGameObj(listenerID);
 	AK::SoundEngine::SetDefaultListeners(&listenerID, 1);
+
+	return true;
+}
+
+bool ModuleAudio::LoadAudioBanks()
+{
+	std::ifstream file("Assets\\Audio\\WwiseProject\\GeneratedSoundBanks\\Windows\\SoundbanksInfo.json");
+	if (!file.is_open())
+	{
+		LOG(LogType::LOG_ERROR, "Failed to open SoundbanksInfo.json");
+		return false;
+	}
+
+	nlohmann::json banksInfo;
+	try
+	{
+		file >> banksInfo;
+		file.close();
+	}
+	catch (const std::exception& e)
+	{
+		LOG(LogType::LOG_ERROR, "Error parsing SoundbanksInfo.json: %s", e.what());
+		return false;
+	}
+
+	auto soundBanks = banksInfo["SoundBanksInfo"]["SoundBanks"];
+
+	for (const auto& bankData : soundBanks)
+	{
+		const std::string shortName = bankData["ShortName"];
+
+		AudioBank* audioBank = new AudioBank();
+		audioBank->bankName = shortName;
+
+		if (bankData.contains("Events"))
+		{
+			for (const auto& eventData : bankData["Events"])
+			{
+				std::string eventName = eventData["Name"];
+
+				audioBank->events.push_back(eventName);
+			}
+		}
+
+		audioBanks.push_back(audioBank);
+	}
+
+	AkBankID bankID;
+
+	for (const auto& audioBank : audioBanks)
+	{
+		AK::SoundEngine::LoadBank(audioBank->bankName.c_str(), bankID);
+	}
 
 	return true;
 }
