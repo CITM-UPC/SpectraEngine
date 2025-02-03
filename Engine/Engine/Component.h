@@ -15,7 +15,8 @@ enum class ComponentType
 	MESH,
 	MATERIAL,
 	CAMERA,
-	SCRIPT
+	SCRIPT,
+	AUDIO
 };
 
 class Component
