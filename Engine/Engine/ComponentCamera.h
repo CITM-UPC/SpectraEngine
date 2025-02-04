@@ -6,7 +6,7 @@
 #include "Component.h"
 #include "Mesh.h"
 
-struct Plane
+struct CameraPlane
 {
 	glm::vec3 normal;
 	float distance;
@@ -53,5 +53,5 @@ private:
 	glm::mat4 viewMatrix;
 	glm::mat4 projectionMatrix;
 
-	Plane frustumPlanes[6];
+	CameraPlane frustumPlanes[6];
 };

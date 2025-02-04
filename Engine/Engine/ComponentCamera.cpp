@@ -112,7 +112,7 @@ bool ComponentCamera::IsAABBInFrustum(const AABB& aabb) const
 {
 	for (int i = 0; i < 6; ++i)
 	{
-		const Plane& plane = frustumPlanes[i];
+		const CameraPlane& plane = frustumPlanes[i];
 		bool anyVertexInside = false;
 
 		for (int corner = 0; corner < 8 && !anyVertexInside; ++corner)
