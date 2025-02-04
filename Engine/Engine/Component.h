@@ -15,7 +15,8 @@ enum class ComponentType
 	MESH,
 	MATERIAL,
 	CAMERA,
-	SCRIPT
+	SCRIPT,
+	PHYSICS_BODY
 };
 
 class Component

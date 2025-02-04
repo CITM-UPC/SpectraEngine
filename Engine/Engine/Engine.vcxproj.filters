@@ -150,6 +150,12 @@
     <ClCompile Include="ScriptMoveInCircle.cpp">
       <Filter>Sources\Components\Scripts</Filter>
     </ClCompile>
+    <ClCompile Include="ModulePhysics.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentPhysicsBody.cpp">
+      <Filter>Sources\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ModuleInput.h">
@@ -280,6 +286,12 @@
     </ClInclude>
     <ClInclude Include="ScriptMoveInCircle.h">
       <Filter>Sources\Components\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="ModulePhysics.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentPhysicsBody.h">
+      <Filter>Sources\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

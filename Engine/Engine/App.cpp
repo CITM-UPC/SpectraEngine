@@ -15,6 +15,7 @@ App::App(int argc, char* argv[])
 	editor = new ModuleEditor(this);
 	fileSystem = new ModuleFileSystem(this);
 	resources = new ModuleResources(this);
+	physics = new ModulePhysics(this);
 
 	AddModule(window);
 	AddModule(camera);
@@ -23,6 +24,7 @@ App::App(int argc, char* argv[])
 	AddModule(resources);
 	AddModule(importer);
 	AddModule(scene);
+	AddModule(physics);
 	AddModule(editor);
 	AddModule(renderer3D);
 
