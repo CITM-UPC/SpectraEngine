@@ -12,7 +12,10 @@ public:
 	void OnEditor() override;
 
 private:
+	void SetVolume(float newVolume);
+
 	std::string audioBankName;
 	std::string eventName;
 	AudioBank* audioBank = nullptr;
+	float volume = 1.f;
 };

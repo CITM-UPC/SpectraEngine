@@ -186,7 +186,9 @@
     <ClCompile Include="$(WWISESDK)\samples\SoundEngine\Win32\stdafx.cpp">
       <Filter>Sources\Wwise</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentAudio.cpp" />
+    <ClCompile Include="ComponentAudio.cpp">
+      <Filter>Sources\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ModuleInput.h">
@@ -321,7 +323,9 @@
     <ClInclude Include="ModuleAudio.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentAudio.h" />
+    <ClInclude Include="ComponentAudio.h">
+      <Filter>Sources\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc" />

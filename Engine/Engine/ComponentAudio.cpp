@@ -46,5 +46,13 @@ void ComponentAudio::OnEditor()
 			}
 			ImGui::EndCombo();
 		}
+
+		if (ImGui::SliderFloat("Volume", &volume, 0.f, 1.f))
+			SetVolume(volume);
 	}
+}
+
+void ComponentAudio::SetVolume(float newVolume)
+{
+	AK::SoundEngine::SetGameObjectOutputBusVolume(0, AK_INVALID_GAME_OBJECT, newVolume);
 }
