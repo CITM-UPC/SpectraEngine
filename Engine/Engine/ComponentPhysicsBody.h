@@ -18,5 +18,13 @@ public:
 	JPH::BodyCreationSettings* bodyCreationSettings = new JPH::BodyCreationSettings();
 
 private:
+	JPH::EAllowedDOFs CalculateAllowedDofs() const;
 
+	bool translationX = false;
+	bool translationY = false;
+	bool translationZ = false;
+	bool rotationX = false;
+	bool rotationY = false;
+	bool rotationZ = false;
+	bool allAxesLockedWarning = false;
 };
