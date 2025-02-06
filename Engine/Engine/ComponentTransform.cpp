@@ -256,3 +256,9 @@ void ComponentTransform::Deserialize(const nlohmann::json& json)
 	SetTransformMatrix(position, rotation, scale, gameObject->parent->transform);
 	UpdateTransform();
 }
+
+void ComponentTransform::SetPosition(const glm::vec3& position)
+{
+	this->position = position;
+	UpdateTransform();
+}

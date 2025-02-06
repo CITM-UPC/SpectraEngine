@@ -10,6 +10,12 @@ public:
 	virtual ~ComponentPhysicsBody();
 
 	void OnEditor() override;
+	Body* physicsBody = nullptr;
+
+	void CreateBody();
+
+	JPH::ShapeRefC shape;
+	JPH::BodyCreationSettings* bodyCreationSettings = new JPH::BodyCreationSettings();
 
 private:
 
