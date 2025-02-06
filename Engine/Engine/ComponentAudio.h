@@ -11,6 +11,8 @@ public:
 
 	void OnEditor() override;
 
+	void Play();
+
 private:
 	void SetVolume(float newVolume);
 

@@ -53,6 +53,11 @@ void ComponentAudio::OnEditor()
 	}
 }
 
+void ComponentAudio::Play()
+{
+	AK::SoundEngine::PostEvent(eventName.c_str(), gameObjectID);
+}
+
 void ComponentAudio::SetVolume(float newVolume)
 {
 	AK::SoundEngine::SetGameObjectOutputBusVolume(gameObjectID, AK_INVALID_GAME_OBJECT, newVolume);

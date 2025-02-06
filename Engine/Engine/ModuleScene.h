@@ -7,6 +7,7 @@
 #include "Mesh.h"
 #include <nlohmann/json.hpp>
 
+class ComponentAudio;
 class GameObject;
 
 class ModuleScene : public Module
@@ -50,4 +51,6 @@ public:
 	ComponentCamera* activeGameCamera = nullptr;
 
 	std::string currentScene;
+
+	ComponentAudio* audio = nullptr;
 };

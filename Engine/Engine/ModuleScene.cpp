@@ -3,6 +3,8 @@
 #include "ScriptMoveInCircle.h"
 #include <fstream>
 #include <iostream>
+#include "ComponentAudio.h"
+
 
 ModuleScene::ModuleScene(App* app) : Module(app), sceneBounds(glm::vec3(-15.0f), glm::vec3(15.0f))
 {
@@ -48,6 +50,8 @@ bool ModuleScene::Start()
 	app->editor->selectedGameObject->transform->UpdateTransform();
 	app->editor->selectedGameObject->AddComponent(ComponentScript::CreateScriptByType("ScriptMoveInCircle", app->editor->selectedGameObject));
 	app->editor->selectedGameObject->name = "Player";
+	audio = new ComponentAudio(app->editor->selectedGameObject);
+	app->editor->selectedGameObject->AddComponent(audio);
 
 	currentScene = "Assets/Scenes/" + root->name + ".scene";
 
@@ -87,7 +91,7 @@ bool ModuleScene::Update(float dt)
 	{
 		if (app->input->GetKey(SDL_SCANCODE_Y) == KEY_DOWN)
 		{
-			app->audio->PlayEvent("Play_Test_Audio", 0);
+			audio->Play();
 		}
 
 		app->audio->ProcessAudio();
