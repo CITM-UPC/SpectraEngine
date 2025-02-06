@@ -39,7 +39,7 @@ bool ModuleAudio::Start()
 
 	LoadAudioBanks();
 
-	AK::SoundEngine::RegisterGameObj(0);
+	//AK::SoundEngine::RegisterGameObj(0);
 
 	AkGameObjectID listenerID = 1;
 	AK::SoundEngine::RegisterGameObj(listenerID);
@@ -130,6 +130,14 @@ void ModuleAudio::ProcessAudio()
 void ModuleAudio::PlayEvent(const char* eventName, AkGameObjectID gameObjectID)
 {
 	AK::SoundEngine::PostEvent(eventName, gameObjectID);
+}
+
+void ModuleAudio::AddAudioComponent(ComponentAudio* audioComponent, AkGameObjectID& gameObjectID)
+{
+	audioComponents.push_back(audioComponent);
+	gameObjectID = audioComponents.size();
+
+	AK::SoundEngine::RegisterGameObj(gameObjectID);
 }
 
 bool ModuleAudio::InitMemoryManager()

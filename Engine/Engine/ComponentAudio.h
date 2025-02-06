@@ -14,6 +14,8 @@ public:
 private:
 	void SetVolume(float newVolume);
 
+	AkGameObjectID gameObjectID = 0;
+
 	std::string audioBankName;
 	std::string eventName;
 	AudioBank* audioBank = nullptr;

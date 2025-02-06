@@ -26,6 +26,8 @@
 #include <vector>
 #include <string>
 
+class ComponentAudio;
+
 struct AudioBank
 {
 	std::string bankName;
@@ -49,6 +51,8 @@ public:
 
 	std::vector<AudioBank*> audioBanks;
 
+	void AddAudioComponent(ComponentAudio* audioComponent, AkGameObjectID& gameObjectID);
+
 private:
 	bool InitMemoryManager();
 	bool InitStreamingManager();
@@ -61,4 +65,6 @@ private:
 	bool LoadAudioBanks();
 
 	CAkFilePackageLowLevelIODeferred* g_lowLevelIO = nullptr;
+
+	std::vector<ComponentAudio*> audioComponents;
 };

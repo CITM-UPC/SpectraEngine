@@ -4,6 +4,7 @@
 
 ComponentAudio::ComponentAudio(GameObject* gameObject) : Component(gameObject, ComponentType::AUDIO)
 {
+	app->audio->AddAudioComponent(this, gameObjectID);
 }
 
 ComponentAudio::~ComponentAudio()
@@ -54,5 +55,5 @@ void ComponentAudio::OnEditor()
 
 void ComponentAudio::SetVolume(float newVolume)
 {
-	AK::SoundEngine::SetGameObjectOutputBusVolume(0, AK_INVALID_GAME_OBJECT, newVolume);
+	AK::SoundEngine::SetGameObjectOutputBusVolume(gameObjectID, AK_INVALID_GAME_OBJECT, newVolume);
 }
