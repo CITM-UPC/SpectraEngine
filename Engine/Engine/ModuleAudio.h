@@ -31,6 +31,7 @@ class ComponentAudio;
 struct AudioBank
 {
 	std::string bankName;
+	std::string bankPath;
 	std::vector<std::string> events;
 };
 

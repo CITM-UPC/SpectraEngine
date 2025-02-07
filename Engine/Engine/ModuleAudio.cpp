@@ -77,6 +77,7 @@ bool ModuleAudio::LoadAudioBanks()
 
 		AudioBank* audioBank = new AudioBank();
 		audioBank->bankName = shortName;
+		audioBank->bankPath = "Assets\\Audio\\WwiseProject\\GeneratedSoundBanks\\Windows\\" + shortName;
 
 		if (bankData.contains("Events"))
 		{
