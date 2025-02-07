@@ -15,6 +15,7 @@ public:
 
 private:
 	void SetVolume(float newVolume);
+	std::string GetEventDurationInfo();
 
 	AkGameObjectID gameObjectID = 0;
 
@@ -23,4 +24,5 @@ private:
 	AudioBank* audioBank = nullptr;
 	float volume = 1.f;
 	bool mute = false;
+	std::string duration;
 };
