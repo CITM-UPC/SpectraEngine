@@ -22,4 +22,5 @@ private:
 	std::string eventName;
 	AudioBank* audioBank = nullptr;
 	float volume = 1.f;
+	bool mute = false;
 };

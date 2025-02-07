@@ -48,6 +48,9 @@ void ComponentAudio::OnEditor()
 			ImGui::EndCombo();
 		}
 
+		if (ImGui::Checkbox("Mute", &mute))
+			SetVolume(mute ? 0.f : volume);
+
 		if (ImGui::SliderFloat("Volume", &volume, 0.f, 1.f))
 			SetVolume(volume);
 	}
