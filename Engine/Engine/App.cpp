@@ -23,9 +23,9 @@ App::App(int argc, char* argv[])
 	AddModule(fileSystem);
 	AddModule(resources);
 	AddModule(importer);
+	AddModule(audio);
 	AddModule(scene);
 	AddModule(editor);
-	AddModule(audio);
 	AddModule(renderer3D);
 
 	window->loadingBarWidth = static_cast<int>(335 / (modules.size() * 2));

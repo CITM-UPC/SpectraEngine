@@ -9,9 +9,12 @@ public:
 	ComponentAudio(GameObject* gameObject);
 	~ComponentAudio();
 
+	void Update() override;
 	void OnEditor() override;
 
 	void Play();
+
+	void UpdatePosition();
 
 private:
 	void SetVolume(float newVolume);

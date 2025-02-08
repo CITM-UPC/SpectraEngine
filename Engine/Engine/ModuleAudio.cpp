@@ -41,8 +41,9 @@ bool ModuleAudio::Start()
 
 	//AK::SoundEngine::RegisterGameObj(0);
 
-	AkGameObjectID listenerID = 1;
+	AkGameObjectID listenerID = 100;
 	AK::SoundEngine::RegisterGameObj(listenerID);
+	Set3DPosition(listenerID, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f));
 	AK::SoundEngine::SetDefaultListeners(&listenerID, 1);
 
 	return true;
@@ -139,6 +140,15 @@ void ModuleAudio::AddAudioComponent(ComponentAudio* audioComponent, AkGameObject
 	gameObjectID = audioComponents.size();
 
 	AK::SoundEngine::RegisterGameObj(gameObjectID);
+}
+
+void ModuleAudio::Set3DPosition(AkGameObjectID gameObjectID, glm::vec3 position, glm::vec3 forward, glm::vec3 up)
+{
+	AkSoundPosition soundPos;
+	soundPos.SetPosition(position.x, position.y, position.z);
+	soundPos.SetOrientation(forward.x, forward.y, forward.z, up.x, up.y, up.z);
+
+	AK::SoundEngine::SetPosition(gameObjectID, soundPos);
 }
 
 bool ModuleAudio::InitMemoryManager()

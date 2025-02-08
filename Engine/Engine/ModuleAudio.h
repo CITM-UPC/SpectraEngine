@@ -26,6 +26,8 @@
 #include <vector>
 #include <string>
 
+#include <glm/glm.hpp>
+
 class ComponentAudio;
 
 struct AudioBank
@@ -53,6 +55,8 @@ public:
 	std::vector<AudioBank*> audioBanks;
 
 	void AddAudioComponent(ComponentAudio* audioComponent, AkGameObjectID& gameObjectID);
+
+	void Set3DPosition(AkGameObjectID gameObjectID, glm::vec3 position, glm::vec3 forward, glm::vec3 up);
 
 private:
 	bool InitMemoryManager();
