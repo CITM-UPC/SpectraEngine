@@ -145,7 +145,7 @@ void ModuleAudio::AddAudioComponent(ComponentAudio* audioComponent, AkGameObject
 void ModuleAudio::Set3DPosition(AkGameObjectID gameObjectID, glm::vec3 position, glm::vec3 forward, glm::vec3 up)
 {
 	AkSoundPosition soundPos;
-	soundPos.SetPosition(position.x, position.y, position.z);
+	soundPos.SetPosition(position.x, position.y, -position.z);
 	soundPos.SetOrientation(forward.x, forward.y, forward.z, up.x, up.y, up.z);
 
 	AK::SoundEngine::SetPosition(gameObjectID, soundPos);

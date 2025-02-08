@@ -219,6 +219,11 @@ bool ComponentTransform::Decompose(const glm::float4x4& transform, glm::vec3& tr
 	return true;
 }
 
+glm::vec3 ComponentTransform::GetGlobalPosition()
+{
+	return glm::vec3(globalTransform[3]);
+}
+
 void ComponentTransform::SetButtonColor(const char* label)
 {
 	ImVec4 buttonColor;

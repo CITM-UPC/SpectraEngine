@@ -76,7 +76,7 @@ void ComponentAudio::Play()
 
 void ComponentAudio::UpdatePosition()
 {
-	app->audio->Set3DPosition(gameObjectID, gameObject->transform->position, glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f));
+	app->audio->Set3DPosition(gameObjectID, gameObject->transform->GetGlobalPosition(), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f));
 }
 
 void ComponentAudio::SetVolume(float newVolume)

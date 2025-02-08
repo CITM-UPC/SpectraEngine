@@ -23,6 +23,8 @@ public:
 
 	bool Decompose(const glm::float4x4& transform, glm::vec3& translation, glm::quat& rotation, glm::vec3& scale);
 
+	glm::vec3 GetGlobalPosition();
+
 private:
 	void SetButtonColor(const char* label);
 
