@@ -39,13 +39,6 @@ bool ModuleAudio::Start()
 
 	LoadAudioBanks();
 
-	//AK::SoundEngine::RegisterGameObj(0);
-
-	AkGameObjectID listenerID = 100;
-	AK::SoundEngine::RegisterGameObj(listenerID);
-	Set3DPosition(listenerID, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f));
-	AK::SoundEngine::SetDefaultListeners(&listenerID, 1);
-
 	return true;
 }
 
@@ -134,12 +127,21 @@ void ModuleAudio::PlayEvent(const char* eventName, AkGameObjectID gameObjectID)
 	AK::SoundEngine::PostEvent(eventName, gameObjectID);
 }
 
-void ModuleAudio::AddAudioComponent(ComponentAudio* audioComponent, AkGameObjectID& gameObjectID)
+void ModuleAudio::AddAudioSourceComponent(ComponentAudioSource* audioComponent, AkGameObjectID& gameObjectID)
 {
-	audioComponents.push_back(audioComponent);
-	gameObjectID = audioComponents.size();
+	audioSources.push_back(audioComponent);
+	gameObjectID = audioSources.size();
 
 	AK::SoundEngine::RegisterGameObj(gameObjectID);
+}
+
+void ModuleAudio::AddAudioListenerComponent(ComponentAudioListener* audioListener, AkGameObjectID& gameObjectID)
+{
+	audioListeners.push_back(audioListener);
+	gameObjectID = audioListeners.size() + 1000;
+
+	AK::SoundEngine::RegisterGameObj(gameObjectID);
+	AK::SoundEngine::SetDefaultListeners(&gameObjectID, 1);
 }
 
 void ModuleAudio::Set3DPosition(AkGameObjectID gameObjectID, glm::vec3 position, glm::vec3 forward, glm::vec3 up)

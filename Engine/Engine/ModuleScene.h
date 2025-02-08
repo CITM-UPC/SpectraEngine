@@ -7,7 +7,7 @@
 #include "Mesh.h"
 #include <nlohmann/json.hpp>
 
-class ComponentAudio;
+class ComponentAudioSource;
 class GameObject;
 
 class ModuleScene : public Module
@@ -52,5 +52,5 @@ public:
 
 	std::string currentScene;
 
-	ComponentAudio* audio = nullptr;
+	ComponentAudioSource* audio = nullptr;
 };

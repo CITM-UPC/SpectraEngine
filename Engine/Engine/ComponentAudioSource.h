@@ -3,11 +3,11 @@
 #include "Component.h"
 #include "ModuleAudio.h"
 
-class ComponentAudio : public Component
+class ComponentAudioSource : public Component
 {
 public:
-	ComponentAudio(GameObject* gameObject);
-	~ComponentAudio();
+	ComponentAudioSource(GameObject* gameObject);
+	~ComponentAudioSource();
 
 	void Update() override;
 	void OnEditor() override;

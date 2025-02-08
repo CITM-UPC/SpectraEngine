@@ -28,7 +28,8 @@
 
 #include <glm/glm.hpp>
 
-class ComponentAudio;
+class ComponentAudioSource;
+class ComponentAudioListener;
 
 struct AudioBank
 {
@@ -54,7 +55,9 @@ public:
 
 	std::vector<AudioBank*> audioBanks;
 
-	void AddAudioComponent(ComponentAudio* audioComponent, AkGameObjectID& gameObjectID);
+	void AddAudioSourceComponent(ComponentAudioSource* audioComponent, AkGameObjectID& gameObjectID);
+
+	void AddAudioListenerComponent(ComponentAudioListener* audioListener, AkGameObjectID& gameObjectID);
 
 	void Set3DPosition(AkGameObjectID gameObjectID, glm::vec3 position, glm::vec3 forward, glm::vec3 up);
 
@@ -71,5 +74,6 @@ private:
 
 	CAkFilePackageLowLevelIODeferred* g_lowLevelIO = nullptr;
 
-	std::vector<ComponentAudio*> audioComponents;
+	std::vector<ComponentAudioSource*> audioSources;
+	std::vector<ComponentAudioListener*> audioListeners;
 };

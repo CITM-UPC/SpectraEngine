@@ -2,7 +2,8 @@
 
 #include "App.h"
 #include "GameObject.h"
-#include "ComponentAudio.h"
+#include "ComponentAudioSource.h"
+#include "ComponentAudioListener.h"
 
 ComponentTransform::ComponentTransform(GameObject* gameObject) : Component(gameObject, ComponentType::TRANSFORM)
 {
@@ -185,10 +186,11 @@ void ComponentTransform::UpdateTransform()
 	updateTransform = false;
 	app->scene->octreeNeedsUpdate = true;
 
-	if (ComponentAudio* componentAudio = dynamic_cast<ComponentAudio*>(gameObject->GetComponent(ComponentType::AUDIO)))
-	{
-		componentAudio->UpdatePosition();
-	}
+	if (ComponentAudioSource* audioSource = dynamic_cast<ComponentAudioSource*>(gameObject->GetComponent(ComponentType::AUDIO_SOURCE)))
+		audioSource->UpdatePosition();
+
+	if (ComponentAudioListener* audioListener = dynamic_cast<ComponentAudioListener*>(gameObject->GetComponent(ComponentType::AUDIO_LISTENER)))
+		audioListener->UpdatePosition();
 }
 
 bool ComponentTransform::Decompose(const glm::float4x4& transform, glm::vec3& translation, glm::quat& rotation, glm::vec3& scale)

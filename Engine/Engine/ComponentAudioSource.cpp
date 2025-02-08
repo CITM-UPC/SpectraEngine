@@ -1,24 +1,25 @@
-#include "ComponentAudio.h"
+#include "ComponentAudioSource.h"
 
 #include "App.h"
 
 #include <fstream>
 
-ComponentAudio::ComponentAudio(GameObject* gameObject) : Component(gameObject, ComponentType::AUDIO)
+ComponentAudioSource::ComponentAudioSource(GameObject* gameObject) : Component(gameObject, ComponentType::AUDIO_SOURCE)
 {
-	app->audio->AddAudioComponent(this, gameObjectID);
+	app->audio->AddAudioSourceComponent(this, gameObjectID);
+	UpdatePosition();
 }
 
-ComponentAudio::~ComponentAudio()
+ComponentAudioSource::~ComponentAudioSource()
 {
 }
 
-void ComponentAudio::Update()
+void ComponentAudioSource::Update()
 {
 	
 }
 
-void ComponentAudio::OnEditor()
+void ComponentAudioSource::OnEditor()
 {
 	if (ImGui::CollapsingHeader("Audio Source", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -69,22 +70,22 @@ void ComponentAudio::OnEditor()
 	}
 }
 
-void ComponentAudio::Play()
+void ComponentAudioSource::Play()
 {
 	AK::SoundEngine::PostEvent(eventName.c_str(), gameObjectID);
 }
 
-void ComponentAudio::UpdatePosition()
+void ComponentAudioSource::UpdatePosition()
 {
 	app->audio->Set3DPosition(gameObjectID, gameObject->transform->GetGlobalPosition(), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f));
 }
 
-void ComponentAudio::SetVolume(float newVolume)
+void ComponentAudioSource::SetVolume(float newVolume)
 {
 	AK::SoundEngine::SetGameObjectOutputBusVolume(gameObjectID, AK_INVALID_GAME_OBJECT, newVolume);
 }
 
-std::string ComponentAudio::GetEventDurationInfo()
+std::string ComponentAudioSource::GetEventDurationInfo()
 {
 	std::ifstream file(audioBank->bankPath + ".json");
 

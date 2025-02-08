@@ -16,7 +16,8 @@ enum class ComponentType
 	MATERIAL,
 	CAMERA,
 	SCRIPT,
-	AUDIO
+	AUDIO_SOURCE,
+	AUDIO_LISTENER
 };
 
 class Component

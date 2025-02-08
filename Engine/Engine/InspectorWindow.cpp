@@ -2,6 +2,9 @@
 #include "GameObject.h"
 #include "App.h"
 
+#include "ComponentAudioSource.h"
+#include "ComponentAudioListener.h"
+
 InspectorWindow::InspectorWindow(const WindowType type, const std::string& name) : EditorWindow(type, name)
 {
 }
@@ -42,6 +45,29 @@ void InspectorWindow::DrawWindow()
 		for (auto i = 0; i < app->editor->selectedGameObject->components.size(); i++)
 		{
 			app->editor->selectedGameObject->components[i]->OnEditor();
+		}
+
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		if (ImGui::Button("Add Component"))
+		{
+			ImGui::OpenPopup("AddComponentPopup");
+		}
+
+		if (ImGui::BeginPopup("AddComponentPopup"))
+		{
+			if (ImGui::MenuItem("Audio Source"))
+			{
+				ComponentAudioSource* audioSource = new ComponentAudioSource(app->editor->selectedGameObject);
+				app->editor->selectedGameObject->AddComponent(audioSource);
+			}
+			if (ImGui::MenuItem("Audio Listener"))
+			{
+				ComponentAudioListener* audioListener = new ComponentAudioListener(app->editor->selectedGameObject);
+				app->editor->selectedGameObject->AddComponent(audioListener);
+			}
+			ImGui::EndPopup();
 		}
 	}
 
